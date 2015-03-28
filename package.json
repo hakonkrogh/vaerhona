@@ -1,0 +1,14 @@
+{
+  "name": "example-project",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-uglify": "^0.6.0",
+    "grunt-contrib-sass": "^0.7.3",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-compass": "^0.7.2",
+    "grunt-includes": "^0.4.5",
+    "grunt-svg-sprite": "^1.0.16"
+  }
+}

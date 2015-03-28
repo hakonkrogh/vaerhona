@@ -1,0 +1,45 @@
+@mixin mask-image ($image_src, $size: 40px, $position: center center, $repeat: no-repeat) {
+
+	$image: inline-image($image_src);
+
+	-webkit-mask-image: $image;
+	-webkit-mask-size: $size;
+	-webkit-mask-position: $position;
+	-webkit-mask-repeat: $repeat;
+
+	-moz-mask-image: $image;
+	-moz-mask-size: $size;
+	-moz-mask-position: $position;
+	-moz-mask-repeat: $repeat;
+
+	mask-image: $image;
+	mask-size: $size;
+	mask-position: $position;
+	mask-repeat: $repeat;
+}
+
+@mixin for ($media) {
+	@if $media == mobile {
+		@media all and (max-width: 480px) {
+	        @content;
+	    }
+	}
+}
+
+@mixin animation ($value) {
+	-webkit-animation: $value;
+	-moz-animation: $value;
+	animation: $value;
+}
+
+@mixin font-icon ($type: none) {
+	font-family: 'icomoon';
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	@if $type == position {
+		content: "\e602";
+	}
+}

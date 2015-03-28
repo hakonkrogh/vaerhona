@@ -1,0 +1,112 @@
+@import "shared";
+
+@-moz-keyframes animspin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes animspin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@keyframes animspin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
+header.site-header {
+	padding: 0 5px;
+	height: $header_height;
+	background: #000;
+	overflow: hidden;
+	@include box-sizing(border-box);
+
+	.standalone & {
+		padding-top: 20px;
+		height: $header_height + 20;
+	}
+
+	&,
+	a {
+		color: #fff;
+	}
+
+	.buttons {
+		float: left;
+
+		.ico {
+			float: left;
+			width: 40px;
+			height: $header_height;
+			padding: 0;
+			margin: 0 5px 0 0;
+			border: none;
+			background: {
+				repeat: no-repeat;
+				color: #fff;
+			}
+			opacity: .6;
+			font-size: 22px;
+
+			$size: 22px;
+
+			&.pictures {
+				@include mask-image("svg/pictures.svg", $size);
+			}
+
+			&.statistics {
+				@include mask-image("svg/statistics.svg", $size);
+			}
+
+			&.refresh {
+				@include mask-image("svg/refresh.svg", $size);
+			}
+
+			.no-touch &:hover,
+			&.spin {
+				opacity: .85;
+			}
+
+			// Disabled since it caused double tap for android
+			//&:active {
+			//	@include transform(scale(.95));
+			//}
+
+			&.selected {
+				opacity: 1;
+				cursor: default;
+				@include transform(scale(1));
+			}
+
+			&.spin {
+				@include animation(animspin 700ms infinite linear);
+			}
+		}
+	}
+
+	.dates {
+		float: right;
+
+		input {
+			background: transparent;
+			border: none;
+			color: #fff;
+			padding: 5px;
+			font-size: 1.1rem;
+			max-width: 80px;
+			height: $header_height;
+			text-align: center;
+			@include box-sizing(border-box);
+		}
+
+		i:before {
+			content: "-";
+		}
+
+		@include for (mobile) {
+
+			input {
+				max-width: 70px;
+			}
+		}
+	}
+}

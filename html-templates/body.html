@@ -1,0 +1,57 @@
+<div class="site-wrap" id="app">
+
+    <header class="site-header" id="site-header">
+        <div class="buttons">
+            <button data-action="camera" class="ico pictures selected"></button>
+            <button data-action="charts" class="ico statistics"></button>
+            <button data-action="refresh" class="ico refresh"></button>
+        </div>
+
+        <div class="dates"><input type="text" id="date-from"><i></i><input type="text" id="date-to"></div>
+    </header>
+
+    <div class="sections" id="sections">
+        <div class="inner">
+            <section class="content-section image" id="image">
+                <div class="snapshot-info">
+                    <div id="img-weather"></div>
+                    <div id="img-date"></div>
+                </div>
+                <div class="img-loading">henter bilde...</div>
+                <div id="img-wrap"><div id="img"></div></div>
+                <div class="range" id="range-wrap">
+                    <div class="kw-range" id="range-kw">
+                        <div class="kwr-indicator"><span class="kwr-text">Text...</span></div>
+                        <div class="kwr-line"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="content-section chart" id="chart">
+                <div class="charts" id="chart-canvas-container">
+                    <div class="chart" id="chart-canvas"></div>
+                </div>
+                <ul class="types">
+                    <li data-type="tempOutside" class="ico thermometer selected">Temperatur</li>
+                    <li data-type="humidity" class="ico droplets humidity">Luftfuktighet</li>
+                    <li data-type="pressure" class="ico compass">Trykk</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+</div>
+<div id="pre-load"></div>
+<div class="spinner">
+    <span></span>
+</div>
+
+<script>
+    window.kw = {};
+    ;(function () {
+        function stopScroll (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        document.addEventListener("touchmove", stopScroll, false);
+    })();
+</script>

@@ -1,0 +1,10 @@
+CACHE MANIFEST
+# v112 - 2015-03-27
+css/build/production.css
+js/build/production.min.js
+
+# Use from network if available
+NETWORK:
+*
+
+FALLBACK:

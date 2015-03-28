@@ -1,0 +1,249 @@
+@import "shared";
+@import "../html-templates/loader.scss";
+
+body {
+	@include transform(translate3d(0, 0, 0));
+}
+
+#qunit {
+	display: none;
+
+	.testing & {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: block;
+	}
+}
+
+.site-wrap {
+	// The height will be overwritten by javascript
+	height: 100vh;
+	overflow: hidden;
+}
+
+.sections {
+	position: relative;
+	//top: $header_height;
+	//height: calc(100% - #{$header_height});
+	background: #292929;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAGklEQVQIW2NkYGD4D8SMQAwGcAY2AbBKDBUAVuYCBQPd34sAAAAASUVORK5CYII=);
+	@include perspective(1000);
+
+	.inner {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		@include transition(all 1000ms);
+		@include transform-style(preserve-3d);
+	}
+
+	&.show-chart .inner {
+		@include transform(rotateY(180deg));
+	}
+}
+
+.content-section {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: $site_bg;
+
+	@include backface-visibility(hidden);
+
+	&.chart {
+		z-index: 1;
+		@include transform(rotateY(180deg));
+
+		.charts {
+			height: calc(100% - 70px);
+			position: relative;
+		}
+
+		.chart {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		.types {
+			display: block;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+
+			li {
+				display: inline-block;
+				list-style: none;
+				margin: 0 10px;
+				padding: 0;
+				width: auto;
+				height: 60px;
+				opacity: .4;
+				cursor: pointer;
+				color: #fff;
+				text-align: center;
+				font-size: .9rem;
+				@include transition(opacity 200ms);
+
+				&:before {
+					content: "";
+					display: block;
+					margin: 8px 0;
+					height: 22px;
+					background-color: #fff;
+				}
+
+				&.thermometer:before {
+					@include mask-image("svg/thermometer.svg", 20px);
+				}
+				&.droplets:before {
+					@include mask-image("svg/droplets.svg", 20px);
+				}
+				&.compass:before {
+					@include mask-image("svg/compass.svg", 20px);
+				}
+
+				.no.touch &:hover {
+					opacity: .85;
+				}
+
+				&:active {
+					@include transform(scale(.95));
+				}
+
+				&.selected {
+					opacity: 1;
+					cursor: default;
+					@include transform(scale(1));
+				}
+			}
+		}
+	}
+
+	&.image {
+		z-index: 2;
+		text-align: center;
+		$rangeHeight: 45px;
+		$infoHeight: 50px;
+
+		.img-loading {
+			position: absolute;
+			top: $infoHeight;
+			left: 0;
+			z-index: 1;
+			width: 100%;
+			height: 200px;
+			line-height: 200px;
+			color: #fff;
+			font: {
+				style: italic;
+				size: 13px;
+			}
+		}
+
+		#img-wrap {
+			position: relative;
+			z-index: 2;
+			height: 100%;
+			overflow: hidden;
+		}
+
+		#img {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-repeat: no-repeat;
+			background-position: top center;
+			@include background-size(contain);
+		}
+
+		.snapshot-info {
+			position: relative;
+			height: $infoHeight;
+			line-height: $infoHeight;
+			background: #000;
+			color: #fff;
+			font-size: 1.3em;
+			border-top: 1px solid #444;
+
+			#img-weather {
+				position: absolute;
+				top: 0;
+				right: 10px;
+
+				span {
+					float: left;
+					width: 100px;
+					text-align: center;
+
+					@include for (mobile) {
+						width: 62px;
+					}
+				}
+			}
+
+			#img-date {
+				position: absolute;
+				top: 0;
+				left: 10px;
+
+				.long-date,
+				.short-date {
+					display: none;
+				}
+
+				.medium-date {
+					display: block;
+				}
+
+				@include for(mobile) {
+					.long-date,
+					.medium-date {
+						display: none;
+					}
+
+					.short-date {
+						display: block;
+					}
+				}
+			}
+		}
+
+		.range {
+			height: $rangeHeight;
+			position: relative;
+			z-index: 2;
+
+			#range {
+				width: 90%;
+				margin: 0 5%;
+				position: relative;
+				top: 10px;
+			}
+
+			.long-date {
+				display: none;
+			}
+		}
+	}
+}
+
+// The canvas for getting the base64 value of an image
+.image-binary-helper,
+.image-binary {
+	position: absolute;
+	top: -500px;
+	left: 0;
+	width: 640px;
+	height: 480px;
+	z-index: 0;
+}
