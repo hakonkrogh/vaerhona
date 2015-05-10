@@ -44,8 +44,10 @@
 
 			var items = weather.data.getCurrent();
 
-			weather.chartTypeDef = "temperature-outside";
-	
+			// Default chart
+			var typeDef = types.tempOutside;
+			weather.chartTypeDef = typeDef.dataID;
+
 			// Get dates
 			var items_date = GetOnlyData(items, "date");
 
@@ -58,8 +60,9 @@
 			// Already initiated. Just update
 			if (weather.highchart) {
 				
-				var typeDef = types[type],
-					data;
+				typeDef = types[type];
+				
+				var data;
 				
 				if (typeDef) {
 					data = GetOnlyData(items, typeDef.dataID);
@@ -70,11 +73,9 @@
 					data = GetOnlyData(items, weather.chartTypeDef);
 				}
 
-				weather.testdata = data;
-
 				weather.highchart.series[0].setData(data);
 
-				// Update axis
+				// Update
 				weather.highchart.xAxis[0].setCategories(GetOnlyData(items, "date"));
 
 				weather.highchart.xAxis[0].update({
@@ -87,7 +88,7 @@
 			else {
 
 				// Get temperature outside
-				var items_temperature_outside = GetOnlyData(items, weather.chartTypeDef);
+				var items_default = GetOnlyData(items, weather.chartTypeDef);
 
 				var $chartEl = $('#chart-canvas');
 				
@@ -101,8 +102,7 @@
 		                categories: items_date
 		            },
 		            series: [{
-		                name: types.tempOutside.name,
-		                data: items_temperature_outside
+		                data: items_default
 		            }],
 		            yAxis: {
 		                title: false,
@@ -116,6 +116,13 @@
 
 		        weather.highchart = $chartEl.highcharts();
 		    }
+
+		    // Set serie values
+		    var serie = weather.highchart.series[0];
+			if (serie) {
+				serie.name = typeDef.name;
+				serie.tooltipOptions.pointFormat = "<b>{point.y}</b> " + typeDef.valueSuffix;
+			}
 
 	        if (callback) {
         		setTimeout(callback, 500);
@@ -238,7 +245,8 @@
 				borderWidth: 0,
 				style: {
 					color: '#ccc'
-				}
+				},
+				pointFormat: "<b>{point.y}</b> °C"
 			},
 
 			plotOptions: {

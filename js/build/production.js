@@ -3259,7 +3259,7 @@ Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
 		}
 
 		if (settings.place.indexOf("dev.html") !== -1) {
-			settings.place = "test";
+			settings.place = "veggli";
 		}
 
 		// Set default
@@ -3267,9 +3267,9 @@ Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
 			settings.place = "veggli";
 		}
 
-		if (settings.place === "test") {
-			localStorage.clear();
-		}
+		//if (settings.place === "test") {
+		//	localStorage.clear();
+		//}
 
 	    // Stores current items
 	    var current = {
@@ -3565,6 +3565,8 @@ Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
 
 				// Notify to other components that loading is done
 				weather.firstLoadComplete = true;
+
+				trackPageView();
 			});
 			
 			return deferred;
@@ -3882,6 +3884,23 @@ Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
 			var first = str[0].toUpperCase();
 
 			return first + str.substr(1);
+		}
+
+		// Track page view
+		function trackPageView () {
+
+			if (!weather.addedGA) {
+				weather.addedGA = +new Date();
+
+				(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+				(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+				})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+				ga('create', 'UA-61711833-1', 'auto');
+			}
+			
+			ga('send', 'pageview');
 		}
 
 		return {
@@ -4398,8 +4417,10 @@ weather.layout = (function () {
 
 			var items = weather.data.getCurrent();
 
-			weather.chartTypeDef = "temperature-outside";
-	
+			// Default chart
+			var typeDef = types.tempOutside;
+			weather.chartTypeDef = typeDef.dataID;
+
 			// Get dates
 			var items_date = GetOnlyData(items, "date");
 
@@ -4412,8 +4433,9 @@ weather.layout = (function () {
 			// Already initiated. Just update
 			if (weather.highchart) {
 				
-				var typeDef = types[type],
-					data;
+				typeDef = types[type];
+				
+				var data;
 				
 				if (typeDef) {
 					data = GetOnlyData(items, typeDef.dataID);
@@ -4424,11 +4446,9 @@ weather.layout = (function () {
 					data = GetOnlyData(items, weather.chartTypeDef);
 				}
 
-				weather.testdata = data;
-
 				weather.highchart.series[0].setData(data);
 
-				// Update axis
+				// Update
 				weather.highchart.xAxis[0].setCategories(GetOnlyData(items, "date"));
 
 				weather.highchart.xAxis[0].update({
@@ -4441,7 +4461,7 @@ weather.layout = (function () {
 			else {
 
 				// Get temperature outside
-				var items_temperature_outside = GetOnlyData(items, weather.chartTypeDef);
+				var items_default = GetOnlyData(items, weather.chartTypeDef);
 
 				var $chartEl = $('#chart-canvas');
 				
@@ -4455,8 +4475,7 @@ weather.layout = (function () {
 		                categories: items_date
 		            },
 		            series: [{
-		                name: types.tempOutside.name,
-		                data: items_temperature_outside
+		                data: items_default
 		            }],
 		            yAxis: {
 		                title: false,
@@ -4470,6 +4489,13 @@ weather.layout = (function () {
 
 		        weather.highchart = $chartEl.highcharts();
 		    }
+
+		    // Set serie values
+		    var serie = weather.highchart.series[0];
+			if (serie) {
+				serie.name = typeDef.name;
+				serie.tooltipOptions.pointFormat = "<b>{point.y}</b> " + typeDef.valueSuffix;
+			}
 
 	        if (callback) {
         		setTimeout(callback, 500);
@@ -4592,7 +4618,8 @@ weather.layout = (function () {
 				borderWidth: 0,
 				style: {
 					color: '#ccc'
-				}
+				},
+				pointFormat: "<b>{point.y}</b> °C"
 			},
 
 			plotOptions: {
