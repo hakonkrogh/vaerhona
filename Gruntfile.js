@@ -3,6 +3,59 @@ module.exports = function (grunt) {
     // Config
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        secret: grunt.file.readJSON('secret.json'),
+
+        'ftp-deploy': {
+            release: {
+                auth: {
+                    host: '<%= secret.host %>',
+                    port: '<%= secret.port %>',
+                    username: '<%= secret.username %>',
+                    password: '<%= secret.password %>'
+                },
+                src: 'dist',
+                dest: '<%= secret.dest %>'
+            }
+        },
+
+        clean: {
+            release: ['dist', 'app.manifest']
+        },
+
+        copy: {
+            release: {
+                files: [
+                    {
+                        expand: true,
+                        src: [
+                            'js/build/*',
+                            'css/build/*',
+                            'gfx/**',
+                            'app.manifest',
+                            'dev.html',
+                            'index.html',
+                            '404.html',
+                            'humans.txt',
+                            'robots.txt',
+                            'crossdomain.xml'
+                        ],
+                        dest: 'dist'
+                    }
+                ]
+            }
+        },
+
+        'compile-handlebars': {
+            appConfig: {
+                files: [{
+                    src: 'app.manifest.handlebars',
+                    dest: 'app.manifest'
+                }],
+                templateData: {
+                    changed: +new Date()
+                }
+            }
+        },
 
         includes: {
             build_html: {
@@ -42,6 +95,9 @@ module.exports = function (grunt) {
 
         uglify: {
             build_main_js: {
+                options: {
+                    sourceMap: true
+                },
                 src: 'js/build/production.js',
                 dest: 'js/build/production.min.js'
             },
@@ -110,13 +166,20 @@ module.exports = function (grunt) {
     });
 
     // Load plugins
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-compile-handlebars');
     grunt.loadNpmTasks('grunt-includes');
+    grunt.loadNpmTasks('grunt-ftp-deploy');
     
     // What do do when running grunt
-    grunt.registerTask('default', ["compass", 'concat', 'uglify', 'includes']);
+    grunt.registerTask('default', ['compass', 'concat', 'uglify', 'includes']);
+
+    // What do do when running grunt
+    grunt.registerTask('release', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy']);
 
 };

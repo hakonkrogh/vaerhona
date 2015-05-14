@@ -4433,7 +4433,9 @@ weather.layout = (function () {
 			// Already initiated. Just update
 			if (weather.highchart) {
 				
-				typeDef = types[type];
+				if (type) {
+					typeDef = types[type];
+				}
 				
 				var data;
 				
@@ -4492,7 +4494,7 @@ weather.layout = (function () {
 
 		    // Set serie values
 		    var serie = weather.highchart.series[0];
-			if (serie) {
+			if (serie && typeDef) {
 				serie.name = typeDef.name;
 				serie.tooltipOptions.pointFormat = "<b>{point.y}</b> " + typeDef.valueSuffix;
 			}
