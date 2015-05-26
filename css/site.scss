@@ -247,3 +247,18 @@ body {
 	height: 480px;
 	z-index: 0;
 }
+
+// Pre-load area for images
+#pre-load {
+	position: absolute;
+	top: -50px;
+	left: 0;
+	opacity: 0;
+
+	img {
+		height: 50px;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+}

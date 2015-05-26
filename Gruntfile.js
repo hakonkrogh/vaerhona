@@ -72,6 +72,7 @@ module.exports = function (grunt) {
         concat: {
             dist: {
                 src: [
+                    'bower_components/imagesloaded/imagesloaded.pkgd.js',
                     'js/vendor/jquery-2.1.1.min.js',
                     'js/vendor/hammer.js',
                     'js/vendor/mobiscroll/mobiscroll.core.js',

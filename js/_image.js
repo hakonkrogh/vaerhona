@@ -170,10 +170,12 @@
 			
 			var item = items[index];
 
-			function PreLoadImages (startIndex, increment) {
+			function PreLoadImages (startIndex, goTo) {
 				startIndex = parseInt(startIndex);
+				var amount = Math.abs(goTo);
+				var increment = goTo < 0 ? -1 : 1;
 
-				for (var i = 0; i < 5; i++) {
+				for (var i = 0; i < amount; i++) {
 					startIndex += increment;
 					if (startIndex >= 0 && startIndex < len) {
 						var item = items[startIndex];
@@ -192,8 +194,14 @@
 				});
 
 				// Pre load images before and after
-				PreLoadImages(index, 1);
-				PreLoadImages(index, -1);
+				if (!weather.firstImageLoaded) {
+					weather.firstImageLoaded = true;
+					PreLoadImages(index, -20);
+				}
+				else {
+					PreLoadImages(index, 1);
+					PreLoadImages(index, -1);
+				}
 
 				current.index = index;
 				current.item = item;
@@ -280,16 +288,26 @@
 		}
 
 		// Pre load single image
-		var images_loaded = [];
+		var images_loaded = [],
+			cleanupTimeout;
 		function PreLoadImage (url) {
 			if (images_loaded.indexOf(url) === -1) {
 				images_loaded.push(url);
 
-				var $loader = $("<div style='background-image: url(" + ResolveImg(url) + ");'/>").appendTo($preLoad);
+				var $loader = $("<img src='" + ResolveImg(url, false) + "' />").appendTo($preLoad);
 
-				//setTimeout(function () {
-				//	$loader.remove();
-				//}, 10000);
+				clearTimeout(cleanupTimeout);
+				cleanupTimeout = setTimeout(PreLoadImageCleanup, 10000);
+			}
+		}
+
+		function PreLoadImageCleanup () {
+			var reduceTo = 100;
+			var $children = $preLoad.children();
+			if ($children.length > reduceTo) {
+				var $keep = $children.filter(":gt(" + ($children.length - reduceTo - 1) + ")");
+				$children.not($keep).remove();
+				images_loaded.splice(0, $children.length - reduceTo);
 			}
 		}
 
@@ -301,8 +319,10 @@
 
 			// Check if we have the image in the local storage
 			var lastStored = weather.data.getStoredImage();
-			if (lastStored && lastStored.img_url === src) {
-				return lastStored.data;
+			if (checkStoredImage && lastStored) {
+				if (lastStored.img === src) {
+					return lastStored.data;
+				}
 			}
 
 			return "http://www.vhsys.no/images/" + src;

@@ -325,13 +325,6 @@
 
 		function StoreLastImage () {
 
-			return;
-
-			if (!weather.image_url) {
-				setTimeout(StoreLastImage, 25);
-				return;
-			}
-
 			var lastSnapshot = items_all[items_all.length - 1];
 
 			if (!weather.$.imageCanvas) {
@@ -340,9 +333,9 @@
 			}
 
 			var ctx = weather.$.imageCanvas[0].getContext("2d");
-			var $img = $("<img class='image-binary-helper' src='" + weather.image.resolve(lastSnapshot.img_url, false) + "' />").appendTo(weather.$.app);
+			var $img = $("<img crossorigin='anonymous' class='image-binary-helper' src='" + weather.image.resolve(lastSnapshot.img_url, false) + "' />").appendTo(weather.$.app);
 			
-			$img.load(function () {
+			imagesLoaded($img[0], function () {
 
 				weather.$.imageCanvas[0].width = weather.imageWidth;
 				weather.$.imageCanvas[0].height = weather.imageHeight;
@@ -352,7 +345,7 @@
 				// The image must be from same origin if attempting to call toDataURL
 				try {
 					var imageData = weather.$.imageCanvas[0].toDataURL("image/jpeg");
-					
+
 					var lastImage = {
 						img: lastSnapshot.img_url,
 						data: imageData
