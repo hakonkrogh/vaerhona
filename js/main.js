@@ -1,5 +1,10 @@
 ;(function (window, $, undefined) {
 
+	// Default to not online if not set
+	if (typeof navigator.onLine === 'undefined') {
+		navigator.onLine = false;
+	}
+
 	window.weather = (function () {
 
 		// App settings

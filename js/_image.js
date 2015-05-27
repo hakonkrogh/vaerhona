@@ -196,7 +196,7 @@
 				// Pre load images before and after
 				if (!weather.firstImageLoaded) {
 					weather.firstImageLoaded = true;
-					PreLoadImages(index, -20);
+					PreLoadImages(index, -5);
 				}
 				else {
 					PreLoadImages(index, 1);
@@ -317,10 +317,10 @@
 				checkStoredImage = true;
 			}
 
-			// Check if we have the image in the local storage
-			var lastStored = weather.data.getStoredImage();
-			if (checkStoredImage && lastStored) {
-				if (lastStored.img === src) {
+			// Use the image in the local storage if not online
+			if (checkStoredImage && !navigator.onLine) {
+				var lastStored = weather.data.getStoredImage();
+				if (lastStored && lastStored.img === src) {
 					return lastStored.data;
 				}
 			}

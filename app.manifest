@@ -1,10 +1,12 @@
 CACHE MANIFEST
-# Last modified: 1431598679626
+# Last modified: 1432665484826
 css/build/production.css
 js/build/production.min.js
+gfx/no-image.jpg
 
 # Use from network if available
 NETWORK:
 *
 
 FALLBACK:
+http://www.vhsys.no/images/ gfx/no-image.jpg
