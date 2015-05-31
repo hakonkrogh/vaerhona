@@ -69,10 +69,21 @@ module.exports = function (grunt) {
             }
         },
 
+        jshint: {
+            options: {
+                eqnull: true
+            },
+            all: [
+                'Gruntfile.js',
+                'js/*.js'
+            ]
+        },
+
         concat: {
             dist: {
                 src: [
                     'bower_components/imagesloaded/imagesloaded.pkgd.js',
+                    'js/vendor/ga.js',
                     'js/vendor/jquery-2.1.1.min.js',
                     'js/vendor/hammer.js',
                     'js/vendor/mobiscroll/mobiscroll.core.js',
@@ -136,7 +147,7 @@ module.exports = function (grunt) {
             },
             scripts: {
                 files: ['js/*.js', 'css/build/*.css', 'html-templates/*.js'],
-                tasks: ['concat', 'uglify'],
+                tasks: ['jshint', 'concat', 'uglify'],
                 options: {
                     spawn: false
                 }
@@ -156,7 +167,7 @@ module.exports = function (grunt) {
                 }
             },
             html_templates: {
-                files: ['html-templates/*.html'],
+                files: ['html-templates/*.html', 'html-source/*.html'],
                 tasks: ['includes'],
                 options: {
                     spawn: false
@@ -174,6 +185,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-compile-handlebars');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-includes');
     grunt.loadNpmTasks('grunt-ftp-deploy');
     

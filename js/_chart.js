@@ -169,7 +169,7 @@
 
 		return {
 			load: LoadChart
-		}
+		};
 	})();
 
 	function setChartTheme () {

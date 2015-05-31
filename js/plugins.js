@@ -35,7 +35,7 @@ $.fn.kwRange = function (mixed, mixed2) {
 			var $intervals = $("<div class='kwr-intervals'/>");
 
 			intervals.forEach(function (item) {
-				$intervals.append("<div class='intv' style='left: " + item.startPct + "%; width: " + item.widthPct + "%;' class='" + item.cls + "' />")
+				$intervals.append("<div class='intv' style='left: " + item.startPct + "%; width: " + item.widthPct + "%;' class='" + item.cls + "' />");
 			});
 
 			$line.find(".kwr-intervals").remove();
@@ -81,7 +81,7 @@ $.fn.kwRange = function (mixed, mixed2) {
 			createIntervals: createIntervals
 		});
 	});
-}
+};
 
 Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
 	return valueChange * ( -Math.pow( 2, -10 * currTime/duration ) + 1 ) + startValue;

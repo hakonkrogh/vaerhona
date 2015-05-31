@@ -16,7 +16,6 @@ weather.layout = (function () {
 			var heightImageHeader = 51;
 			var heightImageRange = 45;
 			var heightChartButtons = 70;
-
 			var contentHeight = weather.vh - 50;
 
 			// Set heights

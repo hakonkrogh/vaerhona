@@ -90,21 +90,21 @@
 					//else if (forceGetFromClient) {
 					//	return filterItemsForCurrentDate();
 					//}
+				}
 
-					// Compile list of items use
-					function filterItemsForCurrentDate () {
-						var items_to_return = [];
+				// Compile list of items use
+				function filterItemsForCurrentDate () {
+					var items_to_return = [];
 
-						for (var i = 0; i < len; i++) {
-							var item = items[i];
-							
-							if (item.t >= datetime_from && item.t <= datetime_to) {
-								items_to_return.push(item);
-							}
+					for (var i = 0; i < len; i++) {
+						var item = items[i];
+						
+						if (item.t >= datetime_from && item.t <= datetime_to) {
+							items_to_return.push(item);
 						}
-
-						return items_to_return;
 					}
+
+					return items_to_return;
 				}
 
 				return [];
@@ -277,8 +277,8 @@
 			}
 
 			// Add the entries that does not exist in items_all
-			for (var i = 0; i < len_new; i++) {
-				item = newItems[i];
+			for (var x = 0; x < len_new; x++) {
+				item = newItems[x];
 				if (keys.indexOf(item.t) === -1) {
 					items_all.push(item);
 				}
@@ -383,6 +383,6 @@
 			getFromAPI: GetDataFromAPI,
 			getFromClient: GetDataFromClient,
 			getStoredImage: GetStoredImage
-		}
+		};
 	})();
 })(window, jQuery);

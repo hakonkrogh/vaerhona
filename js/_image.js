@@ -8,7 +8,6 @@
 				item: null,
 				transform: []
 			},
-			$preLoad,
 			$range,
 			$rangeKw,
 			$img_date,
@@ -16,12 +15,11 @@
 			$img;
 
 		function PageLoad () {
-			$preLoad = $("#pre-load");
 			$range = $("#range");
 			$rangeKw = $("#range-kw");
 			$img_date = $("#img-date");
 			$img_weather = $("#img-weather");
-			$img = $("#img");
+			$img = $("#img-wrap");
 		}
 
 		// Show last image in list and pre load close images
@@ -169,42 +167,12 @@
 			index = parseInt(index);
 			
 			var item = items[index];
-
-			function PreLoadImages (startIndex, goTo) {
-				startIndex = parseInt(startIndex);
-				var amount = Math.abs(goTo);
-				var increment = goTo < 0 ? -1 : 1;
-
-				for (var i = 0; i < amount; i++) {
-					startIndex += increment;
-					if (startIndex >= 0 && startIndex < len) {
-						var item = items[startIndex];
-						if (item) {
-							PreLoadImage(item.img_url);
-						}
-					}
-				}
-			}
-
 			if (item) {
-
-				// Set new image
-				$img.css({
-					backgroundImage: "url(" + ResolveImg(item.img_url) + ")"
-				});
-
-				// Pre load images before and after
-				if (!weather.firstImageLoaded) {
-					weather.firstImageLoaded = true;
-					PreLoadImages(index, -5);
-				}
-				else {
-					PreLoadImages(index, 1);
-					PreLoadImages(index, -1);
-				}
 
 				current.index = index;
 				current.item = item;
+				
+				displayImage(items);
 
 				var longDate = "<span class='long-date'>" + weather.prettyDate(item.date) + "</span>";
 				var mediumDate = "<span class='medium-date'>" + weather.prettyDate(item.date, "short") + "</span>";
@@ -225,6 +193,63 @@
 
 			return index;
 		}
+
+		// Handles the display of the current item and preloads the other closest items
+		var displayImage = (function () {
+			var loadedUrls = [];
+
+			return function (items) {
+
+				var $imgs = $img.children(),
+					newUrls = [],
+					imgsInsert = [];
+
+				// Load this and 5 before and after
+				handleItem(current.item);
+				handleItem(items[current.index + 1]);
+				handleItem(items[current.index + 2]);
+				handleItem(items[current.index + 3]);
+				handleItem(items[current.index + 4]);
+				handleItem(items[current.index + 5]);
+				handleItem(items[current.index - 1]);
+				handleItem(items[current.index - 2]);
+				handleItem(items[current.index - 3]);
+				handleItem(items[current.index - 4]);
+				handleItem(items[current.index - 5]);
+				
+				// Insert new
+				if (imgsInsert.length > 0) {
+					$img.append(imgsInsert.join(""));
+				}
+
+				// Remove old
+				var removes = [];
+				for (var i = 0; i < loadedUrls.length; i++) {
+					var url = loadedUrls[i];
+					if (newUrls.indexOf(url) === -1) {
+						$imgs.filter("[data-url='" + url + "']").remove();
+						removes.push(i);
+					}
+				}
+
+				// Store new
+				loadedUrls = newUrls;
+
+				// Mark selected
+				$img.children().removeClass("selected").filter("[data-url='" + current.item.img_url + "']").addClass("selected");
+
+				function handleItem (item, selected) {
+					if (item) {
+						newUrls.push(item.img_url);
+
+						// Not loaded
+						if (loadedUrls.indexOf(item.img_url) === -1) {
+							imgsInsert.push("<div data-url='" + item.img_url + "' style='background-image: url(" + ResolveImg(item.img_url) + ")' />");
+						}
+					}
+				}
+			};
+		}());
 
 		var scale = 1;  // scale of the image
 		var scaleLast = 1;
@@ -287,30 +312,6 @@
 			// http://doctype.com/javascript-image-zoom-css3-transforms-calculate-origin-example
 		}
 
-		// Pre load single image
-		var images_loaded = [],
-			cleanupTimeout;
-		function PreLoadImage (url) {
-			if (images_loaded.indexOf(url) === -1) {
-				images_loaded.push(url);
-
-				var $loader = $("<img src='" + ResolveImg(url, false) + "' />").appendTo($preLoad);
-
-				clearTimeout(cleanupTimeout);
-				cleanupTimeout = setTimeout(PreLoadImageCleanup, 10000);
-			}
-		}
-
-		function PreLoadImageCleanup () {
-			var reduceTo = 100;
-			var $children = $preLoad.children();
-			if ($children.length > reduceTo) {
-				var $keep = $children.filter(":gt(" + ($children.length - reduceTo - 1) + ")");
-				$children.not($keep).remove();
-				images_loaded.splice(0, $children.length - reduceTo);
-			}
-		}
-
 		function ResolveImg (src, checkStoredImage) {
 			
 			if (typeof checkStoredImage === "undefined") {
@@ -349,11 +350,10 @@
 			pinch: pinch,
 			pinchStart: pinchStart,
 			pinchEnd: pinchEnd,
-			preLoad: PreLoadImage,
 			loadSingle: LoadImage,
 			getCurrentIndex: GetCurrentIndex,
 			getMaxIndex: GetMaxIndex,
 			atEnd: AtEnd
-		}
+		};
 	})();
 })(window, jQuery);
