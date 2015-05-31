@@ -1,6 +1,5 @@
-weather.layout = (function () {
-
-	function resized () {
+module.exports = {
+	resized: function () {
 		clearTimeout(weather.resizeTimeout);
 		weather.resizeTimeout = setTimeout(function () {
 			window.scrollTo(0, 0);
@@ -44,8 +43,4 @@ weather.layout = (function () {
 			}
 		}, 50);
 	}
-
-	return {
-		resized: resized
-	};
-})();
+};

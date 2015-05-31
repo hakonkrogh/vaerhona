@@ -45,6 +45,14 @@ module.exports = function (grunt) {
             }
         },
 
+        browserify: {
+            dist: {
+                files: {
+                    'js/build/app.browserify.js': ['js/main.js']
+                }
+            }
+        },
+
         'compile-handlebars': {
             appConfig: {
                 files: [{
@@ -94,12 +102,7 @@ module.exports = function (grunt) {
                     'js/vendor/mobiscroll/i18n/mobiscroll.i18n.no.js',
                     'js/vendor/highcharts/highcharts.js',
                     'js/plugins.js',
-                    'js/main.js',
-                    'js/_layout.js',
-                    'js/_data.js',
-                    'js/_chart.js',
-                    'js/_image.js',
-                    'js/_loader.js'
+                    'js/build/app.browserify.js'
                 ],
                 dest: 'js/build/production.js'
             }
@@ -147,7 +150,7 @@ module.exports = function (grunt) {
             },
             scripts: {
                 files: ['js/*.js', 'css/build/*.css', 'html-templates/*.js'],
-                tasks: ['jshint', 'concat', 'uglify'],
+                tasks: ['jshint', 'browserify', 'concat', 'uglify'],
                 options: {
                     spawn: false
                 }
@@ -188,9 +191,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-includes');
     grunt.loadNpmTasks('grunt-ftp-deploy');
+    grunt.loadNpmTasks('grunt-browserify');
     
     // What do do when running grunt
-    grunt.registerTask('default', ['compass', 'concat', 'uglify', 'includes']);
+    grunt.registerTask('default', ['compass', 'browserify', 'concat', 'uglify', 'includes']);
 
     // What do do when running grunt
     grunt.registerTask('release', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy']);
