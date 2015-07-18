@@ -1,7 +1,11 @@
-@mixin mask-image ($image_src, $size: 40px, $position: center center, $repeat: no-repeat) {
+@mixin mask-image ($image_src, $size: 40px, $position: center center, $repeat: no-repeat, $inline: true) {
 
-	$image: inline-image($image_src);
+	$image: url("/gfx/#{$image_src}.png");
 
+	@if $inline == true {
+		$image: inline-image($image_src);
+	}
+	
 	-webkit-mask-image: $image;
 	-webkit-mask-size: $size;
 	-webkit-mask-position: $position;

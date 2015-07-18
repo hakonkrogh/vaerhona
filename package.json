@@ -16,5 +16,8 @@
     "grunt-compile-handlebars": "^2.0.0",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-browserify": "^3.8.0"
+  },
+  "dependencies": {
+    "imagesloaded": "^3.1.8"
   }
 }

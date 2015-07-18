@@ -11,6 +11,12 @@ if (typeof navigator.onLine === 'undefined') {
 
 window.weather = (function () {
 
+	// Make sure there is a place set
+	if (!settings.place) {
+		$("<div class='no-place-set'><div class='logo'/><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navn på vørhøna i adressefeltet</div></div>").appendTo(document.body);
+		return;
+	}
+
     // Stores current items
     var current = {
     	items: [],
@@ -60,11 +66,6 @@ window.weather = (function () {
     			from: Now(-3),
     			to: Now()
     		});
-
-    		// Test mode
-    		if (location.href.indexOf("test") !== -1) {
-    			document.body.classList.add("testing");
-    		}
 		}
 		else {
 			setTimeout(startApp, 50);

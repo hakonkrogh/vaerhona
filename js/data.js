@@ -1,5 +1,6 @@
 var settings = require('./settings.js'),
-	image = require('./image.js');
+	image = require('./image.js'),
+	imagesLoaded = require('imagesloaded');
 
 var items_current = [];
 var items_all = [];

@@ -79,7 +79,8 @@ module.exports = function (grunt) {
 
         jshint: {
             options: {
-                eqnull: true
+                eqnull: true,
+                debug: true
             },
             all: [
                 'Gruntfile.js',

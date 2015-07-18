@@ -5,32 +5,32 @@
     outline: none;
 }
 
-input[type="range"]{
-    background: #fff;
-    height: 1px;
-    @include appearance(none);
-
-    &::-webkit-slider-thumb {
-        @include appearance(none);
-
-        width: 1px;
-        height: 60px;
-        background: transparent;
-        border: none;
-        position: relative;
-
-        &::after {
-            content: "";
-            background-color: #fff;
-            position: absolute;
-            top: 10px;
-            left: -10px;
-            height: 20px;
-            width: 20px;
-            @include mask-image("svg/location.svg", 20px);
-        }
-    }
-}
+//input[type="range"]{
+//    background: #fff;
+//    height: 1px;
+//    @include appearance(none);
+//
+//    &::-webkit-slider-thumb {
+//        @include appearance(none);
+//
+//        width: 1px;
+//        height: 60px;
+//        background: transparent;
+//        border: none;
+//        position: relative;
+//
+//        &::after {
+//            content: "";
+//            background-color: #fff;
+//            position: absolute;
+//            top: 10px;
+//            left: -10px;
+//            height: 20px;
+//            width: 20px;
+//            @include mask-image("svg/location.svg", 20px);
+//        }
+//    }
+//}
 
 h1 {
     font-size: 2rem;
