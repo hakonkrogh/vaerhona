@@ -23,5 +23,8 @@ module.exports = (function () {
 		settings.place = "veggli";
 	}
 
+	// Set to false if it is empty
+	settings.place = settings.place.length > 0 ? settings.place : false;
+
 	return settings;
 }());

@@ -11,12 +11,6 @@ if (typeof navigator.onLine === 'undefined') {
 
 window.weather = (function () {
 
-	// Make sure there is a place set
-	if (!settings.place) {
-		$("<div class='no-place-set'><div class='logo'/><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navn på vørhøna i adressefeltet</div></div>").appendTo(document.body);
-		return;
-	}
-
     // Stores current items
     var current = {
     	items: [],
@@ -48,6 +42,29 @@ window.weather = (function () {
 
 	// Handle cache
     StartCacheControl();
+
+    var blockingMessage = (function () {
+		function show (message) {
+			var blockMsg = "<div class='section-block-message'>" +  message+ "</div>";
+			$image.append(blockMsg);
+			$chart.append(blockMsg);
+
+			$image.toggleClass("section-blocked", true);
+			$chart.toggleClass("section-blocked", true);
+		}
+		function hide () {
+			$image.find(".section-block").remove();
+			$chart.find(".section-block").remove();
+
+			$image.toggleClass("section-blocked", false);
+			$chart.toggleClass("section-blocked", false);
+		}
+
+		return {
+			show: show,
+			hide: hide
+		};
+	}());
 
     // Init
     function startApp () {
@@ -117,7 +134,6 @@ window.weather = (function () {
 
 		$image = $("#image");
 		$imgWrap = $("#img-wrap");
-		$range = $("#range");
 		$rangeWrap = $("#range-wrap");
 		$rangeKw = $("#range-kw");
 		
@@ -145,7 +161,10 @@ window.weather = (function () {
 			// Change chart types
 			OnClick($chart.find(".types li"), ChangeChartType);
 
-			$w.resize(layout.resized);
+			$w.resize(function () {
+				layout.resized();
+				chart.load();
+			});
 
 			// Listen for change dates in a bit
 			setTimeout(function (argument) {
@@ -290,18 +309,26 @@ window.weather = (function () {
 		};
 
 		// Get data and update image and chart
-		data.get(getOptions).then(function () {
-			image.load();
-			
-			// Wait some before loading charts
-			setTimeout(chart.load, 500);
-			
-			deferred.resolve();
+		data.get(getOptions).then(function (snapshots) {
 
-			if (options.moveToEnd) {
-				var index = image.getMaxIndex();
-				image.loadSingle(index);
+			if (snapshots.length === 0) {
+				blockingMessage.show("Ingen værdata funnet i perioden <span class='dates'>" + PrettyDate(options.from, "no-time") + " til " + PrettyDate(options.to, "no-time") + "</span>");
 			}
+			else {
+				blockingMessage.hide();
+
+				image.load();
+				
+				// Wait some before loading charts
+				setTimeout(chart.load, 500);
+				
+				if (options.moveToEnd) {
+					var index = image.getMaxIndex();
+					image.loadSingle(index);
+				}
+			}
+
+			deferred.resolve();
 
 			// Notify to other components that loading is done
 			weather.firstLoadComplete = true;
@@ -534,6 +561,10 @@ window.weather = (function () {
 
 		var day = weekDays[date.getDay()] + " " + date.getDate() + ". " + months[date.getMonth()].toLowerCase() + " " + date.getFullYear();
 		var time = Time(date);
+
+		if (format === "no-time") {
+			return day;
+		}
 
 		return day + " <span>" + time + "</span>";
 	}

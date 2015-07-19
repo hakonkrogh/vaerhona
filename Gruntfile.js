@@ -15,6 +15,16 @@ module.exports = function (grunt) {
                 },
                 src: 'dist',
                 dest: '<%= secret.dest %>'
+            },
+            test: {
+                auth: {
+                    host: '<%= secret.testhost %>',
+                    port: '<%= secret.testport %>',
+                    username: '<%= secret.testusername %>',
+                    password: '<%= secret.testpassword %>'
+                },
+                src: 'dist',
+                dest: '<%= secret.testdest %>'
             }
         },
 
@@ -197,7 +207,8 @@ module.exports = function (grunt) {
     // What do do when running grunt
     grunt.registerTask('default', ['compass', 'browserify', 'concat', 'uglify', 'includes']);
 
-    // What do do when running grunt
-    grunt.registerTask('release', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy']);
+    
+    grunt.registerTask('deploy-test', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy:test']);
+    grunt.registerTask('deploy-live', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy:release']);
 
 };

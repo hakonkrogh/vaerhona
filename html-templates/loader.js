@@ -8,7 +8,18 @@
 	
 	var loader = document.querySelector("#app-loader");
 
-	setTimeout(loadResources, 100);
+	// Make sure there is a place set
+	var hrefParts = location.href.split("/");
+	var hrefPartLast = hrefParts[hrefParts.length - 1];
+	if (hrefPartLast.length === 0 && hrefPartLast !== "dev.html") {
+		var div = document.createElement("div");
+		div.className = "no-place-set";
+		div.innerHTML = "<div class='logo'></div><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navnet på værhøna i adressefeltet</div>";
+		document.body.appendChild(div);
+	}
+	else {
+		setTimeout(loadResources, 100);
+	}
 
 	function loadResources () {
 		

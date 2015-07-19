@@ -51,12 +51,12 @@ function Get (options) {
 			items_current = DataAvailbleAtClient(true);
 
 			// Resolve promise
-			data_loader.resolve();
+			data_loader.resolve(items_current);
 		});
 	}
 	// Its all good. Just resolve without asking the API for data =)
 	else {
-		data_loader.resolve();
+		data_loader.resolve(items_current);
 	}
 
 	return data_loader;
@@ -326,6 +326,10 @@ function GetAll () {
 function StoreLastImage () {
 
 	var lastSnapshot = items_all[items_all.length - 1];
+
+	if (!lastSnapshot) {
+		return;
+	}
 
 	if (!weather.$.imageCanvas) {
 		weather.$.imageCanvas = $("<canvas class='image-binary' />");

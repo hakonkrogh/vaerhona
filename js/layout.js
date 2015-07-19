@@ -36,11 +36,6 @@ module.exports = {
 			if (!weather.firstResize) {
 				weather.firstResize = weather.now();
 			}
-			else {
-
-				// Redo charts when the window changes dimensions
-				weather.chart.load();
-			}
 		}, 50);
 	}
 };
