@@ -426,6 +426,10 @@ function GetDataFromAPI (from, to, callback) {
 
 			var items_from_api = ParseAPIdata(response.data);
 
+			if (response.firstSnapshotTime) {
+				weather.setMinimumDate(new Date(response.firstSnapshotTime * 1000));
+			}
+
 			if (callback) {
 				callback(items_from_api);
 			}
@@ -491,7 +495,6 @@ function GetDataFromClient () {
 
 	if (items_string != null) {
 		raw_data = JSON.parse(items_string);
-		
 		items_all = ParseLocalStorageData(raw_data.items);
 	}
 
@@ -1002,8 +1005,8 @@ function ResolveImg (src, checkStoredImage) {
 		checkStoredImage = true;
 	}
 
-	// Use the image in the local storage if not online
-	if (checkStoredImage && !navigator.onLine) {
+	// Not online. Use the image in the local storage if not online
+	if (!navigator.onLine && checkStoredImage) {
 		var lastStored = data.getStoredImage();
 		if (lastStored && lastStored.img === src) {
 			return lastStored.data;
@@ -1266,13 +1269,15 @@ window.weather = (function () {
 		HammerTime();
 	}
 
-	function BindMobiScroll (from, to) {
+	function BindMobiScroll (opt) {
+		
 		$date_from.mobiscroll("destroy");
 		$date_from.mobiscroll().date({
 			lang: "no",
 			dateFormat: "d/m/y",
 			dateOrder: "ddMMyy",
-			maxDate: to
+			maxDate: opt.to,
+			minDate: opt.fromMin
 		});
 
 		$date_to.mobiscroll("destroy");
@@ -1280,8 +1285,30 @@ window.weather = (function () {
 			lang: "no",
 			dateFormat: "d/m/y",
 			dateOrder: "D ddMMyy",
-			minDate: from
+			minDate: opt.from
 		});
+	}
+
+	function SetMinimumDate (date) {
+
+		BindMobiScroll({
+			from: $date_from.mobiscroll("getDate"),
+			to: $date_to.mobiscroll("getDate"),
+			fromMin: date
+		});
+
+		/*var currentDate = $date_from.mobiscroll("getDate");
+		var opt = ,
+
+		$date_from.mobiscroll().date({
+			lang: "no",
+			dateFormat: "d/m/y",
+			dateOrder: "ddMMyy",
+			maxDate: opt.to
+		});*/
+		//firstSnapshotTime
+		//firstSnapshotTime
+		//weather.lastMobiScrollOpt.toMinDate = 
 	}
 
 	// Switch active section
@@ -1365,7 +1392,10 @@ window.weather = (function () {
 			options.setDateInputs = true;
 		}
 
-		BindMobiScroll(options.from, options.to);
+		BindMobiScroll({
+			from: options.from,
+			to: options.to
+		});
 
 		var deferred = $.Deferred();
 
@@ -1768,6 +1798,7 @@ window.weather = (function () {
 		shortDate: ShortDate,
 		shortDateTime: ShortDateTime,
 		prettyDate: PrettyDate,
+		setMinimumDate: SetMinimumDate,
 		time: Time,
 		ensureDigits: EnsureDigits,
 		getCurrent: GetCurrent,

@@ -135,6 +135,10 @@ function GetDataFromAPI (from, to, callback) {
 
 			var items_from_api = ParseAPIdata(response.data);
 
+			if (response.firstSnapshotTime) {
+				weather.setMinimumDate(new Date(response.firstSnapshotTime * 1000));
+			}
+
 			if (callback) {
 				callback(items_from_api);
 			}
@@ -200,7 +204,6 @@ function GetDataFromClient () {
 
 	if (items_string != null) {
 		raw_data = JSON.parse(items_string);
-		
 		items_all = ParseLocalStorageData(raw_data.items);
 	}
 
