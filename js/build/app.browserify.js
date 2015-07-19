@@ -1407,10 +1407,10 @@ window.weather = (function () {
 					var index = image.getMaxIndex();
 					image.loadSingle(index);
 				}
-
-				// Notify to other components that loading is done
-				weather.firstLoadComplete = true;
 			}
+
+			// Notify to other components that loading is done
+			weather.firstLoadComplete = true;
 
 			deferred.resolve();
 
