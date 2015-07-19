@@ -319,11 +319,14 @@ function ResolveImg (src, checkStoredImage) {
 		checkStoredImage = true;
 	}
 
-	// Use the image in the local storage if not online
-	if (checkStoredImage && !navigator.onLine) {
+	// Not online. Use the image in the local storage if not online
+	if (!navigator.onLine && checkStoredImage) {
 		var lastStored = data.getStoredImage();
 		if (lastStored && lastStored.img === src) {
 			return lastStored.data;
+		}
+		else {
+			return "/gfx/no-image.jpg";
 		}
 	}
 

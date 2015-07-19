@@ -414,71 +414,76 @@ window.weather = (function () {
 	    hammertimeImage.on("pressup", function (e) {
 	    	changingImageWithTouch = false;
 	    });
-	    var changing = false;
 
 	    // Change snapshot
 	    weather.lastx = -1;
 
 	    hammertimeImage.on("pan", function (e) {
 	    	if (!ChangeImageIndexFromRangeSlider(e)) {
-		    	if (!changing) {
 		    		
-		    		var x = e.pointers[0].pageX;
-		    		if (e.pointers.length === 2) {
-		    			x = e.center.x;
-		    		}
+	    		var x = e.pointers[0].pageX;
+	    		if (e.pointers.length === 2) {
+	    			x = e.center.x;
+	    		}
 
-		    		if (weather.lastx === -1) {
-		    			weather.lastx = x;
-		    		}
-		    		
-	    			var diff = x - weather.lastx,
-	    				index;
+	    		if (weather.lastx === -1) {
+	    			weather.lastx = x;
+	    		}
+	    		
+    			var diff = x - weather.lastx,
+    				index;
 
-	    			if (Math.abs(diff) >= 10) {
+    			if (Math.abs(diff) >= 5) {
 
-	    				current_index = image.getCurrentIndex();
+    				current_index = image.getCurrentIndex();
 
-	    				changing = true;
-	    				
-	    				if (diff > 0) {
-	    					if (!image.atEnd()) {
-
-	    						// Move 1 day up
-	    						if (e.pointers.length === 2) {
-	    							index = image.loadSingle("+1d");
-	    						}
-	    						else {
+    				changing = true;
+    				
+    				if (diff > 0) {
+    					if (!image.atEnd()) {
+    						pushImageToDisplay(function () {
+								// Move 1 day up
+								if (e.pointers.length === 2) {
+									index = image.loadSingle("+1d");
+								}
+								else {
 		    						index = image.loadSingle(current_index + 1);
 		    					}
-		    				}
+		    				});
 	    				}
-	    				else {
+    				}
+    				else {
+    					pushImageToDisplay(function () {
 	    					// Move 1 day down
-    						if (e.pointers.length === 2) {
-    							index = image.loadSingle("-1d");
-    						}
-    						else {
+							if (e.pointers.length === 2) {
+								index = image.loadSingle("-1d");
+							}
+							else {
 	    						index = image.loadSingle(current_index - 1);
 	    					}
-	    				}
+	    				});
+    				}
 
-    					weather.lastx = -1;
-
-						setTimeout(function () {
-							changing = false;
-						}, 1);
-	    			}
+					weather.lastx = -1;
 				}
 			}
 		});
+
+		var pushImageToDisplay = (function () {
+			var timeout;
+
+			return function (fn) {
+				clearTimeout(timeout);
+				timeout = setTimeout(fn);
+			};
+		}());
 
 		hammertimeImage.on("panend", function (e) {
 	    	weather.lastx = -1;
 
 	    	var duration = 2000,
 	    		startIndex = image.getCurrentIndex(),
-	    		changeInIndex = 25 * e.velocityX * -1,
+	    		changeInIndex = 50 * e.velocityX * -1,
 	    		decreasing = changeInIndex < 0,
 	    		timeStart = +new Date();
 

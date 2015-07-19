@@ -327,7 +327,8 @@ function StoreLastImage () {
 
 	var lastSnapshot = items_all[items_all.length - 1];
 
-	if (!lastSnapshot) {
+	// Dont do this atm. The canvas width will be wider than the window width and will cause horizontal scrollbar
+	if (!lastSnapshot || true) {
 		return;
 	}
 
