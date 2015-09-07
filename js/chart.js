@@ -40,7 +40,7 @@ function LoadChart () {
 			callback = arguments[1];
 		}
 	}
-
+	
 	var items = data.getCurrent();
 
 	// Default chart
@@ -129,40 +129,33 @@ function LoadChart () {
 		setTimeout(callback, 500);
 	}
 
-
-	function AddHeader (arr, header) {
-		arr.reverse();
-		arr.push(header);
-		arr.reverse();
-	}
-
     // Extract relevant data
-	function GetOnlyData (arr, type) {
-		var items = [];
+	function GetOnlyData (arr, dataType) {
+		var returnItems = [];
 
 		arr.map(function (item) {
 			if (!item.motion) {
-				switch (type) {
+				switch (dataType) {
 					case "temperature-outside":
-						items.push(item.tmp_o);
+						returnItems.push(item.tmp_o);
 						break;
 					case "temperature-inside":
-						items.push(item.tmp_i);
+						returnItems.push(item.tmp_i);
 						break;
 					case "pressure":
-						items.push(item.prs_o);
+						returnItems.push(item.prs_o);
 						break;
 					case "humidity":
-						items.push(item.hum_o);
+						returnItems.push(item.hum_o);
 						break;
 					case "date":
-						items.push(weather.shortDateTime(new Date(item.t)));
+						returnItems.push(weather.shortDateTime(new Date(item.t)));
 						break;
 				}
 			}
 		});
 		
-		return items;
+		return returnItems;
 	}
 }
 
@@ -281,7 +274,7 @@ function setChartTheme () {
 	};
 
 	// Apply the theme
-	var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
+	Highcharts.setOptions(Highcharts.theme);
 }
 
 module.exports = {

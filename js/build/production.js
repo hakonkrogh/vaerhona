@@ -3166,7 +3166,6 @@ $.fn.kwRange = function (mixed, mixed2) {
 		var $ind = $this.find(".kwr-indicator"),
 			$indText = $ind.find(".kwr-text"),
 			$line = $this.find(".kwr-line"),
-			minValue = 0,
 			maxValue = 0,
 			value = 0,
 			valuePct = 0;
@@ -3236,9 +3235,11 @@ $.fn.kwRange = function (mixed, mixed2) {
 };
 
 Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
-	return valueChange * ( -Math.pow( 2, -10 * currTime/duration ) + 1 ) + startValue;
+	return valueChange * (-Math.pow( 2, -10 * currTime / duration) + 1) + startValue;
 };
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+
 var data = require('./data.js');
 
 var types = {
@@ -3262,22 +3263,21 @@ var types = {
 setChartTheme();
 
 // Load temperature chart
-function LoadChart () {
-	
-	var callback = function () {};
+function LoadChart() {
+
+	var callback = function callback() {};
 	var type = false;
 
 	var arg_len = arguments.length;
 	if (arg_len > 0) {
-		
+
 		if ($.isFunction(arguments[0])) {
 			callback = arguments[0];
-		}
-		else {
+		} else {
 			type = arguments[0];
 		}
 
-		if (arg_len > 1) {
+		if (arg_len > 1) {
 			callback = arguments[1];
 		}
 	}
@@ -3299,19 +3299,18 @@ function LoadChart () {
 
 	// Already initiated. Just update
 	if (weather.highchart) {
-		
+
 		if (type) {
 			typeDef = types[type];
 		}
-		
+
 		var weatherData;
-		
+
 		if (typeDef) {
 			weatherData = GetOnlyData(items, typeDef.dataID);
 
 			weather.chartTypeDef = typeDef;
-		}
-		else {
+		} else {
 			weatherData = GetOnlyData(items, weather.chartTypeDef);
 		}
 
@@ -3325,94 +3324,87 @@ function LoadChart () {
 			categories: items_date
 		});
 	}
-	
+
 	// Init highchart using outside temperature
 	else {
 
-		// Get temperature outside
-		var items_default = GetOnlyData(items, weather.chartTypeDef);
+			// Get temperature outside
+			var items_default = GetOnlyData(items, weather.chartTypeDef);
 
-		var $chartEl = $('#chart-canvas');
-		
-        // Go!
-        $chartEl.highcharts({
-            title: false,
-            subtitle: false,
-            legend: false,
-            xAxis: {
-                tickInterval: tickInterval,
-                categories: items_date
-            },
-            series: [{
-                data: items_default
-            }],
-            yAxis: {
-                title: false,
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            }
-        });
+			var $chartEl = $('#chart-canvas');
 
-        weather.highchart = $chartEl.highcharts();
-    }
+			// Go!
+			$chartEl.highcharts({
+				title: false,
+				subtitle: false,
+				legend: false,
+				xAxis: {
+					tickInterval: tickInterval,
+					categories: items_date
+				},
+				series: [{
+					data: items_default
+				}],
+				yAxis: {
+					title: false,
+					plotLines: [{
+						value: 0,
+						width: 1,
+						color: '#808080'
+					}]
+				}
+			});
 
-    // Set serie values
-    var serie = weather.highchart.series[0];
+			weather.highchart = $chartEl.highcharts();
+		}
+
+	// Set serie values
+	var serie = weather.highchart.series[0];
 	if (serie && typeDef) {
 		serie.name = typeDef.name;
 		serie.tooltipOptions.pointFormat = "<b>{point.y}</b> " + typeDef.valueSuffix;
 	}
 
-    if (callback) {
+	if (callback) {
 		setTimeout(callback, 500);
 	}
 
-
-	function AddHeader (arr, header) {
-		arr.reverse();
-		arr.push(header);
-		arr.reverse();
-	}
-
-    // Extract relevant data
-	function GetOnlyData (arr, type) {
-		var items = [];
+	// Extract relevant data
+	function GetOnlyData(arr, dataType) {
+		var returnItems = [];
 
 		arr.map(function (item) {
 			if (!item.motion) {
-				switch (type) {
+				switch (dataType) {
 					case "temperature-outside":
-						items.push(item.tmp_o);
+						returnItems.push(item.tmp_o);
 						break;
 					case "temperature-inside":
-						items.push(item.tmp_i);
+						returnItems.push(item.tmp_i);
 						break;
 					case "pressure":
-						items.push(item.prs_o);
+						returnItems.push(item.prs_o);
 						break;
 					case "humidity":
-						items.push(item.hum_o);
+						returnItems.push(item.hum_o);
 						break;
 					case "date":
-						items.push(weather.shortDateTime(new Date(item.t)));
+						returnItems.push(weather.shortDateTime(new Date(item.t)));
 						break;
 				}
 			}
 		});
-		
-		return items;
+
+		return returnItems;
 	}
 }
 
-function setChartTheme () {
+function setChartTheme() {
 
 	/**
-	 * Gray theme for Highcharts JS
-	 * @author Torstein Honsi
-	 */
+  * Gray theme for Highcharts JS
+  * @author Torstein Honsi
+  */
 	Highcharts.theme = {
 		colors: ["#e0e0e0"],
 		chart: {
@@ -3522,29 +3514,32 @@ function setChartTheme () {
 	};
 
 	// Apply the theme
-	var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
+	Highcharts.setOptions(Highcharts.theme);
 }
 
 module.exports = {
 	load: LoadChart
 };
+
 },{"./data.js":2}],2:[function(require,module,exports){
+'use strict';
+
 var settings = require('./settings.js'),
-	image = require('./image.js'),
-	imagesLoaded = require('imagesloaded');
+    image = require('./image.js'),
+    imagesLoaded = require('imagesloaded');
 
 var items_current = [];
 var items_all = [];
 
 // Get data from localStorage or API
-function Get (options) {
-	
+function Get(options) {
+
 	var data_loader = $.Deferred(),
-		dates = [],
-		api_date_from,
-		api_date_to,
-		datetime_from,
-		datetime_to;
+	    dates = [],
+	    api_date_from,
+	    api_date_to,
+	    datetime_from,
+	    datetime_to;
 
 	// Show loading indication
 	weather.loading();
@@ -3567,7 +3562,7 @@ function Get (options) {
 	// Check where the data is avalible
 	items_current = DataAvailbleAtClient();
 
-	if (items_current.length === 0 || forceGetFromApi) {
+	if (items_current.length === 0 || forceGetFromApi) {
 
 		// Get from API
 		GetDataFromAPI(api_date_from, api_date_to, function (items) {
@@ -3587,16 +3582,15 @@ function Get (options) {
 	}
 	// Its all good. Just resolve without asking the API for data =)
 	else {
-		data_loader.resolve(items_current);
-	}
+			data_loader.resolve(items_current);
+		}
 
 	return data_loader;
 
 	// Check if we can use only the data from the client
-	function DataAvailbleAtClient (forceGetFromClient) {
+	function DataAvailbleAtClient(forceGetFromClient) {
 		var items = GetDataFromClient(),
-			items_to_return = [],
-			len = items.length;
+		    len = items.length;
 
 		// If there is any data from the client
 		if (len > 0) {
@@ -3624,34 +3618,34 @@ function Get (options) {
 		}
 
 		// Compile list of items use
-		function filterItemsForCurrentDate () {
-			var items_to_return = [];
+		function filterItemsForCurrentDate() {
+			var returnItems = [];
 
-			for (var i = 0; i < len; i++) {
-				var item = items[i];
-				
+			for (var x = 0; x < len; x++) {
+				var item = items[x];
+
 				if (item.t >= datetime_from && item.t <= datetime_to) {
-					items_to_return.push(item);
+					returnItems.push(item);
 				}
 			}
 
-			return items_to_return;
+			return returnItems;
 		}
 
 		return [];
 	}
 
-	function FromDateIsLargerThanTo () {
+	function FromDateIsLargerThanTo() {
 		return api_date_from.getTime() > api_date_to.getTime();
 	}
 }
 
-function GetDataFromAPI (from, to, callback) {
-	
+function GetDataFromAPI(from, to, callback) {
+
 	var date_from = new Date(from.getTime());
 	var date_to = new Date(to.getTime());
 
-	var deferred = $.ajax({
+	$.ajax({
 		url: "http://www.vhsys.no/api/",
 		dataType: "jsonp",
 		cache: false,
@@ -3673,28 +3667,29 @@ function GetDataFromAPI (from, to, callback) {
 			if (callback) {
 				callback(items_from_api);
 			}
+		} else {
+			onRequestFail();
 		}
-		else {
-			alert(response.message);
-		}
-	}).fail(function (response) {
+	}).fail(onRequestFail);
+
+	function onRequestFail() {
 		if (callback) {
 			callback([]);
 		}
-	});
+	}
 
 	// Parse data API response
-	function ParseAPIdata (rawArray) {
-		
+	function ParseAPIdata(rawArray) {
+
 		var items_to_return = [],
-			len = rawArray.length;
+		    len = rawArray.length;
 
 		for (var i = 0; i < len; i++) {
-			
+
 			var item = rawArray[i];
 			var date = new Date(item.time * 1000);
 
-			var _item = {
+			var parsedItem = {
 				date: date,
 				t: Number(date),
 				motion: parseInt(item.motion_event),
@@ -3705,9 +3700,9 @@ function GetDataFromAPI (from, to, callback) {
 				img: item.image
 			};
 
-			CreateImageUrl(_item);
+			CreateImageUrl(parsedItem);
 
-			items_to_return.push(_item);
+			items_to_return.push(parsedItem);
 		}
 
 		return items_to_return;
@@ -3715,12 +3710,11 @@ function GetDataFromAPI (from, to, callback) {
 }
 
 // Retrieves data from cache or client storage
-function GetDataFromClient () {
+function GetDataFromClient() {
 
-	var items_string,
-		raw_data;
+	var items_string, raw_data;
 
-	// If already got 
+	// If already got
 	if (items_all.length > 0) {
 		return items_all;
 	}
@@ -3728,8 +3722,7 @@ function GetDataFromClient () {
 	// Attempt to get from local storage
 	try {
 		items_string = localStorage.getItem(GetLocalStorageKey());
-	}
-	catch (e) {
+	} catch (e) {
 		console.error("Could not get data from localStorage", e);
 	}
 
@@ -3739,7 +3732,7 @@ function GetDataFromClient () {
 	}
 
 	// Enriching data from localStorage storage
-	function ParseLocalStorageData (items) {
+	function ParseLocalStorageData(items) {
 
 		// Add date property
 		items.map(function (item) {
@@ -3753,18 +3746,18 @@ function GetDataFromClient () {
 	return items_all;
 }
 
-function CreateImageUrl (item) {
+function CreateImageUrl(item) {
 	var year = item.date.getFullYear();
 	var month = weather.ensureDigits(item.date.getMonth() + 1, 2);
 	var date = weather.ensureDigits(item.date.getDate(), 2);
-	
+
 	item.img_url = settings.place + "/" + year + "/" + month + "/" + date + "/" + item.img;
 }
 
 // Save items to localStorage
-function Save () {
-	var items = [];
-		len = items_all.length;
+function Save() {
+	var items = [],
+	    len = items_all.length;
 
 	// Create clone of all objects
 	for (var i = 0; i < len; i++) {
@@ -3787,23 +3780,24 @@ function Save () {
 	return SaveToLocalStorage(GetLocalStorageKey(), JSON.stringify(saveObj));
 }
 
-function SaveToLocalStorage (key, data) {
+function SaveToLocalStorage(key, data) {
 	try {
 		localStorage.setItem(key, data);
 		return true;
+	} catch (e) {
+		console.log(e);
 	}
-	catch (e) {}
 
 	return false;
 }
 
 // Merge new array with client array
-function MergeWithCache (newItems) {
+function MergeWithCache(newItems) {
 
 	var keys = [],
-		len = items_all.length,
-		len_new = newItems.length,
-		item;
+	    len = items_all.length,
+	    len_new = newItems.length,
+	    item;
 
 	// Create array of keys of the existing array
 	for (var i = 0; i < len; i++) {
@@ -3817,7 +3811,7 @@ function MergeWithCache (newItems) {
 			items_all.push(item);
 		}
 	}
-	
+
 	// Sort by date asc
 	items_all.sort(function (a, b) {
 		return Number(a.date) - Number(b.date);
@@ -3827,42 +3821,42 @@ function MergeWithCache (newItems) {
 }
 
 // Round helper
-function Round (number, decimals) {
+function Round(number, decimals) {
 	var pow = Math.pow(10, decimals);
 	return parseInt(number * pow) / pow;
 }
 
 // The local storage key
-function GetLocalStorageKey () {
+function GetLocalStorageKey() {
 	return settings.localStorageKey + "_" + settings.place;
 }
 
-function CreateDateKey (date) {
+//function CreateDateKey (date) {
+//	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+//}
+
+function CreateDateKeyDb(date) {
 	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 }
 
-function CreateDateKeyDb (date) {
-	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-}
-
-function GetCurrent () {
+function GetCurrent() {
 	return items_current;
 }
 
-function GetCurrentLength () {
+function GetCurrentLength() {
 	return items_current.length;
 }
 
-function GetAll () {
+function GetAll() {
 	return items_all;
 }
 
-function StoreLastImage () {
+function StoreLastImage() {
 
 	var lastSnapshot = items_all[items_all.length - 1];
 
 	// Dont do this atm. The canvas width will be wider than the window width and will cause horizontal scrollbar
-	if (!lastSnapshot || true) {
+	if (!lastSnapshot || true) {
 		return;
 	}
 
@@ -3873,7 +3867,7 @@ function StoreLastImage () {
 
 	var ctx = weather.$.imageCanvas[0].getContext("2d");
 	var $img = $("<img crossorigin='anonymous' class='image-binary-helper' src='" + image.resolve(lastSnapshot.img_url, false) + "' />").appendTo(weather.$.app);
-	
+
 	imagesLoaded($img[0], function () {
 
 		weather.$.imageCanvas[0].width = weather.imageWidth;
@@ -3891,8 +3885,9 @@ function StoreLastImage () {
 			};
 
 			SaveToLocalStorage(GetLocalStorageKey() + "_image", JSON.stringify(lastImage));
+		} catch (e) {
+			console.log(e);
 		}
-		catch (e) {}
 
 		setTimeout(function () {
 			$img.remove();
@@ -3900,7 +3895,7 @@ function StoreLastImage () {
 	});
 }
 
-function GetStoredImage () {
+function GetStoredImage() {
 	var last = {};
 
 	try {
@@ -3908,8 +3903,9 @@ function GetStoredImage () {
 		if (item) {
 			last = JSON.parse(item);
 		}
+	} catch (e) {
+		console.log(e);
 	}
-	catch (e) {}
 
 	return last;
 }
@@ -3923,40 +3919,32 @@ module.exports = {
 	getFromClient: GetDataFromClient,
 	getStoredImage: GetStoredImage
 };
-},{"./image.js":3,"./settings.js":6,"imagesloaded":7}],3:[function(require,module,exports){
+
+},{"./image.js":3,"./settings.js":7,"imagesloaded":8}],3:[function(require,module,exports){
+"use strict";
+
 var data;
 
 var current = {
-		index: 0,
-		item: null,
-		transform: []
-	},
-	$range,
-	$rangeKw,
-	$img_date,
-	$img_weather,
-	$img;
+	index: 0,
+	item: null,
+	transform: []
+};
 
-function PageLoad () {
+function PageLoad() {
 
 	// Not sure why I cannot require the data at the top. Need to figure this out.
 	data = require('./data.js');
-
-	$range = $("#range");
-	$rangeKw = $("#range-kw");
-	$img_date = $("#img-date");
-	$img_weather = $("#img-weather");
-	$img = $("#img-wrap");
 }
 
 // Show last image in list and pre load close images
-function Load (options) {
+function Load(options) {
 
-	options = options || {};
+	options = options || {};
 
 	var items = data.getCurrent(),
-		lastIndex = items.length - 1,
-		indexToShow;
+	    lastIndex = items.length - 1,
+	    indexToShow;
 
 	if (lastIndex < 0) {
 		lastIndex = 0;
@@ -3968,20 +3956,19 @@ function Load (options) {
 	}
 	// Index by current item
 	else if (current.item != null) {
-		var time = current.item.date.getTime();
+			var time = current.item.date.getTime();
 
-		// New range starts after the last index
-		if (items[0] && items[0].date.getTime() > time) {
-			indexToShow = 0; 
+			// New range starts after the last index
+			if (items[0] && items[0].date.getTime() > time) {
+				indexToShow = 0;
+			} else {
+				items.map(function (itm, index) {
+					if (itm.date.getTime() === time) {
+						indexToShow = index;
+					}
+				});
+			}
 		}
-		else {
-			items.map(function (itm, index) {
-				if (itm.date.getTime() === time) {
-					indexToShow = index;
-				}
-			});
-		}
-	}
 
 	// Not set, just show last
 	if (indexToShow == null) {
@@ -3989,11 +3976,11 @@ function Load (options) {
 	}
 
 	// Initiate kw range
-	$rangeKw.kwRange({
+	weather.$.rangeKw.kwRange({
 		max: lastIndex,
 		value: indexToShow,
 		markIntervals: createMotionIntervals(items),
-		onChange: function (index) {
+		onChange: function onChange(index) {
 			LoadImage(index);
 		}
 	});
@@ -4003,7 +3990,7 @@ function Load (options) {
 }
 
 // Create motion intervals
-function createMotionIntervals (items) {
+function createMotionIntervals(items) {
 
 	var motionIntervals = [];
 	var motionCurrentInterval = [];
@@ -4012,15 +3999,14 @@ function createMotionIntervals (items) {
 	items.forEach(function (item, index) {
 		if (item.motion) {
 			motionCurrentInterval.push(index);
-		}
-		else if (motionCurrentInterval.length > 0) {
+		} else if (motionCurrentInterval.length > 0) {
 			endInterval();
 		}
 	});
 
 	endInterval();
 
-	function endInterval () {
+	function endInterval() {
 		if (motionCurrentInterval.length > 0) {
 			var interval = {
 				cls: "motion",
@@ -4028,9 +4014,9 @@ function createMotionIntervals (items) {
 				end: motionCurrentInterval[motionCurrentInterval.length - 1]
 			};
 			interval.startPct = interval.start * pctMultiplier;
-			interval.endPct = (interval.end * pctMultiplier) + pctMultiplier;
+			interval.endPct = interval.end * pctMultiplier + pctMultiplier;
 			interval.widthPct = interval.endPct - interval.startPct;
-			
+
 			motionIntervals.push(interval);
 
 			motionCurrentInterval.length = 0;
@@ -4041,9 +4027,9 @@ function createMotionIntervals (items) {
 }
 
 // Show image in list and pre load 10 closest
-function LoadImage (index, items) {
+function LoadImage(index, items) {
 
-	items = items || data.getCurrent();
+	items = items || data.getCurrent();
 
 	var len = items.length;
 
@@ -4052,66 +4038,63 @@ function LoadImage (index, items) {
 		if (index.pct) {
 			index = Math.floor(len * index.pct);
 		}
-	}
-	else if (typeof index === "string") {
-		if (index === "first") {
+	} else if (typeof index === "string") {
+		if (index === "first") {
 			index = 0;
-		}
-		else if (index === "last") {
+		} else if (index === "last") {
 			index = len - 1;
 		}
 
 		// Ca. one day up/down
 		else if (index === "+1d" || index === "-1d") {
-			
-			var checkIndex = current.index,
-				found = false,
-				timeOneDay = 1000 * 60 * 60 * 24,
-				increment = 1,
-				checkItem;
 
-			if (index === "-1d") {
-				increment = -1;
-			}
+				var checkIndex = current.index,
+				    found = false,
+				    timeOneDay = 1000 * 60 * 60 * 24,
+				    increment = 1,
+				    checkItem;
 
-			do {
-				checkIndex = checkIndex + increment;
-				checkItem = items[checkIndex];
-
-				if (checkItem) {
-					
-					if (Math.abs(checkItem.t - current.item.t) >= timeOneDay) {
-						found = true;
-					}
+				if (index === "-1d") {
+					increment = -1;
 				}
+
+				do {
+					checkIndex = checkIndex + increment;
+					checkItem = items[checkIndex];
+
+					if (checkItem) {
+
+						if (Math.abs(checkItem.t - current.item.t) >= timeOneDay) {
+							found = true;
+						}
+					}
+				} while (checkIndex < items.length && checkIndex >= 0 && !found);
+
+				index = checkIndex;
 			}
-			while (checkIndex < items.length && checkIndex >= 0 && !found);
-			
-			index = checkIndex;
-		}
 	}
 
 	index = parseInt(index);
-	
+
 	var item = items[index];
 	if (item) {
 
 		current.index = index;
 		current.item = item;
-		
+
 		displayImage(items);
 
 		var longDate = "<span class='long-date'>" + weather.prettyDate(item.date) + "</span>";
 		var mediumDate = "<span class='medium-date'>" + weather.prettyDate(item.date, "short") + "</span>";
 		var shortDate = "<span class='short-date'>" + weather.shortDateTime(item.date) + "</span>";
 
-		$img_date.html(longDate + mediumDate + shortDate);
-		$img_weather.html("<span>" + item.tmp_o + "&#8451;</span><span>" + item.hum_o + "%</span><span>" + parseInt(item.prs_o) + "hPa</span>");
+		weather.$.imgDate.html(longDate + mediumDate + shortDate);
+		weather.$.imgWeather.html("<span>" + item.tmp_o + "&#8451;</span><span>" + item.hum_o + "%</span><span>" + parseInt(item.prs_o) + "hPa</span>");
 
 		// Update isLast flag
 		current.indexIsLast = current.index === len - 1;
 
-		$rangeKw.kwRange("setValue", {
+		weather.$.rangeKw.kwRange("setValue", {
 			value: index,
 			text: weather.time(item.date, true),
 			cls: item.motion ? "motion" : ""
@@ -4125,11 +4108,11 @@ function LoadImage (index, items) {
 var displayImage = (function () {
 	var loadedUrls = [];
 
-	return function (items) {
+	return function (items) {
 
-		var $imgs = $img.children(),
-			newUrls = [],
-			imgsInsert = [];
+		var $imgs = weather.$.imgWrap.children(),
+		    newUrls = [],
+		    imgsInsert = [];
 
 		// Load this and 5 before and after
 		handleItem(current.item);
@@ -4143,10 +4126,10 @@ var displayImage = (function () {
 		handleItem(items[current.index - 3]);
 		handleItem(items[current.index - 4]);
 		handleItem(items[current.index - 5]);
-		
+
 		// Insert new
 		if (imgsInsert.length > 0) {
-			$img.append(imgsInsert.join(""));
+			weather.$.imgWrap.append(imgsInsert.join(""));
 		}
 
 		// Remove old
@@ -4163,9 +4146,9 @@ var displayImage = (function () {
 		loadedUrls = newUrls;
 
 		// Mark selected
-		$img.children().removeClass("selected").filter("[data-url='" + current.item.img_url + "']").addClass("selected");
+		weather.$.imgWrap.children().removeClass("selected").filter("[data-url='" + current.item.img_url + "']").addClass("selected");
 
-		function handleItem (item, selected) {
+		function handleItem(item) {
 			if (item) {
 				newUrls.push(item.img_url);
 
@@ -4176,82 +4159,79 @@ var displayImage = (function () {
 			}
 		}
 	};
-}());
+})();
 
-var scale = 1;  // scale of the image
+var scale = 1; // scale of the image
 var scaleLast = 1;
-var xLast = 0;  // last x location on the screen
-var yLast = 0;  // last y location on the screen
+var xLast = 0; // last x location on the screen
+var yLast = 0; // last y location on the screen
 var xImage = 0; // last x location on the image
 var yImage = 0; // last y location on the image
-var pinchType = "slide-images";
+//var pinchType = "slide-images";
 
-function pinchStart (e) {
+function pinchStart() {
 	scale = scaleLast;
 }
 
-function pinchEnd (e) {
+function pinchEnd(e) {
 	scale = e.scale;
 	console.log(e);
 }
 
-function pinch (e) {
-	
+function pinch(e) {
+
 	var xScreen = e.center.x - 0;
-    var yScreen = e.center.y - 40;
+	var yScreen = e.center.y - 40;
 
-    // find current location on the image at the current scale
-    xImage = xImage + ((xScreen - xLast) / scaleLast);
-    yImage = yImage + ((yScreen - yLast) / scaleLast);
+	// find current location on the image at the current scale
+	xImage = xImage + (xScreen - xLast) / scaleLast;
+	yImage = yImage + (yScreen - yLast) / scaleLast;
 
-	scaleLast = (scale * e.scale);
+	scaleLast = scale * e.scale;
 
 	if (scaleLast < 1) {
 		scaleLast = 1;
-	}
-	else if (scaleLast > 25) {
+	} else if (scaleLast > 25) {
 		scaleLast = 25;
 	}
 
 	// determine the location on the screen at the new scale
-    var xNew = (xScreen - xImage) / scaleLast;
-    var yNew = (yScreen - yImage) / scaleLast;
+	/*var xNew = (xScreen - xImage) / scaleLast;
+ var yNew = (yScreen - yImage) / scaleLast;
+  if (scaleLast === 1) {
+ 	xNew = 0;
+ 	yNew = 0;
+ }*/
 
-    if (scaleLast === 1) {
-    	xNew = 0;
-    	yNew = 0;
-    }
-
-    // save the current screen location
-    xLast = xScreen;
-    yLast = yScreen;
+	// save the current screen location
+	xLast = xScreen;
+	yLast = yScreen;
 
 	//$img.css({
-    //	transform: 'scale(' + scaleLast + ')'
-    //});
+	//	transform: 'scale(' + scaleLast + ')'
+	//});
 
-    //$img.css({
-    //	transform: 'scale(' + scaleLast + ') ' + 'translate3d(' + xNew + 'px, ' + yNew + 'px' + ', 0)',
-    //	transformOrigin: xImage + 'px ' + yImage + 'px'
-    //});
+	//$img.css({
+	//	transform: 'scale(' + scaleLast + ') ' + 'translate3d(' + xNew + 'px, ' + yNew + 'px' + ', 0)',
+	//	transformOrigin: xImage + 'px ' + yImage + 'px'
+	//});
 
 	// http://stackoverflow.com/questions/2916081/zoom-in-on-a-point-using-scale-and-translate
 	// http://doctype.com/javascript-image-zoom-css3-transforms-calculate-origin-example
 }
 
-function ResolveImg (src, checkStoredImage) {
-	
+function ResolveImg(src, checkStoredImage) {
+
 	if (typeof checkStoredImage === "undefined") {
 		checkStoredImage = true;
 	}
 
 	// Not online. Use the image in the local storage if not online
-	if (!navigator.onLine && checkStoredImage) {
+	if (!navigator.onLine && checkStoredImage) {
 		var lastStored = data.getStoredImage();
 		if (lastStored && lastStored.img === src) {
 			return lastStored.data;
-		}
-		else {
+		} else {
 			return "/gfx/no-image.jpg";
 		}
 	}
@@ -4259,16 +4239,16 @@ function ResolveImg (src, checkStoredImage) {
 	return "http://www.vhsys.no/images/" + src;
 }
 
-function GetCurrentIndex () {
+function GetCurrentIndex() {
 	return current.index;
 }
 
-function GetMaxIndex () {
-	return data.getCurrentLength() - 1;
+function GetMaxIndex() {
+	return data.getCurrentLength() - 1;
 }
 
-function AtEnd () {
-	return current.index === (data.getCurrentLength() - 1);
+function AtEnd() {
+	return current.index === data.getCurrentLength() - 1;
 }
 
 module.exports = {
@@ -4283,54 +4263,310 @@ module.exports = {
 	getMaxIndex: GetMaxIndex,
 	atEnd: AtEnd
 };
+
 },{"./data.js":2}],4:[function(require,module,exports){
+'use strict';
+
+var image = require('./image.js'),
+    chart = require('./chart.js'),
+    layout = require('./layout.js'),
+    data = require('./data.js');
+
+var current_index;
+//var changingImageWithTouch = false;
+
+function init() {
+	$(function () {
+
+		// Change section
+		weather.onClick(weather.$.header.find("button"), HeaderButtonClick);
+
+		// Change chart types
+		weather.onClick(weather.$.chart.find(".types li"), ChangeChartType);
+
+		weather.$.w.resize(function () {
+			layout.resized();
+			chart.load();
+		});
+
+		// Faster mobiscroll actions
+		weather.onClick(weather.$.dateFrom, function () {
+			$(this).mobiscroll("show");
+		});
+		weather.onClick(weather.$.dateTo, function () {
+			$(this).mobiscroll("show");
+		});
+
+		// Listen for change dates in a bit
+		setTimeout(function () {
+			weather.$.dateFrom.add(weather.$.dateTo).change(function () {
+				weather.setDates({
+					from: weather.$.dateFrom.mobiscroll("getDate"),
+					to: weather.$.dateTo.mobiscroll("getDate"),
+					setDateInputs: false
+				});
+			});
+		}, 1000);
+	});
+
+	hammerEvents();
+}
+
+function hammerEvents() {
+
+	if (!image) {
+		setTimeout(hammerEvents, 25);
+		return;
+	}
+
+	weather.hammerTimeBody = new Hammer(document.body);
+
+	var hammertimeImage = new Hammer(weather.$.image[0]);
+
+	// Fast press
+	hammertimeImage.get("press").set({
+		enable: true,
+		time: 1
+	});
+
+	// Pan
+	hammertimeImage.get("pan").set({
+		enable: true,
+		threshold: 0,
+		direction: Hammer.DIRECTION_ALL,
+		pointers: 0 // all
+	});
+
+	hammertimeImage.get("pinch").set({
+		enable: false
+	});
+
+	hammertimeImage.on("hammer.input", function () {
+		clearTimeout(weather.slideOutTimeout);
+	});
+
+	hammertimeImage.on("press", function (e) {
+		if (!ChangeImageIndexFromRangeSlider(e)) {
+			current_index = image.getCurrentIndex();
+			//changingImageWithTouch = true;
+		}
+	});
+	//hammertimeImage.on("pressup", function (e) {
+	//	changingImageWithTouch = false;
+	//});
+
+	// Change snapshot
+	weather.lastx = -1;
+
+	hammertimeImage.on("pan", function (e) {
+		if (!ChangeImageIndexFromRangeSlider(e)) {
+
+			var x = e.pointers[0].pageX;
+			if (e.pointers.length === 2) {
+				x = e.center.x;
+			}
+
+			if (weather.lastx === -1) {
+				weather.lastx = x;
+			}
+
+			var diff = x - weather.lastx;
+
+			if (Math.abs(diff) >= 5) {
+
+				current_index = image.getCurrentIndex();
+
+				//changing = true;
+
+				if (diff > 0) {
+					if (!image.atEnd()) {
+						pushImageToDisplay(function () {
+							// Move 1 day up
+							if (e.pointers.length === 2) {
+								image.loadSingle("+1d");
+							} else {
+								image.loadSingle(current_index + 1);
+							}
+						});
+					}
+				} else {
+					pushImageToDisplay(function () {
+
+						// Move 1 day down
+						if (e.pointers.length === 2) {
+							image.loadSingle("-1d");
+						} else {
+							image.loadSingle(current_index - 1);
+						}
+					});
+				}
+
+				weather.lastx = -1;
+			}
+		}
+	});
+
+	var pushImageToDisplay = (function () {
+		var timeout;
+
+		return function (fn) {
+			clearTimeout(timeout);
+			timeout = setTimeout(fn);
+		};
+	})();
+
+	hammertimeImage.on("panend", function (e) {
+		weather.lastx = -1;
+
+		var duration = 2000,
+		    startIndex = image.getCurrentIndex(),
+		    changeInIndex = 50 * e.velocityX * -1,
+		    decreasing = changeInIndex < 0,
+		    timeStart = +new Date();
+
+		if (Math.abs(changeInIndex) > 3) {
+			slideNewImage();
+		}
+
+		function slideNewImage() {
+			var now = +new Date();
+			var time = now - timeStart;
+			var newIndex = Math.easeOutExpo(time, startIndex, changeInIndex, duration);
+
+			newIndex = decreasing ? Math.floor(newIndex) : Math.ceil(newIndex);
+
+			image.loadSingle(newIndex);
+
+			if (time < duration) {
+				weather.slideOutTimeout = setTimeout(slideNewImage, 25);
+			}
+		}
+	});
+
+	// Zoom
+	hammertimeImage.on("pinchstart", image.pinchStart);
+	hammertimeImage.on("pinch", image.pinch);
+	hammertimeImage.on("pinchEnd", image.pinchEnd);
+}
+
+// Switch active section
+function HeaderButtonClick() {
+	var $btn = $(this);
+	if (!$btn.hasClass("selected")) {
+
+		switch ($btn.data("action")) {
+			case "camera":
+				weather.$.sections.removeClass("show-chart");
+				$btn.addClass("selected").siblings().removeClass("selected");
+				break;
+			case "charts":
+				weather.$.sections.addClass("show-chart");
+				$btn.addClass("selected").siblings().removeClass("selected");
+				break;
+			case "refresh":
+				weather.refresh({
+					forceGetFromApi: true
+				});
+				break;
+		}
+	}
+}
+
+function ChangeImageIndexFromRangeSlider(e) {
+	var $target = $(e.target);
+	var x = Math.floor(e.pointers[0].pageX);
+
+	if ($target.closest(weather.$.rangeWrap).length > 0) {
+
+		var rangeWidth = weather.vw - 32.5 * 2;
+		var rangeMargin = Math.ceil((weather.vw - rangeWidth) / 2);
+
+		var pctX = (x - rangeMargin) / rangeWidth;
+		if (pctX < 0) {
+			pctX = 0;
+		}
+		if (pctX > 100) {
+			pctX = 100;
+		}
+
+		var length = data.getCurrentLength();
+		var index = length * pctX;
+
+		image.loadSingle(index);
+
+		return true;
+	}
+
+	return false;
+}
+
+// Switch active chart
+function ChangeChartType() {
+	var $btn = $(this);
+	$btn.addClass("selected").siblings().removeClass("selected");
+	setTimeout(function () {
+		chart.load($btn.data("type"));
+	}, 25);
+}
+
 module.exports = {
-	resized: function () {
+	init: init
+};
+
+},{"./chart.js":1,"./data.js":2,"./image.js":3,"./layout.js":5}],5:[function(require,module,exports){
+"use strict";
+
+function resize() {
+	window.scrollTo(0, 0);
+
+	weather.vw = weather.$.w.width();
+	weather.vh = window.innerHeight || weather.$.w.innerHeight();
+
+	if (window.navigator.standalone) {
+		weather.vh -= 20;
+	}
+
+	var heightImageHeader = 51;
+	var heightImageRange = 45;
+	var heightChartButtons = 70;
+	var contentHeight = weather.vh - 50;
+
+	// Set heights
+	if (window.navigator.standalone) {
+		weather.$.app.height(weather.vh + 20);
+	} else {
+		weather.$.app.height(weather.vh);
+	}
+	weather.$.sections.height(contentHeight);
+
+	// Set height for image section
+	weather.$.image.height(contentHeight);
+	weather.$.imgWrap.height(contentHeight - heightImageHeader - heightImageRange);
+
+	weather.$.chart.height(contentHeight);
+	weather.$.chartContainer.height(contentHeight - heightChartButtons);
+
+	if (!weather.firstResize) {
+		weather.firstResize = weather.now();
+	}
+}
+
+module.exports = {
+	resized: function resized() {
 		clearTimeout(weather.resizeTimeout);
-		weather.resizeTimeout = setTimeout(function () {
-			window.scrollTo(0, 0);
-
-			weather.vw = weather.$.w.width();
-			weather.vh = window.innerHeight || weather.$.w.innerHeight();
-
-			if (window.navigator.standalone) {
-				weather.vh -= 20;
-			}
-
-			var heightHeader = 50;
-			var heightImageHeader = 51;
-			var heightImageRange = 45;
-			var heightChartButtons = 70;
-			var contentHeight = weather.vh - 50;
-
-			// Set heights
-			if (window.navigator.standalone) {
-				weather.$.app.height(weather.vh + 20);
-			}
-			else {
-				weather.$.app.height(weather.vh);
-			}
-			weather.$.sections.height(contentHeight);
-
-			// Set height for image section
-			weather.$.image.height(contentHeight);
-			weather.$.imgWrap.height(contentHeight - heightImageHeader - heightImageRange);
-
-			weather.$.chart.height(contentHeight);
-			weather.$.chartContainer.height(contentHeight - heightChartButtons);
-
-			if (!weather.firstResize) {
-				weather.firstResize = weather.now();
-			}
-		}, 50);
+		weather.resizeTimeout = setTimeout(resize, 50);
 	}
 };
-},{}],5:[function(require,module,exports){
+
+},{}],6:[function(require,module,exports){
+'use strict';
+
 var data = require('./data.js'),
-	image = require('./image.js'),
-	chart = require('./chart.js'),
-	layout = require('./layout.js');
-	settings = require('./settings.js');
+    image = require('./image.js'),
+    chart = require('./chart.js'),
+    layout = require('./layout.js'),
+    settings = require('./settings.js'),
+    interactions = require('./interactions.js');
 
 // Default to not online if not set
 if (typeof navigator.onLine === 'undefined') {
@@ -4339,180 +4575,132 @@ if (typeof navigator.onLine === 'undefined') {
 
 window.weather = (function () {
 
-    // Stores current items
-    var current = {
-    	items: [],
-    	items_index: 0
-    };
-
-    var $html,
-    	$app,
-    	$header,
-    	$sections,
-    	$rangeWrap,
-    	$image,
-    	$img,
-    	$imgWrap,
-    	$chart,
-    	$chartTemperature,
-		$chartHumidity,
-		$chartPressure,
-    	$date_from,
-    	$date_to,
-    	$w,
-    	changingImageWithTouch = false;
-
-	$html = $("html");
+	// Stores current items
+	var current = {
+		items: [],
+		items_index: 0
+	};
 
 	if (window.navigator.standalone) {
-		$html.addClass("standalone");
+		$("html").addClass("standalone");
 	}
 
 	// Handle cache
-    StartCacheControl();
+	//StartCacheControl();
 
-    var blockingMessage = (function () {
-		function show (message) {
-			var blockMsg = "<div class='section-block-message'>" +  message+ "</div>";
-			$image.append(blockMsg);
-			$chart.append(blockMsg);
+	var blockingMessage = (function () {
 
-			$image.toggleClass("section-blocked", true);
-			$chart.toggleClass("section-blocked", true);
+		function show(message) {
+			var blockMsg = "<div class='section-block-message'>" + message + "</div>";
+			weather.$.image.append(blockMsg);
+			weather.$.chart.append(blockMsg);
+
+			weather.$.image.toggleClass("section-blocked", true);
+			weather.$.chart.toggleClass("section-blocked", true);
 		}
-		function hide () {
-			$image.find(".section-block").remove();
-			$chart.find(".section-block").remove();
 
-			$image.toggleClass("section-blocked", false);
-			$chart.toggleClass("section-blocked", false);
+		function hide() {
+			weather.$.image.find(".section-block").remove();
+			weather.$.chart.find(".section-block").remove();
+
+			weather.$.image.toggleClass("section-blocked", false);
+			weather.$.chart.toggleClass("section-blocked", false);
 		}
 
 		return {
 			show: show,
 			hide: hide
 		};
-	}());
+	})();
 
-    // Init
-    function startApp () {
+	// Init
+	function startApp() {
 
-    	if (window.weather && layout) {
+		if (window.weather && layout) {
 
-    		setTitle(settings.place);
+			setTitle(settings.place);
 
-    		CacheObjects();
-    		layout.resized();
-    		BindEvents();
+			CacheObjects();
 
-    		image.pageLoad();
+			layout.resized();
 
-    		weather.setDates({
-    			from: Now(-3),
-    			to: Now()
-    		});
-		}
-		else {
+			interactions.init();
+
+			image.pageLoad();
+
+			SetDates({
+				from: Now(-3),
+				to: Now()
+			});
+
+			// Notify to other components that loading is done
+			weather.firstLoadComplete = true;
+		} else {
 			setTimeout(startApp, 50);
 		}
 	}
 
-	function setTitle (title) {
+	function setTitle(title) {
 		title = firstUpper(title);
 
 		var $head = $("head"),
-			$appTitle;
+		    $appTitle;
 
 		$head.find("title").html(title);
-		
+
 		$appTitle = $head.find("[name='apple-mobile-web-app-title']");
 		if ($appTitle.length > 0) {
-    		$appTitle[0].content = title;
-    	}
+			$appTitle[0].content = title;
+		}
 	}
 
 	startApp();
 
-	function StartCacheControl () {
-		var appCache = window.applicationCache;
+	/*function StartCacheControl () {
+ 	var appCache = window.applicationCache;
+ 		// Bind listener
+ 	appCache.addEventListener('updateready', CheckStatus, false);
+ 		CheckStatus();
+ 		function CheckStatus () {
+ 		if (appCache.status === appCache.UPDATEREADY) {
+ 		  // Don't prompt user. Maybe do like Chrome does and indicate the new version in a settings page?
+ 	      if (confirm('En ny versjon av værstasjonen er klar. Vil du hente den nå?')) {
+ 	        window.location.reload();
+ 	      }
+ 	    }
+ 	}
+ }*/
 
-		// Bind listener
-		appCache.addEventListener('updateready', CheckStatus, false);
+	function CacheObjects() {
 
-		CheckStatus();
+		weather.$ = weather.$ || {};
 
-		function CheckStatus () {
-			if (appCache.status == appCache.UPDATEREADY) {
-		      if (confirm('En ny versjon av værstasjonen er klar. Vil du hente den nå?')) {
-		        window.location.reload();
-		      }
-		    }
-		}
-	}
-
-	function CacheObjects () {
-		$w = $(window);
-
-		$app = $("#app");
-		$sections = $("#sections");
-		
-		$header = $("#site-header");
-		$date_from = $("#date-from");
-		$date_to = $("#date-to");
-
-		$image = $("#image");
-		$imgWrap = $("#img-wrap");
-		$rangeWrap = $("#range-wrap");
-		$rangeKw = $("#range-kw");
-		
-		$chart = $("#chart");
-		$chartTemperature = $("#chart-temperature");
-		$chartHumidity = $("#chart-humidity");
-		$chartPressure = $("#chart-pressure");
-
-		// New shared caching
-		weather.$.w = $w;
-		weather.$.app = $app;
-		weather.$.sections = $sections;
-		weather.$.image = $image;
-		weather.$.imgWrap = $imgWrap;
-		weather.$.chart = $chart;
-		weather.$.chartContainer = $("#chart-canvas-container");
-	}
-
-	function BindEvents () {
-		$(function () {
-			
-			// Change section
-			OnClick($header.find("button"), HeaderButtonClick);
-
-			// Change chart types
-			OnClick($chart.find(".types li"), ChangeChartType);
-
-			$w.resize(function () {
-				layout.resized();
-				chart.load();
-			});
-
-			// Listen for change dates in a bit
-			setTimeout(function (argument) {
-				$date_from.add($date_to).change(function () {
-					SetDates({
-						from: $date_from.mobiscroll("getDate"),
-						to: $date_to.mobiscroll("getDate"),
-						setDateInputs: false
-					});
-				});
-			}, 1000);
+		$.extend(weather.$, {
+			w: $(window),
+			app: $("#app"),
+			header: $("#site-header"),
+			dateFrom: $("#date-from"),
+			dateTo: $("#date-to"),
+			rangeWrap: $("#range-wrap"),
+			rangeKw: $("#range-kw"),
+			range: $("#range"),
+			chartTemperature: $("#chart-temperature"),
+			chartHumidity: $("#chart-humidity"),
+			chartPressure: $("#chart-pressure"),
+			sections: $("#sections"),
+			image: $("#image"),
+			imgWrap: $("#img-wrap"),
+			imgDate: $("#img-date"),
+			imgWeather: $("#img-weather"),
+			chart: $("#chart"),
+			chartContainer: $("#chart-canvas-container")
 		});
-
-		HammerTime();
 	}
 
-	function BindMobiScroll (opt) {
-		
-		$date_from.mobiscroll("destroy");
-		$date_from.mobiscroll().date({
+	function BindMobiScroll(opt) {
+
+		weather.$.dateFrom.mobiscroll("destroy");
+		weather.$.dateFrom.mobiscroll().date({
 			lang: "no",
 			dateFormat: "d/m/y",
 			dateOrder: "ddMMyy",
@@ -4520,8 +4708,8 @@ window.weather = (function () {
 			minDate: opt.fromMin
 		});
 
-		$date_to.mobiscroll("destroy");
-		$date_to.mobiscroll().date({
+		weather.$.dateTo.mobiscroll("destroy");
+		weather.$.dateTo.mobiscroll().date({
 			lang: "no",
 			dateFormat: "d/m/y",
 			dateOrder: "D ddMMyy",
@@ -4529,71 +4717,23 @@ window.weather = (function () {
 		});
 	}
 
-	function SetMinimumDate (date) {
-
+	function SetMinimumDate(date) {
 		BindMobiScroll({
-			from: $date_from.mobiscroll("getDate"),
-			to: $date_to.mobiscroll("getDate"),
+			from: weather.$.dateFrom.mobiscroll("getDate"),
+			to: weather.$.dateTo.mobiscroll("getDate"),
 			fromMin: date
 		});
-
-		/*var currentDate = $date_from.mobiscroll("getDate");
-		var opt = ,
-
-		$date_from.mobiscroll().date({
-			lang: "no",
-			dateFormat: "d/m/y",
-			dateOrder: "ddMMyy",
-			maxDate: opt.to
-		});*/
-		//firstSnapshotTime
-		//firstSnapshotTime
-		//weather.lastMobiScrollOpt.toMinDate = 
-	}
-
-	// Switch active section
-	function HeaderButtonClick () {
-		var $btn = $(this);
-		if (!$btn.hasClass("selected")) {
-			
-			switch ($btn.data("action")) {
-				case "camera":
-					$sections.removeClass("show-chart");
-					$btn.addClass("selected").siblings().removeClass("selected");
-					break;
-				case "charts":
-					$sections.addClass("show-chart");
-					$btn.addClass("selected").siblings().removeClass("selected");
-					break;
-				case "refresh":
-					refresh({
-						forceGetFromApi: true
-					});
-					break;
-			}
-		}
-	}
-
-	// Switch active chart
-	function ChangeChartType () {
-		var $btn = $(this);
-		$btn.addClass("selected").siblings().removeClass("selected");
-		setTimeout(function () {
-			chart.load($btn.data("type"));
-		}, 25);
 	}
 
 	// Check if given date is the todays date
-	function isToday (date) {
+	function isToday(date) {
 		var now = Now();
 
-		return date.getFullYear() === now.getFullYear() &&
-			   date.getMonth() === now.getMonth() &&
-			   date.getDate() === now.getDate();
+		return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
 	}
 
-	function needsUpdate () {
-		
+	function needsUpdate() {
+
 		if (!weather.onToday) {
 			return false;
 		}
@@ -4607,7 +4747,7 @@ window.weather = (function () {
 	}
 
 	// Date helper
-	function Now (addDays) {
+	function Now(addDays) {
 		var now = new Date();
 		now.setHours(0);
 		now.setMinutes(0);
@@ -4621,13 +4761,13 @@ window.weather = (function () {
 		return now;
 	}
 
-	function GetCurrent () {
+	function GetCurrent() {
 		return current;
 	}
 
 	// Set the from and to date and update data
-	function SetDates (options) {
-		
+	function SetDates(options) {
+
 		if (typeof options.setDateInputs === "undefined") {
 			options.setDateInputs = true;
 		}
@@ -4640,8 +4780,8 @@ window.weather = (function () {
 		var deferred = $.Deferred();
 
 		if (options.setDateInputs) {
-			$date_from.mobiscroll("setDate", options.from, true);
-			$date_to.mobiscroll("setDate", options.to, true);
+			weather.$.dateFrom.mobiscroll("setDate", options.from, true);
+			weather.$.dateTo.mobiscroll("setDate", options.to, true);
 		}
 
 		// Check if the to date is today
@@ -4658,9 +4798,9 @@ window.weather = (function () {
 		weather.to = options.to;
 
 		var getOptions = {
-			 from: options.from,
-			 to: options.to ,
-			 forceGetFromApi: options.forceGetFromApi
+			from: options.from,
+			to: options.to,
+			forceGetFromApi: options.forceGetFromApi
 		};
 
 		// Get data and update image and chart
@@ -4668,36 +4808,31 @@ window.weather = (function () {
 
 			if (snapshots.length === 0) {
 				blockingMessage.show("Ingen værdata funnet i perioden <span class='dates'>" + PrettyDate(options.from, "no-time") + " til " + PrettyDate(options.to, "no-time") + "</span>");
-			}
-			else {
+			} else {
 				blockingMessage.hide();
 
 				image.load();
-				
+
 				// Wait some before loading charts
 				setTimeout(chart.load, 500);
-				
+
 				if (options.moveToEnd) {
 					var index = image.getMaxIndex();
 					image.loadSingle(index);
 				}
 			}
 
-			// Notify to other components that loading is done
-			weather.firstLoadComplete = true;
-
 			deferred.resolve();
 
 			trackPageView();
 		});
-		
+
 		return deferred;
 	}
 
-	// Refresh data
-	function refresh (options) {
+	function refresh(options) {
 
-		options = options || {};
+		options = options || {};
 
 		// Show loading indication
 		weather.loading();
@@ -4705,9 +4840,9 @@ window.weather = (function () {
 		// Wait for a bit before actually getting new data.
 		// It is important to show some loading indication to the user
 		setTimeout(function () {
-			var from = $date_from.mobiscroll("getDate"),
-				to = $date_to.mobiscroll("getDate");
-			
+			var from = weather.$.dateFrom.mobiscroll("getDate"),
+			    to = weather.$.dateTo.mobiscroll("getDate");
+
 			if (weather.onToday && !isToday(to)) {
 				SetDates({
 					from: from,
@@ -4718,7 +4853,7 @@ window.weather = (function () {
 				});
 				return;
 			}
-			
+
 			SetDates({
 				from: from,
 				to: to,
@@ -4729,173 +4864,34 @@ window.weather = (function () {
 		}, 500);
 	}
 
-	// Init hammer for app
-	function HammerTime () {
+	// Handle document focus
+	(function () {
+		var hasFocus = document.hasFocus();
 
-		if (!image) {
-			setTimeout(HammerTime, 25);
-			return;
-		}
-		var hammertimeImage = new Hammer($image[0]);
+		setInterval(checkDocumentFocus, 500);
 
-	    // Fast press
-		hammertimeImage.get("press").set({
-			enable: true,
-			time: 1
-		});
+		function checkDocumentFocus() {
+			var focus = document.hasFocus();
 
-		// Pan
-		hammertimeImage.get("pan").set({
-			enable: true,
-			threshold: 0,
-			direction: Hammer.DIRECTION_HORIZONTAL,
-			pointers: 0 // all
-		});
+			// Refresh if regaining focus
+			if (!hasFocus && focus) {
 
-		hammertimeImage.get("pinch").set({
-			enable: false
-		});
-
-		hammertimeImage.on("hammer.input", function () {
-			clearTimeout(weather.slideOutTimeout);
-		});
-
-	    hammertimeImage.on("press", function (e) {
-    		if (!ChangeImageIndexFromRangeSlider(e)) {
-		    	current_index = image.getCurrentIndex();
-		    	changingImageWithTouch = true;
-		    }
-	    });
-	    hammertimeImage.on("pressup", function (e) {
-	    	changingImageWithTouch = false;
-	    });
-
-	    // Change snapshot
-	    weather.lastx = -1;
-
-	    hammertimeImage.on("pan", function (e) {
-	    	if (!ChangeImageIndexFromRangeSlider(e)) {
-		    		
-	    		var x = e.pointers[0].pageX;
-	    		if (e.pointers.length === 2) {
-	    			x = e.center.x;
-	    		}
-
-	    		if (weather.lastx === -1) {
-	    			weather.lastx = x;
-	    		}
-	    		
-    			var diff = x - weather.lastx,
-    				index;
-
-    			if (Math.abs(diff) >= 5) {
-
-    				current_index = image.getCurrentIndex();
-
-    				changing = true;
-    				
-    				if (diff > 0) {
-    					if (!image.atEnd()) {
-    						pushImageToDisplay(function () {
-								// Move 1 day up
-								if (e.pointers.length === 2) {
-									index = image.loadSingle("+1d");
-								}
-								else {
-		    						index = image.loadSingle(current_index + 1);
-		    					}
-		    				});
-	    				}
-    				}
-    				else {
-    					pushImageToDisplay(function () {
-	    					// Move 1 day down
-							if (e.pointers.length === 2) {
-								index = image.loadSingle("-1d");
-							}
-							else {
-	    						index = image.loadSingle(current_index - 1);
-	    					}
-	    				});
-    				}
-
-					weather.lastx = -1;
+				// Last refresh must be more than 1 minute old
+				if (needsUpdate()) {
+					refresh();
 				}
 			}
-		});
 
-		var pushImageToDisplay = (function () {
-			var timeout;
+			hasFocus = focus;
+		}
 
-			return function (fn) {
-				clearTimeout(timeout);
-				timeout = setTimeout(fn);
-			};
-		}());
-
-		hammertimeImage.on("panend", function (e) {
-	    	weather.lastx = -1;
-
-	    	var duration = 2000,
-	    		startIndex = image.getCurrentIndex(),
-	    		changeInIndex = 50 * e.velocityX * -1,
-	    		decreasing = changeInIndex < 0,
-	    		timeStart = +new Date();
-
-	    	if (Math.abs(changeInIndex) > 3) {
-	    		slideNewImage();
-	    	}
-
-	    	function slideNewImage () {
-	    		var now = +new Date();
-	    		var time = now - timeStart;
-	    		var newIndex = Math.easeOutExpo(time, startIndex, changeInIndex, duration);
-
-	    		newIndex = decreasing ? Math.floor(newIndex) : Math.ceil(newIndex);
-	    		
-	    		image.loadSingle(newIndex);
-
-	    		if (time < duration) {
-		    		weather.slideOutTimeout = setTimeout(slideNewImage, 25);
-		    	}
-	    	}
-	    });
-
-		// Zoom
-		hammertimeImage.on("pinchstart", image.pinchStart);
-		hammertimeImage.on("pinch", image.pinch);
-		hammertimeImage.on("pinchEnd", image.pinchEnd);
-	}
-
-	function ChangeImageIndexFromRangeSlider (e) {
-		var $target = $(e.target);
-		if ($target.closest($rangeWrap).length > 0) {
-			var x = Math.floor(e.pointers[0].pageX);
-
-    		var rangeWidth = weather.vw - (32.5 * 2);
-    		var rangeMargin = Math.ceil((weather.vw - rangeWidth) / 2);
-    		
-    		var pctX = (x - rangeMargin) / rangeWidth;
-    		if (pctX < 0) {
-    			pctX = 0;
-    		}
-    		if (pctX > 100) {
-    			pctX = 100;
-    		}
-
-    		var length = data.getCurrentLength();
-    		var index = length * pctX;
-
-    		image.loadSingle(index);
-
-    		return true;
-    	}
-
-    	return false;
-	}
+		return {
+			checkDocumentFocus: checkDocumentFocus
+		};
+	})();
 
 	// Pads number with given digits
-	function EnsureDigits (num, digits) {
+	function EnsureDigits(num, digits) {
 		num = num.toString();
 		var incr = digits - num.length;
 		for (var i = 0; i < incr; i++) {
@@ -4905,8 +4901,8 @@ window.weather = (function () {
 	}
 
 	// Returns a pretty date string from date
-	function PrettyDate (date, format) {
-		
+	function PrettyDate(date, format) {
+
 		var weekDays = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
 		var weekDays_short = ["Sø.", "Ma.", "Ti.", "On.", "To.", "Fr.", "Lø."];
 		var months = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
@@ -4930,18 +4926,18 @@ window.weather = (function () {
 	}
 
 	// Returns a short date string from date
-	function ShortDate (dt) {
+	function ShortDate(dt) {
 		var year = dt.getFullYear().toString();
 		return dt.getDate() + "/" + (dt.getMonth() + 1) + "/" + year[2].toString() + year[3].toString();
 	}
 
-	function ShortDateTime (date) {
+	function ShortDateTime(date) {
 		return ShortDate(date) + " <span>" + Time(date) + "</span>";
 	}
 
-	function Time (date, seconds) {
+	function Time(date, seconds) {
 		var timePart = EnsureDigits(date.getHours(), 2) + ":" + EnsureDigits(date.getMinutes(), 2);
-		
+
 		if (seconds) {
 			return timePart + ":" + EnsureDigits(date.getSeconds(), 2);
 		}
@@ -4950,7 +4946,7 @@ window.weather = (function () {
 	}
 
 	// Shorthand for better click
-	function OnClick ($el, fn) {
+	function OnClick($el, fn) {
 		$el.each(function () {
 			var $this = $(this);
 			var hm = new Hammer(this);
@@ -4959,56 +4955,31 @@ window.weather = (function () {
 				time: 1,
 				threshold: 100
 			});
-			
+
 			hm.on("press", function (e) {
 				fn.call($this[0], e);
 			});
 
-			$this.click(function (e) {
-				e.preventDefault();
-			});
+			$this.click(prevDef);
 		});
 	}
 
-	function prevDef (e) {
+	function prevDef(e) {
 		e.preventDefault();
 	}
 
-	function loading (hide) {
-		var $btn = $header.find(".ico[data-action='refresh']");
-		
+	function loading(hide) {
+		var $btn = weather.$.header.find(".ico[data-action='refresh']");
+
 		if (hide === false) {
 			$btn.removeClass("spin");
-		}
-		else {
+		} else {
 			$btn.addClass("spin");
 		}
 	}
 
-	// Handle document focus
-	var hasFocus = document.hasFocus(),
-		lastAutoRefresh = +new Date();
-	setInterval(checkDocumentFocus, 500);
-	function checkDocumentFocus () {
-		var focus = document.hasFocus();
-
-		// Refresh if regaining focus
-		if (!hasFocus && focus) {
-			var now = +new Date();
-			
-			// Last refresh must be more than 1 minute old
-			if (needsUpdate()) {
-				lastAutoRefresh = now;
-
-				refresh();
-			}
-		}
-
-		hasFocus = focus;
-	}
-
-	function firstUpper (str) {
-		if (!str || str.length < 1) {
+	function firstUpper(str) {
+		if (!str || str.length < 1) {
 			return str;
 		}
 
@@ -5018,7 +4989,7 @@ window.weather = (function () {
 	}
 
 	// Track page view
-	function trackPageView () {
+	function trackPageView() {
 
 		if (!weather.addedGA) {
 			weather.addedGA = +new Date();
@@ -5027,7 +4998,7 @@ window.weather = (function () {
 
 			ga('create', 'UA-61711833-1', 'auto');
 		}
-		
+
 		ga('send', 'pageview');
 	}
 
@@ -5046,11 +5017,14 @@ window.weather = (function () {
 		needsUpdate: needsUpdate,
 		$: {},
 		imageWidth: 640,
-		imageHeight: 480
+		imageHeight: 480,
+		refresh: refresh
 	};
-
 })();
-},{"./chart.js":1,"./data.js":2,"./image.js":3,"./layout.js":4,"./settings.js":6}],6:[function(require,module,exports){
+
+},{"./chart.js":1,"./data.js":2,"./image.js":3,"./interactions.js":4,"./layout.js":5,"./settings.js":7}],7:[function(require,module,exports){
+"use strict";
+
 module.exports = (function () {
 
 	// App settings
@@ -5073,15 +5047,16 @@ module.exports = (function () {
 	}
 
 	if (settings.place.indexOf("dev.html") !== -1) {
-		settings.place = "tornes";
+		settings.place = "veggli";
 	}
 
 	// Set to false if it is empty
 	settings.place = settings.place.length > 0 ? settings.place : false;
 
 	return settings;
-}());
-},{}],7:[function(require,module,exports){
+})();
+
+},{}],8:[function(require,module,exports){
 /*!
  * imagesLoaded v3.1.8
  * JavaScript is all like "You images are done yet or what?"
@@ -5418,7 +5393,7 @@ function makeArray( obj ) {
 
 });
 
-},{"eventie":8,"wolfy87-eventemitter":9}],8:[function(require,module,exports){
+},{"eventie":9,"wolfy87-eventemitter":10}],9:[function(require,module,exports){
 /*!
  * eventie v1.0.6
  * event binding helper
@@ -5502,7 +5477,7 @@ if ( typeof define === 'function' && define.amd ) {
 
 })( window );
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*!
  * EventEmitter v4.2.11 - git.io/ee
  * Unlicense - http://unlicense.org/
@@ -5976,4 +5951,4 @@ if ( typeof define === 'function' && define.amd ) {
     }
 }.call(this));
 
-},{}]},{},[5]);
+},{}]},{},[6]);

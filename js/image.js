@@ -4,23 +4,12 @@ var current = {
 		index: 0,
 		item: null,
 		transform: []
-	},
-	$range,
-	$rangeKw,
-	$img_date,
-	$img_weather,
-	$img;
+	};
 
 function PageLoad () {
 
 	// Not sure why I cannot require the data at the top. Need to figure this out.
 	data = require('./data.js');
-
-	$range = $("#range");
-	$rangeKw = $("#range-kw");
-	$img_date = $("#img-date");
-	$img_weather = $("#img-weather");
-	$img = $("#img-wrap");
 }
 
 // Show last image in list and pre load close images
@@ -63,7 +52,7 @@ function Load (options) {
 	}
 
 	// Initiate kw range
-	$rangeKw.kwRange({
+	weather.$.rangeKw.kwRange({
 		max: lastIndex,
 		value: indexToShow,
 		markIntervals: createMotionIntervals(items),
@@ -179,13 +168,13 @@ function LoadImage (index, items) {
 		var mediumDate = "<span class='medium-date'>" + weather.prettyDate(item.date, "short") + "</span>";
 		var shortDate = "<span class='short-date'>" + weather.shortDateTime(item.date) + "</span>";
 
-		$img_date.html(longDate + mediumDate + shortDate);
-		$img_weather.html("<span>" + item.tmp_o + "&#8451;</span><span>" + item.hum_o + "%</span><span>" + parseInt(item.prs_o) + "hPa</span>");
+		weather.$.imgDate.html(longDate + mediumDate + shortDate);
+		weather.$.imgWeather.html("<span>" + item.tmp_o + "&#8451;</span><span>" + item.hum_o + "%</span><span>" + parseInt(item.prs_o) + "hPa</span>");
 
 		// Update isLast flag
 		current.indexIsLast = current.index === len - 1;
 
-		$rangeKw.kwRange("setValue", {
+		weather.$.rangeKw.kwRange("setValue", {
 			value: index,
 			text: weather.time(item.date, true),
 			cls: item.motion ? "motion" : ""
@@ -201,7 +190,7 @@ var displayImage = (function () {
 
 	return function (items) {
 
-		var $imgs = $img.children(),
+		var $imgs = weather.$.imgWrap.children(),
 			newUrls = [],
 			imgsInsert = [];
 
@@ -220,7 +209,7 @@ var displayImage = (function () {
 		
 		// Insert new
 		if (imgsInsert.length > 0) {
-			$img.append(imgsInsert.join(""));
+			weather.$.imgWrap.append(imgsInsert.join(""));
 		}
 
 		// Remove old
@@ -237,9 +226,9 @@ var displayImage = (function () {
 		loadedUrls = newUrls;
 
 		// Mark selected
-		$img.children().removeClass("selected").filter("[data-url='" + current.item.img_url + "']").addClass("selected");
+		weather.$.imgWrap.children().removeClass("selected").filter("[data-url='" + current.item.img_url + "']").addClass("selected");
 
-		function handleItem (item, selected) {
+		function handleItem (item) {
 			if (item) {
 				newUrls.push(item.img_url);
 
@@ -258,9 +247,9 @@ var xLast = 0;  // last x location on the screen
 var yLast = 0;  // last y location on the screen
 var xImage = 0; // last x location on the image
 var yImage = 0; // last y location on the image
-var pinchType = "slide-images";
+//var pinchType = "slide-images";
 
-function pinchStart (e) {
+function pinchStart () {
 	scale = scaleLast;
 }
 
@@ -288,13 +277,13 @@ function pinch (e) {
 	}
 
 	// determine the location on the screen at the new scale
-    var xNew = (xScreen - xImage) / scaleLast;
+    /*var xNew = (xScreen - xImage) / scaleLast;
     var yNew = (yScreen - yImage) / scaleLast;
 
     if (scaleLast === 1) {
     	xNew = 0;
     	yNew = 0;
-    }
+    }*/
 
     // save the current screen location
     xLast = xScreen;

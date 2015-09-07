@@ -59,6 +59,9 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     'js/build/app.browserify.js': ['js/main.js']
+                },
+                options: {
+                  transform: ['babelify']
                 }
             }
         },
@@ -87,15 +90,14 @@ module.exports = function (grunt) {
             }
         },
 
-        jshint: {
-            options: {
-                eqnull: true,
-                debug: true
-            },
-            all: [
-                'Gruntfile.js',
-                'js/*.js'
-            ]
+        eslint: {
+          options: {
+            configFile: '.eslintrc'
+          },
+          all: [
+            'Gruntfile.js',
+            'js/*.js'
+          ]
         },
 
         concat: {
@@ -161,7 +163,7 @@ module.exports = function (grunt) {
             },
             scripts: {
                 files: ['js/*.js', 'css/build/*.css', 'html-templates/*.js'],
-                tasks: ['jshint', 'browserify', 'concat', 'uglify'],
+                tasks: ['eslint', 'browserify'],
                 options: {
                     spawn: false
                 }
@@ -199,15 +201,14 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-compile-handlebars');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-includes');
     grunt.loadNpmTasks('grunt-ftp-deploy');
     grunt.loadNpmTasks('grunt-browserify');
     
-    // What do do when running grunt
+    // What do do when running grunt withouth any arguments
     grunt.registerTask('default', ['compass', 'browserify', 'concat', 'uglify', 'includes']);
 
-    
     grunt.registerTask('deploy-test', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy:test']);
     grunt.registerTask('deploy-live', ['default', 'clean:release', 'compile-handlebars:appConfig', 'copy:release', 'ftp-deploy:release']);
 

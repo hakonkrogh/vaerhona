@@ -1,4 +1,4 @@
-;(function () {
+(function () {
 
 	// Check if the pretty dates formats correctly in Norwegian
 	QUnit.test("PrettyDate", function (assert) {

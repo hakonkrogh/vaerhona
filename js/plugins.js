@@ -14,7 +14,6 @@ $.fn.kwRange = function (mixed, mixed2) {
 		var $ind = $this.find(".kwr-indicator"),
 			$indText = $ind.find(".kwr-text"),
 			$line = $this.find(".kwr-line"),
-			minValue = 0,
 			maxValue = 0,
 			value = 0,
 			valuePct = 0;
@@ -84,5 +83,5 @@ $.fn.kwRange = function (mixed, mixed2) {
 };
 
 Math.easeOutExpo = function (currTime, startValue, valueChange, duration) {
-	return valueChange * ( -Math.pow( 2, -10 * currTime/duration ) + 1 ) + startValue;
+	return valueChange * (-Math.pow( 2, -10 * currTime / duration) + 1) + startValue;
 };

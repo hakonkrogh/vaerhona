@@ -1,0 +1,41 @@
+{
+  "parser": "babel-eslint",
+
+  "env": {
+    // I write for browser
+    "browser": true,
+    // in CommonJS
+    "node": true
+  },
+
+  "rules": {
+    "strict": 0,
+    "quotes": "single",
+    "no-irregular-whitespace": false,
+    "no-trailing-spaces": [0, { skipBlankLines: true }],
+    "no-mixed-spaces-and-tabs": false,
+    "no-extra-strict": false,
+    "eol-last": false,
+    "new-cap": false,
+    "no-debugger": false,
+    "no-unreachable": false,
+    "no-mixed-requires": false,
+    "no-multi-spaces": false,
+
+    "camelcase": false,
+    "no-use-before-define": false
+  },
+
+  "globals": {
+    "kw",
+    "alert",
+    "console",
+    "$",
+    "weather",
+    "Highcharts",
+    "Hammer",
+    "ga",
+    "QUnit",
+    "insertGA"
+  }
+}

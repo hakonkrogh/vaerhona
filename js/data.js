@@ -64,7 +64,6 @@ function Get (options) {
 	// Check if we can use only the data from the client
 	function DataAvailbleAtClient (forceGetFromClient) {
 		var items = GetDataFromClient(),
-			items_to_return = [],
 			len = items.length;
 
 		// If there is any data from the client
@@ -94,17 +93,17 @@ function Get (options) {
 
 		// Compile list of items use
 		function filterItemsForCurrentDate () {
-			var items_to_return = [];
+			var returnItems = [];
 
-			for (var i = 0; i < len; i++) {
-				var item = items[i];
+			for (var x = 0; x < len; x++) {
+				var item = items[x];
 				
 				if (item.t >= datetime_from && item.t <= datetime_to) {
-					items_to_return.push(item);
+					returnItems.push(item);
 				}
 			}
 
-			return items_to_return;
+			return returnItems;
 		}
 
 		return [];
@@ -120,7 +119,7 @@ function GetDataFromAPI (from, to, callback) {
 	var date_from = new Date(from.getTime());
 	var date_to = new Date(to.getTime());
 
-	var deferred = $.ajax({
+	$.ajax({
 		url: "http://www.vhsys.no/api/",
 		dataType: "jsonp",
 		cache: false,
@@ -144,13 +143,15 @@ function GetDataFromAPI (from, to, callback) {
 			}
 		}
 		else {
-			alert(response.message);
+			onRequestFail();
 		}
-	}).fail(function (response) {
+	}).fail(onRequestFail);
+
+	function onRequestFail () {
 		if (callback) {
 			callback([]);
 		}
-	});
+	}
 
 	// Parse data API response
 	function ParseAPIdata (rawArray) {
@@ -163,7 +164,7 @@ function GetDataFromAPI (from, to, callback) {
 			var item = rawArray[i];
 			var date = new Date(item.time * 1000);
 
-			var _item = {
+			var parsedItem = {
 				date: date,
 				t: Number(date),
 				motion: parseInt(item.motion_event),
@@ -174,9 +175,9 @@ function GetDataFromAPI (from, to, callback) {
 				img: item.image
 			};
 
-			CreateImageUrl(_item);
+			CreateImageUrl(parsedItem);
 
-			items_to_return.push(_item);
+			items_to_return.push(parsedItem);
 		}
 
 		return items_to_return;
@@ -232,7 +233,7 @@ function CreateImageUrl (item) {
 
 // Save items to localStorage
 function Save () {
-	var items = [];
+	var items = [],
 		len = items_all.length;
 
 	// Create clone of all objects
@@ -261,7 +262,9 @@ function SaveToLocalStorage (key, data) {
 		localStorage.setItem(key, data);
 		return true;
 	}
-	catch (e) {}
+	catch (e) {
+		console.log(e);
+	}
 
 	return false;
 }
@@ -306,9 +309,9 @@ function GetLocalStorageKey () {
 	return settings.localStorageKey + "_" + settings.place;
 }
 
-function CreateDateKey (date) {
-	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-}
+//function CreateDateKey (date) {
+//	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+//}
 
 function CreateDateKeyDb (date) {
 	return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -361,7 +364,9 @@ function StoreLastImage () {
 
 			SaveToLocalStorage(GetLocalStorageKey() + "_image", JSON.stringify(lastImage));
 		}
-		catch (e) {}
+		catch (e) {
+			console.log(e);
+		}
 
 		setTimeout(function () {
 			$img.remove();
@@ -378,7 +383,9 @@ function GetStoredImage () {
 			last = JSON.parse(item);
 		}
 	}
-	catch (e) {}
+	catch (e) {
+		console.log(e);
+	}
 
 	return last;
 }
