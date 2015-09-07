@@ -21,7 +21,7 @@ var types = {
 setChartTheme();
 
 // Load temperature chart
-function LoadChart () {
+function load () {
 	
 	var callback = function () {};
 	var type = false;
@@ -40,7 +40,7 @@ function LoadChart () {
 			callback = arguments[1];
 		}
 	}
-	
+
 	var items = data.getCurrent();
 
 	// Default chart
@@ -278,5 +278,5 @@ function setChartTheme () {
 }
 
 module.exports = {
-	load: LoadChart
+	load
 };

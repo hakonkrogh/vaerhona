@@ -24,7 +24,7 @@ var types = {
 setChartTheme();
 
 // Load temperature chart
-function LoadChart() {
+function load() {
 
 	var callback = function callback() {};
 	var type = false;
@@ -279,7 +279,7 @@ function setChartTheme() {
 }
 
 module.exports = {
-	load: LoadChart
+	load: load
 };
 
 },{"./data.js":2}],2:[function(require,module,exports){
@@ -1080,6 +1080,7 @@ function hammerEvents() {
 		return;
 	}
 
+	// Enable hammer on document.body
 	weather.hammerTimeBody = new Hammer(document.body);
 
 	var hammertimeImage = new Hammer(weather.$.image[0]);

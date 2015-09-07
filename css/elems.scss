@@ -39,7 +39,7 @@ h1 {
 .kw-range {
     $indicatorWidth: 55px;
 
-    height: 30px;
+    height: 50px;
     margin: 0 (($indicatorWidth / 2) + 5);
     position: relative;
 
@@ -83,7 +83,7 @@ h1 {
         left: 0;
         top: 50%;
         width: 100%;
-        height: 5px;
+        height: 4px;
         background: $colorRangeLine;
 
         .kwr-intervals {
