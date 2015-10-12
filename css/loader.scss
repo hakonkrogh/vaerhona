@@ -64,8 +64,8 @@
 		height: 50px;
 		margin: 100px 0 20px;
 		background-size: 100% auto;
-		@include background-image(linear-gradient(#12ae6f, #57d4a2));
-		@include mask-image(logo, 50px, center center, no-repeat, false);
+		@include background(linear-gradient(#12ae6f, #57d4a2));
+		@include mask-image("logo.png", 50px, center center, no-repeat, false);
 	}
 
 	.sub {

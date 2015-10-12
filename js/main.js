@@ -144,7 +144,7 @@ window.weather = (function () {
 		weather.$.dateFrom.mobiscroll().date({
 			lang: "no",
 			dateFormat: "d/m/y",
-			dateOrder: "ddMMyy",
+			dateOrder: "D ddMMyy",
 			maxDate: opt.to,
 			minDate: opt.fromMin
 		});
@@ -250,7 +250,7 @@ window.weather = (function () {
 		data.get(getOptions).then(function (snapshots) {
 
 			if (snapshots.length === 0) {
-				blockingMessage.show("Ingen værdata funnet i perioden <span class='dates'>" + PrettyDate(options.from, "no-time") + " til " + PrettyDate(options.to, "no-time") + "</span>");
+				blockingMessage.show("Ingen værdata registrert i perioden <span class='dates'>" + PrettyDate(options.from, "no-time") + " til " + PrettyDate(options.to, "no-time") + "</span>");
 			}
 			else {
 				blockingMessage.hide();

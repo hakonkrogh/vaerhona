@@ -3263,7 +3263,7 @@ var types = {
 setChartTheme();
 
 // Load temperature chart
-function LoadChart() {
+function load() {
 
 	var callback = function callback() {};
 	var type = false;
@@ -3518,7 +3518,7 @@ function setChartTheme() {
 }
 
 module.exports = {
-	load: LoadChart
+	load: load
 };
 
 },{"./data.js":2}],2:[function(require,module,exports){
@@ -4289,14 +4289,6 @@ function init() {
 			chart.load();
 		});
 
-		// Faster mobiscroll actions
-		weather.onClick(weather.$.dateFrom, function () {
-			$(this).mobiscroll("show");
-		});
-		weather.onClick(weather.$.dateTo, function () {
-			$(this).mobiscroll("show");
-		});
-
 		// Listen for change dates in a bit
 		setTimeout(function () {
 			weather.$.dateFrom.add(weather.$.dateTo).change(function () {
@@ -4319,46 +4311,31 @@ function hammerEvents() {
 		return;
 	}
 
-	weather.hammerTimeBody = new Hammer(document.body);
+	// Enable hammer on document.body
+	//weather.hammerTimeBody = new Hammer(document.body);
 
-	var hammertimeImage = new Hammer(weather.$.image[0]);
+	var hammertimeImage = new Hammer.Manager(weather.$.image[0]);
 
-	// Fast press
-	hammertimeImage.get("press").set({
-		enable: true,
-		time: 1
-	});
-
-	// Pan
-	hammertimeImage.get("pan").set({
-		enable: true,
-		threshold: 0,
-		direction: Hammer.DIRECTION_ALL,
-		pointers: 0 // all
-	});
-
-	hammertimeImage.get("pinch").set({
-		enable: false
-	});
+	hammertimeImage.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+	hammertimeImage.add(new Hammer.Swipe()).recognizeWith(hammertimeImage.get('pan'));
+	//hammertimeImage.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
 
 	hammertimeImage.on("hammer.input", function () {
 		clearTimeout(weather.slideOutTimeout);
 	});
 
-	hammertimeImage.on("press", function (e) {
+	// Change snapshot
+	weather.lastx = -1;
+
+	hammertimeImage.on("panstart", function (e) {
 		if (!ChangeImageIndexFromRangeSlider(e)) {
 			current_index = image.getCurrentIndex();
 			//changingImageWithTouch = true;
 		}
 	});
-	//hammertimeImage.on("pressup", function (e) {
-	//	changingImageWithTouch = false;
-	//});
-
-	// Change snapshot
-	weather.lastx = -1;
 
 	hammertimeImage.on("pan", function (e) {
+
 		if (!ChangeImageIndexFromRangeSlider(e)) {
 
 			var x = e.pointers[0].pageX;
@@ -4411,7 +4388,7 @@ function hammerEvents() {
 
 		return function (fn) {
 			clearTimeout(timeout);
-			timeout = setTimeout(fn);
+			timeout = setTimeout(fn, 25);
 		};
 	})();
 
@@ -4444,9 +4421,9 @@ function hammerEvents() {
 	});
 
 	// Zoom
-	hammertimeImage.on("pinchstart", image.pinchStart);
-	hammertimeImage.on("pinch", image.pinch);
-	hammertimeImage.on("pinchEnd", image.pinchEnd);
+	//hammertimeImage.on("pinchstart", image.pinchStart);
+	//hammertimeImage.on("pinch", image.pinch);
+	//hammertimeImage.on("pinchEnd", image.pinchEnd);
 }
 
 // Switch active section
@@ -4703,7 +4680,7 @@ window.weather = (function () {
 		weather.$.dateFrom.mobiscroll().date({
 			lang: "no",
 			dateFormat: "d/m/y",
-			dateOrder: "ddMMyy",
+			dateOrder: "D ddMMyy",
 			maxDate: opt.to,
 			minDate: opt.fromMin
 		});
@@ -4807,7 +4784,7 @@ window.weather = (function () {
 		data.get(getOptions).then(function (snapshots) {
 
 			if (snapshots.length === 0) {
-				blockingMessage.show("Ingen værdata funnet i perioden <span class='dates'>" + PrettyDate(options.from, "no-time") + " til " + PrettyDate(options.to, "no-time") + "</span>");
+				blockingMessage.show("Ingen værdata registrert i perioden <span class='dates'>" + PrettyDate(options.from, "no-time") + " til " + PrettyDate(options.to, "no-time") + "</span>");
 			} else {
 				blockingMessage.hide();
 
@@ -5951,4 +5928,7 @@ if ( typeof define === 'function' && define.amd ) {
     }
 }.call(this));
 
-},{}]},{},[6]);
+},{}]},{},[6])
+
+
+//# sourceMappingURL=app.browserify.js.map

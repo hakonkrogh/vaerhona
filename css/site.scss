@@ -1,5 +1,5 @@
 @import "shared";
-@import "../html-templates/loader.scss";
+@import "loader.scss";
 
 body {
 	@include transform(translate3d(0, 0, 0));

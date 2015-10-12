@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js">
     <head>
-        include "header.html"
+        @@include("header.html")
 
         <link rel="stylesheet" href="css/build/normalize.css">
         <link rel="stylesheet" href="css/build/mobiscroll.css">
@@ -12,7 +12,7 @@
     </head>
     <body style="background: #222;">
 
-	    include "body.html"
+	    @@include("body.html")
 
         <script src="js/vendor/jquery-2.1.1.min.js"></script>
         <script src="js/vendor/hammer.js"></script>
@@ -26,11 +26,7 @@
 
         <script src="js/plugins.js"></script>
 
-        <script src="js/main.js"></script>
-        <script src="js/_layout.js"></script>
-        <script src="js/_data.js"></script>
-        <script src="js/_chart.js"></script>
-        <script src="js/_image.js"></script>
+        <script src="js/build/app.browserify.js"></script>
 
         <!-- QUnit -->
         <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">
