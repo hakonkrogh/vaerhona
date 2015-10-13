@@ -27,10 +27,21 @@ window.weather = (function () {
 
     var blockingMessage = (function () {
 
+    	let $blockMsgImage,
+    		$blockMsgChart;
+
 		function show (message) {
-			var blockMsg = "<div class='section-block-message'>" + message + "</div>";
-			weather.$.image.append(blockMsg);
-			weather.$.chart.append(blockMsg);
+			if (!$blockMsgImage) {
+				let template = `<div class='section-block-message'>${message}</div>`;
+				$blockMsgImage = $(template);
+				$blockMsgChart = $(template);
+				weather.$.image.append($blockMsgImage);
+				weather.$.chart.append($blockMsgChart);
+			}
+			else {
+				$blockMsgImage.html(message);
+				$blockMsgChart.html(message);
+			}
 
 			weather.$.image.toggleClass("section-blocked", true);
 			weather.$.chart.toggleClass("section-blocked", true);

@@ -164,11 +164,11 @@ gulp.task('minify:css', function () {
     .pipe(gulp.dest('./css/build/'));
 });
 
-// Create new app.manifest with changed date
-gulp.task("updateAppManifest", function () {
-  gulp.src('./app.manifest.handlebars')
+// Create new app.appcache with changed date
+gulp.task("updateAppcache", function () {
+  gulp.src('./app.appcache.handlebars')
     .pipe(handlebars({ changed: +new Date() }))
-    .pipe(rename('app.manifest'))
+    .pipe(rename('app.appcache'))
     .pipe(gulp.dest('./'));
 });
 
@@ -201,14 +201,14 @@ gulp.task("deploy-live", () => { return deployTo("live"); });
 
 // The files to deploy to live/test
 function deployTo (where) {
-  runSequence("default", "concat:js", "minify:css", "minify:js", "fileinclude", "updateAppManifest", () => {
+  runSequence("default", "concat:js", "minify:css", "minify:js", "fileinclude", "updateAppcache", () => {
 
     var deployFiles = [
       'js/build/**/*',
       'css/build/**/*',
       'gfx/**/*',
       'favicons/**/*',
-      'app.manifest',
+      'app.appcache',
       'dev.html',
       'index.html',
       '404.html',

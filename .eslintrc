@@ -10,20 +10,19 @@
 
   "rules": {
     "strict": 0,
-    "quotes": "single",
-    "no-irregular-whitespace": false,
+    "quotes": [0, "single"],
+    "no-irregular-whitespace": 0,
     "no-trailing-spaces": [0, { skipBlankLines: true }],
-    "no-mixed-spaces-and-tabs": false,
-    "no-extra-strict": false,
-    "eol-last": false,
-    "new-cap": false,
-    "no-debugger": false,
-    "no-unreachable": false,
-    "no-mixed-requires": false,
-    "no-multi-spaces": false,
-
-    "camelcase": false,
-    "no-use-before-define": false
+    "no-mixed-spaces-and-tabs": 0,
+    "no-extra-strict": 0,
+    "eol-last": 0,
+    "new-cap": 0,
+    "no-debugger": 0,
+    "no-unreachable": 0,
+    "no-mixed-requires": 0,
+    "no-multi-spaces": 0,
+    "camelcase": 0,
+    "no-use-before-define": 0
   },
 
   "globals": {
