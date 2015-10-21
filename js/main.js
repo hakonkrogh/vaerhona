@@ -12,6 +12,17 @@ if (typeof navigator.onLine === 'undefined') {
 
 window.weather = (function () {
 
+	// Make sure there is a place set
+	var hrefParts = location.href.split("/");
+	var hrefPartLast = hrefParts[hrefParts.length - 1];
+	if (hrefPartLast.length === 0 && hrefPartLast !== "dev.html") {
+		var div = document.createElement("div");
+		div.className = "no-place-set";
+		div.innerHTML = "<div class='logo'></div><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navnet på værhøna i adressefeltet</div>";
+		document.body.appendChild(div);
+		return;
+	}
+
     // Stores current items
     var current = {
     	items: [],
@@ -63,7 +74,6 @@ window.weather = (function () {
 
     // Init
     function startApp () {
-
     	if (window.weather && layout) {
 
     		setTitle(settings.place);
@@ -81,8 +91,13 @@ window.weather = (function () {
     			to: Now()
     		});
 
-    		// Notify to other components that loading is done
-			weather.firstLoadComplete = true;
+			// Remove loader
+			var $loader = $("#app-loader");
+			$loader.css({ opacity: 0 });
+
+			setTimeout(function () {
+				$loader.remove();
+			}, 500);
 		}
 		else {
 			setTimeout(startApp, 50);

@@ -47,6 +47,8 @@ gulp.task('serve', ['styles'], () => {
 
   gulp.watch('./css/**/*.scss', ['styles']);
 
+  gulp.watch(['./html-source/*.html', './html-source/*.html'], ['fileinclude']);
+
   var watchifyJS = watchify(browserifyInstance); 
   watchifyJS.on("log", gutil.log);
   watchifyJS.on("update", function watchifyUpdate () {
@@ -233,7 +235,7 @@ function deployTo (where) {
       // using base = '.' will transfer everything to / correctly
       // turn off buffering in gulp.src for best performance
       return gulp.src(deployFiles, { base: '.', buffer: false })
-          .pipe(conn.newer(server.dest)) // Only newer files
+          .pipe(conn.newer(server.dest))
           .pipe(conn.dest(server.dest));
     }
   });

@@ -40,6 +40,9 @@
         <style>@-webkit-keyframes animspin{from{-webkit-transform:rotate(0)}to{-webkit-transform:rotate(360deg)}}@keyframes animspin{from{-webkit-transform:rotate(0);transform:rotate(0)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}#app-loader{background:#222;position:fixed;top:0;left:0;width:100%;height:100%;min-height:480px;z-index:99999;transition:opacity 450ms}#app-loader .icon{display:block;width:100px;height:100px;position:relative;top:50%;margin:-50px auto 0;-webkit-animation:animspin 1s infinite linear;animation:animspin 1s infinite linear}#app-loader .icon--path{fill:#fff}.no-place-set{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;color:#fff;padding:20px;text-align:center;font-family:sans-serif;box-sizing:border-box}.no-place-set h1{font-size:20px;margin-top:20px}.no-place-set .logo{height:50px;margin:100px 0 20px;-pie-background:-pie-linear-gradient(#12ae6f,#57d4a2);background:linear-gradient(#12ae6f,#57d4a2);-moz-mask-image:url(/gfx/logo.png);-moz-mask-size:50px;-moz-mask-position:center center;-moz-mask-repeat:no-repeat;-webkit-mask-image:url(/gfx/logo.png);mask-image:url(/gfx/logo.png);-webkit-mask-size:50px;mask-size:50px;-webkit-mask-position:center center;mask-position:center center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}.no-place-set .sub{font-size:17px;line-height:20px;color:#d0d0d0}
 /*# sourceMappingURL=loader.min.css.map */
 </style>
+        <script>!function(e,t){function n(){var e=document.createElement("script"),t=document.createElement("link");e.src="js/build/production.min.js",t.href="css/build/production.css",t.rel="stylesheet",document.body.appendChild(t),document.body.appendChild(e),setTimeout(o,100)}function o(){e.weather&&e.weather.firstLoadComplete?setTimeout(d,100):setTimeout(o,25)}function d(e){i&&(i.style.opacity=0,setTimeout(function(){i.parentNode.removeChild(i),e&&e()},500))}-1!==navigator.userAgent.indexOf("Android")&&document.body.classList&&document.body.classList.add("android");var i=document.querySelector("#app-loader"),s=location.href.split("/"),a=s[s.length-1];if(0===a.length&&"dev.html"!==a){var c=document.createElement("div");c.className="no-place-set",c.innerHTML="<div class='logo'></div><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navnet på værhøna i adressefeltet</div>",document.body.appendChild(c)}else setTimeout(n,100)}(window,void 0);
+//# sourceMappingURL=loader.min.js.map
+</script>
     </head>
     <body style="background: #222;">
         <div id="app-loader">
@@ -107,8 +110,7 @@
     })();
 </script>
 
-        <script>!function(e,t){function n(){var e=document.createElement("script"),t=document.createElement("link");e.src="js/build/production.min.js",t.href="css/build/production.css",t.rel="stylesheet",document.body.appendChild(t),document.body.appendChild(e),setTimeout(o,100)}function o(){e.weather&&e.weather.firstLoadComplete?setTimeout(d,100):setTimeout(o,25)}function d(e){i&&(i.style.opacity=0,setTimeout(function(){i.parentNode.removeChild(i),e&&e()},500))}-1!==navigator.userAgent.indexOf("Android")&&document.body.classList&&document.body.classList.add("android");var i=document.querySelector("#app-loader"),s=location.href.split("/"),a=s[s.length-1];if(0===a.length&&"dev.html"!==a){var c=document.createElement("div");c.className="no-place-set",c.innerHTML="<div class='logo'></div><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navnet på værhøna i adressefeltet</div>",document.body.appendChild(c)}else setTimeout(n,100)}(window,void 0);
-//# sourceMappingURL=loader.min.js.map
-</script>
+        <script async defer src="/js/build/production.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/build/production.min.css" async />
     </body>
 </html>

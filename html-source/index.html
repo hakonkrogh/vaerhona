@@ -7,6 +7,7 @@
         <link rel="prefetch" href="/gfx/no-image.jpg">
 
         <style>@@include("../css/build/loader.min.css")</style>
+        <script>@@include("../js/build/loader.min.js")</script>
     </head>
     <body style="background: #222;">
         <div id="app-loader">
@@ -15,6 +16,7 @@
 
         @@include("body.html")
 
-        <script>@@include("../js/build/loader.min.js")</script>
+        <script async defer src="/js/build/production.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/build/production.min.css" async />
     </body>
 </html>
