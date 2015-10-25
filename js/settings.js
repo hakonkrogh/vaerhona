@@ -20,7 +20,7 @@ module.exports = (function () {
 	}
 
 	if (settings.place.indexOf("dev.html") !== -1) {
-		settings.place = "veggli";
+		settings.place = "buvassbrenna";
 	}
 
 	// Set to false if it is empty

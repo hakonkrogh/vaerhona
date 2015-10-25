@@ -4552,6 +4552,17 @@ if (typeof navigator.onLine === 'undefined') {
 
 window.weather = (function () {
 
+	// Make sure there is a place set
+	var hrefParts = location.href.split("/");
+	var hrefPartLast = hrefParts[hrefParts.length - 1];
+	if (hrefPartLast.length === 0 && hrefPartLast !== "dev.html") {
+		var div = document.createElement("div");
+		div.className = "no-place-set";
+		div.innerHTML = "<div class='logo'></div><h1>værhøna.no/[din-værhøne]</h1><div class='sub'>Skriv inn navnet på værhøna i adressefeltet</div>";
+		document.body.appendChild(div);
+		return;
+	}
+
 	// Stores current items
 	var current = {
 		items: [],
@@ -4567,10 +4578,20 @@ window.weather = (function () {
 
 	var blockingMessage = (function () {
 
+		var $blockMsgImage = undefined,
+		    $blockMsgChart = undefined;
+
 		function show(message) {
-			var blockMsg = "<div class='section-block-message'>" + message + "</div>";
-			weather.$.image.append(blockMsg);
-			weather.$.chart.append(blockMsg);
+			if (!$blockMsgImage) {
+				var template = '<div class=\'section-block-message\'>' + message + '</div>';
+				$blockMsgImage = $(template);
+				$blockMsgChart = $(template);
+				weather.$.image.append($blockMsgImage);
+				weather.$.chart.append($blockMsgChart);
+			} else {
+				$blockMsgImage.html(message);
+				$blockMsgChart.html(message);
+			}
 
 			weather.$.image.toggleClass("section-blocked", true);
 			weather.$.chart.toggleClass("section-blocked", true);
@@ -4592,7 +4613,6 @@ window.weather = (function () {
 
 	// Init
 	function startApp() {
-
 		if (window.weather && layout) {
 
 			setTitle(settings.place);
@@ -4610,8 +4630,13 @@ window.weather = (function () {
 				to: Now()
 			});
 
-			// Notify to other components that loading is done
-			weather.firstLoadComplete = true;
+			// Remove loader
+			var $loader = $("#app-loader");
+			$loader.css({ opacity: 0 });
+
+			setTimeout(function () {
+				$loader.remove();
+			}, 500);
 		} else {
 			setTimeout(startApp, 50);
 		}

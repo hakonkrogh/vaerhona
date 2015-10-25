@@ -867,9 +867,19 @@ function LoadImage(index, items) {
 
 // Handles the display of the current item and preloads the other closest items
 var displayImage = (function () {
-	var loadedUrls = [];
+	var loadedUrls = [],
+	    $img;
 
 	return function (items) {
+
+		if (!$img) {
+			$img = $("<div class='selected'/>");
+			weather.$.imgWrap.append($img);
+		}
+		$img.css({
+			backgroundImage: "url(" + ResolveImg(current.item.img_url) + ")"
+		});
+		return;
 
 		var $imgs = weather.$.imgWrap.children(),
 		    newUrls = [],
@@ -1081,7 +1091,8 @@ function hammerEvents() {
 	hammertimeImage.add(new Hammer.Swipe()).recognizeWith(hammertimeImage.get('pan'));
 	//hammertimeImage.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([mc.get('pan'), mc.get('rotate')]);
 
-	hammertimeImage.on("hammer.input", function () {
+	hammertimeImage.on("hammer.input", function (e) {
+		e.preventDefault();
 		clearTimeout(weather.slideOutTimeout);
 	});
 
@@ -1096,7 +1107,6 @@ function hammerEvents() {
 	});
 
 	hammertimeImage.on("pan", function (e) {
-
 		if (!ChangeImageIndexFromRangeSlider(e)) {
 
 			var x = e.pointers[0].pageX;
@@ -1149,16 +1159,16 @@ function hammerEvents() {
 
 		return function (fn) {
 			clearTimeout(timeout);
-			timeout = setTimeout(fn, 25);
+			timeout = setTimeout(fn, 0);
 		};
 	})();
 
 	hammertimeImage.on("panend", function (e) {
 		weather.lastx = -1;
 
-		var duration = 2000,
+		var duration = 1000,
 		    startIndex = image.getCurrentIndex(),
-		    changeInIndex = 50 * e.velocityX * -1,
+		    changeInIndex = 25 * e.velocityX * -1,
 		    decreasing = changeInIndex < 0,
 		    timeStart = +new Date();
 
@@ -1810,7 +1820,7 @@ module.exports = (function () {
 	}
 
 	if (settings.place.indexOf("dev.html") !== -1) {
-		settings.place = "veggli";
+		settings.place = "buvassbrenna";
 	}
 
 	// Set to false if it is empty

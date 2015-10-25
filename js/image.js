@@ -186,9 +186,19 @@ function LoadImage (index, items) {
 
 // Handles the display of the current item and preloads the other closest items
 var displayImage = (function () {
-	var loadedUrls = [];
+	var loadedUrls = [],
+		$img;
 
 	return function (items) {
+
+		if (!$img) {
+			$img = $("<div class='selected'/>");
+			weather.$.imgWrap.append($img);
+		}
+		$img.css({
+			backgroundImage: `url(${ResolveImg(current.item.img_url)})`
+		});
+		return;
 
 		var $imgs = weather.$.imgWrap.children(),
 			newUrls = [],
