@@ -257,60 +257,6 @@ var xLast = 0;  // last x location on the screen
 var yLast = 0;  // last y location on the screen
 var xImage = 0; // last x location on the image
 var yImage = 0; // last y location on the image
-//var pinchType = "slide-images";
-
-function pinchStart () {
-	scale = scaleLast;
-}
-
-function pinchEnd (e) {
-	scale = e.scale;
-	console.log(e);
-}
-
-function pinch (e) {
-	
-	var xScreen = e.center.x - 0;
-    var yScreen = e.center.y - 40;
-
-    // find current location on the image at the current scale
-    xImage = xImage + ((xScreen - xLast) / scaleLast);
-    yImage = yImage + ((yScreen - yLast) / scaleLast);
-
-	scaleLast = (scale * e.scale);
-
-	if (scaleLast < 1) {
-		scaleLast = 1;
-	}
-	else if (scaleLast > 25) {
-		scaleLast = 25;
-	}
-
-	// determine the location on the screen at the new scale
-    /*var xNew = (xScreen - xImage) / scaleLast;
-    var yNew = (yScreen - yImage) / scaleLast;
-
-    if (scaleLast === 1) {
-    	xNew = 0;
-    	yNew = 0;
-    }*/
-
-    // save the current screen location
-    xLast = xScreen;
-    yLast = yScreen;
-
-	//$img.css({
-    //	transform: 'scale(' + scaleLast + ')'
-    //});
-
-    //$img.css({
-    //	transform: 'scale(' + scaleLast + ') ' + 'translate3d(' + xNew + 'px, ' + yNew + 'px' + ', 0)',
-    //	transformOrigin: xImage + 'px ' + yImage + 'px'
-    //});
-
-	// http://stackoverflow.com/questions/2916081/zoom-in-on-a-point-using-scale-and-translate
-	// http://doctype.com/javascript-image-zoom-css3-transforms-calculate-origin-example
-}
 
 function ResolveImg (src, checkStoredImage) {
 	
@@ -348,9 +294,6 @@ module.exports = {
 	pageLoad: PageLoad,
 	load: Load,
 	resolve: ResolveImg,
-	pinch: pinch,
-	pinchStart: pinchStart,
-	pinchEnd: pinchEnd,
 	loadSingle: LoadImage,
 	getCurrentIndex: GetCurrentIndex,
 	getMaxIndex: GetMaxIndex,

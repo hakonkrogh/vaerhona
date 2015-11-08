@@ -106,6 +106,7 @@ module.exports = function (grunt) {
                     'bower_components/imagesloaded/imagesloaded.pkgd.js',
                     'js/vendor/ga.js',
                     'js/vendor/jquery-2.1.1.min.js',
+                    'js/vendor/jquery.panzoom.js',
                     'js/vendor/hammer.js',
                     'js/vendor/mobiscroll/mobiscroll.core.js',
                     'js/vendor/mobiscroll/mobiscroll.util.datetime.js',

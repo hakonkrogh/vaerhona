@@ -1979,7 +1979,14 @@ h1 {
   color: #bababa;
   width: 55px;
   position: relative;
+  top: 1px;
   left: -27.5px;
+}
+
+@media all and (max-width: 480px) {
+  .kw-range .kwr-text {
+    top: 3px;
+  }
 }
 
 .kw-range .kwr-line {

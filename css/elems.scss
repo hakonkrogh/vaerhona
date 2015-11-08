@@ -75,7 +75,12 @@ h1 {
         color: $colorRangeLine;
         width: $indicatorWidth;
         position: relative;
+        top: 1px;
         left: -($indicatorWidth / 2);
+
+        @include for (mobile) {
+            top: 3px;
+        }
     }
 
     .kwr-line {
