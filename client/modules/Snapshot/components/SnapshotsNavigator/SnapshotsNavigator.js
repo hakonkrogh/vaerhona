@@ -33,9 +33,10 @@ class SnapshotsNavigator extends Component {
   render() {
     return (
       <div>
-        <SnapshotDisplayChooser />
-        <SnapshotImage snapshots={this.props.snapshots} />
-        <SnapshotGraph />
+        <SnapshotDisplayChooser>
+          <SnapshotImage snapshots={this.props.snapshots} />
+          <SnapshotGraph snapshots={this.props.snapshots} />
+        </SnapshotDisplayChooser>
       </div>
     );
   }

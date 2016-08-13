@@ -4,7 +4,7 @@ import { TOGGLE_ADD_SNAPSHOT, SET_SELECTED_PLACE } from './AppActions';
 // Initial State
 const initialState = {
   showAddSnapshot: false,
-  selectedPlace: { name: 'todo...', cuid: '' }
+  selectedPlace: false
 };
 
 const AppReducer = (state = initialState, action) => {

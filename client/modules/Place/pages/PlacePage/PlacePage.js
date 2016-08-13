@@ -11,6 +11,11 @@ import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 export class PlacePage extends Component {
 	componentDidMount() {
 		this.props.dispatch(setSelectedPlace({ name: this.props.params.placeName }));
+
+		// If there are no snapshots when loading, try to look again. This happens if we navigate here from the settings page
+		if (!this.props.snapshots || this.props.snapshots.length === 0) {
+			fetchSnapshots()(this.props.dispatch);
+		}
 	}
 	render() {
 		return (
@@ -24,7 +29,7 @@ export class PlacePage extends Component {
 	}
 }
 
-// Actions required to provide data for this component to render in sever side.
+// Actions required to provide data for this component to render in server side.
 PlacePage.need = [() => { return fetchSnapshots(); }];
 
 PlacePage.propTypes = {
@@ -37,9 +42,9 @@ PlacePage.propTypes = {
   dispatch: PropTypes.func.isRequired
 };
 
-//PlacePage.contextTypes = {
-//  router: React.PropTypes.object
-//};
+PlacePage.contextTypes = {
+  router: React.PropTypes.object
+};
 
 function mapStateToProps (state) {
 	return {

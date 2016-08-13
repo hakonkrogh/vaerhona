@@ -5,7 +5,7 @@ import App from './modules/App/App';
 
 // require.ensure polyfill for node
 if (typeof require.ensure !== 'function') {
-  require.ensure = function requireModule(deps, callback) {
+  require.ensure = function requireModule (deps, callback) {
     callback(require);
   };
 }
@@ -38,7 +38,8 @@ export default (
           cb(null, require('./modules/Place/pages/PlacePage/PlacePage').default);
         });
       }}
-    />
+    >
+    </Route>
     <Route
       path="/:placeName/settings"
       getComponent={(nextState, cb) => {

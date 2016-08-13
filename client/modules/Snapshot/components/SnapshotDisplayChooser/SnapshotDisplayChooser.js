@@ -5,6 +5,7 @@ class SnapshotDisplayChooser extends Component {
     return (
       <div>
         <div className="snapshot-display-chooser">
+        {this.props.children}
         </div>
       </div>
     );

@@ -8,27 +8,31 @@ import styles from './App.css';
 import Helmet from 'react-helmet';
 import DevTools from './components/DevTools';
 import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
 
 // Import Actions
-import { toggleAddSnapshot } from './AppActions';
 import { switchLanguage } from '../../modules/Intl/IntlActions';
 
 export class App extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = { isMounted: false };
   }
 
-  componentDidMount() {
-    this.setState({isMounted: true}); // eslint-disable-line
+  componentDidMount () {
+    this.setState({ isMounted: true }); // eslint-disable-line
   }
 
-  toggleAddSnapshotSection = () => {
-    this.props.dispatch(toggleAddSnapshot());
+  getChildContext () {
+
+    // Enable children components to access the params
+    return { params: this.props.params }
   }
 
-  render() {
+  render () {
+
+
+    //this.props.dispatch(setSelectedPlace({ name: this.props.params.placeName }));
+
     return (
       <div>
         {this.state.isMounted && !window.devToolsExtension && process.env.NODE_ENV === 'development' && <DevTools />}
@@ -45,18 +49,15 @@ export class App extends Component {
               {
                 name: 'viewport',
                 content: 'width=device-width, initial-scale=1',
-              },
+              }
             ]}
           />
           <Header
-            switchLanguage={lang => this.props.dispatch(switchLanguage(lang))}
             intl={this.props.intl}
-            toggleAddSnapshot={this.toggleAddSnapshotSection}
           />
           <div className={styles.container}>
             {this.props.children}
           </div>
-          <Footer />
         </div>
       </div>
     );
@@ -67,6 +68,11 @@ App.propTypes = {
   children: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   intl: PropTypes.object.isRequired
+};
+
+// Enable children components to access the params
+App.childContextTypes = {
+  params: React.PropTypes.object
 };
 
 // Retrieve data from state as props
