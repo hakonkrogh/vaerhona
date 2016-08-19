@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as PlaceController from '../controllers/place.controller';
+
 const router = new Router();
 
 // Get one place by name

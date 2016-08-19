@@ -10,12 +10,24 @@ import { saveImageFromSnapshot } from '../aws/s3';
  * @param res
  * @returns void
  */
-export function getSnapshots(req, res) {
-  Snapshot.find().sort('-dateAdded').exec((err, snapshots) => {
+export function getSnapshots (req, res) {
+  
+  // Get place by name
+  Place.findOne({ name: req.params.placeName }).exec((err, place) => {
     if (err) {
-      res.status(500).send(err);
+      return res.status(500).send(err);
     }
-    res.json({ snapshots });
+
+    if (!place) {
+      return res.status(500).send('Error: place not found');
+    }
+
+    Snapshot.find({ placeCuid: place.cuid }).sort('-dateAdded').exec((err, snapshots) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      res.json({ snapshots });
+    });
   });
 }
 
@@ -28,11 +40,56 @@ export function getSnapshots(req, res) {
 export function addSnapshot (req, res) {
   return addSnapshotRaw(req.body.snapshot)
   .then(snapshot => {
-    res.json({ snapshot });
+
+    // This property indicates the WS app version
+    // req.body.appVersion
+
+    // This property tells you the key names for the wifi network added by the WS
+    // req.body.wifiNetworks
+
+    res.json({
+      snapshot,
+      success: true, // old API props
+      message: '' // old API props
+    });
+
+    // The signature for sending back the new app version to the weather station
+    //appUpdate: {
+    //  path: 'http://path-to-new-app.tar.gz',
+    //  version: '99'
+    //}
+
+    // The signature for adding a new WIFI access point
+    /*wifiUpdate = {
+      // Internal name for the network
+      Id: "some-unique-id",
+      ssid: "the-ssid",
+      psk: "the-password-psk",
+      protocol: "WPA",
+      keyManagement: "WPA-PSK",
+      pairwise: "TKIP",
+      authorization: "OPEN",
+
+      // If the SSID is hidden or not
+      scan_ssid: false,
+
+      // Remove the old stored wifi networks?
+      removeOld: false
+    };*/
   })
   .catch(err => {
     res.status(err.code).send(err.message);
   });
+}
+
+/**
+ * Save a snapshot (legacy entry)
+ * @param req
+ * @param res
+ * @returns Promise
+ */
+export function addSnapshotLegacy (req, res) {
+  return addSnapshot(req, res);
 }
 
 /**
@@ -94,14 +151,14 @@ export function addSnapshotRaw (snapshot = {}) {
  * @param res
  * @returns void
  */
-export function getSnapshot(req, res) {
-  Snapshot.findOne({ cuid: req.params.cuid }).exec((err, snapshot) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-    res.json({ snapshot });
-  });
-}
+//export function getSnapshot (req, res) {
+//  Snapshot.findOne({ cuid: req.params.cuid }).exec((err, snapshot) => {
+//    if (err) {
+//      res.status(500).send(err);
+//    }
+//    res.json({ snapshot });
+//  });
+//}
 
 /**
  * Delete a snapshot
@@ -109,7 +166,7 @@ export function getSnapshot(req, res) {
  * @param res
  * @returns void
  */
-export function deleteSnapshot(req, res) {
+export function deleteSnapshot (req, res) {
   Snapshot.findOne({ cuid: req.params.cuid }).exec((err, snapshot) => {
     if (err) {
       res.status(500).send(err);

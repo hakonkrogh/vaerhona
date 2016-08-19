@@ -1,4 +1,10 @@
-import { ADD_SNAPSHOT, ADD_SNAPSHOTS, DELETE_SNAPSHOT } from './SnapshotActions';
+import {
+  ADD_SNAPSHOT,
+  ADD_SNAPSHOTS,
+  DELETE_SNAPSHOT,
+  SHOW_PREV_SNAPSHOT,
+  SHOW_NEXT_SNAPSHOT
+} from './SnapshotActions';
 
 // Initial State
 const initialState = { data: [], selected: false };
@@ -14,7 +20,7 @@ const SnapshotReducer = (state = initialState, action) => {
     case ADD_SNAPSHOTS :
       return {
         data: action.snapshots,
-        selected: !state.selected ? action.snapshots[action.snapshots.length - 1] : state.selected
+        selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected
       };
 
     case DELETE_SNAPSHOT :
@@ -34,6 +40,39 @@ const SnapshotReducer = (state = initialState, action) => {
       return {
         data: newListOfSnapshots,
         selected
+      };
+
+    case SHOW_PREV_SNAPSHOT :
+
+      if (!state.selected) {
+        return state;
+      }
+
+      let selectedIndex1 = state.data.findIndex((snapshot, index) => snapshot.cuid === state.selected.cuid);
+      
+      if (selectedIndex1 === 0) {
+        return state;
+      }
+
+      return {
+        data: state.data,
+        selected: state.data[selectedIndex1 - 1]
+      };
+
+    case SHOW_NEXT_SNAPSHOT :
+      if (!state.selected) {
+        return state;
+      }
+
+      let selectedIndex2 = state.data.findIndex((snapshot, index) => snapshot.cuid === state.selected.cuid);
+      
+      if (selectedIndex2 >= state.data.length - 1) {
+        return state;
+      }
+
+      return {
+        data: state.data,
+        selected: state.data[selectedIndex2 + 1]
       };
 
     default:

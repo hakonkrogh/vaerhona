@@ -4,6 +4,7 @@ import callApi from '../../util/apiCaller';
 export const ADD_PLACE = 'ADD_PLACE';
 export const ADD_PLACES = 'ADD_PLACES';
 export const DELETE_PLACE = 'DELETE_PLACE';
+export const UNSELECT_PLACE = 'UNSELECT_PLACE';
 
 // Export Actions
 export function addPlace (place) {
@@ -13,8 +14,14 @@ export function addPlace (place) {
   };
 }
 
+export function unselectPlace () {
+  return {
+    type: UNSELECT_PLACE
+  };
+}
+
 export function addPlaceRequest (place) {
-  return (dispatch) => {
+  return dispatch => {
     return callApi('place', 'post', {
       place: {
         cuid: place.cuid,
@@ -32,16 +39,20 @@ export function addPlaces (places) {
 }
 
 export function fetchPlaces () {
-  return (dispatch) => {
+  return dispatch => {
     return callApi('places').then(res => {
       dispatch(addPlaces(res.places));
     });
   };
 }
 
-export function fetchPlace (cuid) {
-  return (dispatch) => {
-    return callApi(`places/${cuid}`).then(res => dispatch(addPlace(res.place)));
+export function fetchPlace (name) {
+  return dispatch => {
+    return callApi(`places/${name}`).then(res => {
+      if (res.place) {
+        return dispatch(addPlace(res.place))
+      }
+    });
   };
 }
 
@@ -53,7 +64,7 @@ export function deletePlace (cuid) {
 }
 
 export function deletePlaceRequest (cuid) {
-  return (dispatch) => {
+  return dispatch => {
     return callApi(`places/${cuid}`, 'delete').then(() => dispatch(deletePlace(cuid)));
   };
 }

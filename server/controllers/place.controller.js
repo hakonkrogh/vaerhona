@@ -7,7 +7,7 @@ import cuid from 'cuid';
  * @param res
  * @returns void
  */
-export function addPlace(req, res) {
+export function addPlace (req, res) {
   
   if (!req.body.place.name) {
     res.status(403).end();
@@ -31,7 +31,7 @@ export function addPlace(req, res) {
  * @returns void
  */
 export function getPlace (req, res) {
-
+  
   if (!req.params.name) {
     res.status(403).end();
   }

@@ -33,6 +33,7 @@ import Helmet from 'react-helmet';
 import routes from '../client/routes';
 import { fetchComponentData } from './util/fetchData';
 import snapshots from './routes/snapshot.routes';
+import places from './routes/place.routes';
 import dummyData from './dummyData';
 import serverConfig from './config';
 
@@ -60,6 +61,7 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../dist')));
 
 app.use('/api', snapshots);
+app.use('/api', places);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {

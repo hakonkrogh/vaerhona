@@ -3,10 +3,10 @@ import * as SnapshotController from '../controllers/snapshot.controller';
 const router = new Router();
 
 // Get all snapshots
-router.route('/snapshots').get(SnapshotController.getSnapshots);
+router.route('/snapshots/:placeName').get(SnapshotController.getSnapshots);
 
 // Get one snapshot by cuid
-router.route('/snapshots/:cuid').get(SnapshotController.getSnapshot);
+//router.route('/snapshots/:cuid').get(SnapshotController.getSnapshot);
 
 // Add a new snapshot
 router.route('/snapshots').post(SnapshotController.addSnapshot);

@@ -1,10 +1,9 @@
 // Import Actions
-import { TOGGLE_ADD_SNAPSHOT, SET_SELECTED_PLACE } from './AppActions';
+import { TOGGLE_ADD_SNAPSHOT } from './AppActions';
 
 // Initial State
 const initialState = {
-  showAddSnapshot: false,
-  selectedPlace: false
+  showAddSnapshot: false
 };
 
 const AppReducer = (state = initialState, action) => {
@@ -16,12 +15,6 @@ const AppReducer = (state = initialState, action) => {
         selectedPlace: state.selectedPlace
       };
 
-    case SET_SELECTED_PLACE:
-      return {
-      	showAddSnapshot: state.showAddSnapshot,
-      	selectedPlace: action.place
-      };
-
     default:
       return state;
   }
@@ -29,7 +22,6 @@ const AppReducer = (state = initialState, action) => {
 
 /* Selectors */
 export const getShowAddSnapshot = state => state.app.showAddSnapshot;
-export const getSelectedPlace = state => state.app.selectedPlace;
 
 // Export Reducer
 export default AppReducer;

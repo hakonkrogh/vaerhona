@@ -41,6 +41,7 @@
     "express": "^4.13.4",
     "intl": "^1.2.4",
     "isomorphic-fetch": "^2.2.1",
+    "keycode": "^2.1.4",
     "limax": "^1.3.0",
     "mongoose": "^4.4.20",
     "react": "^15.1.0",

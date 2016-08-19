@@ -29,14 +29,10 @@ export class App extends Component {
   }
 
   render () {
-
-
-    //this.props.dispatch(setSelectedPlace({ name: this.props.params.placeName }));
-
     return (
       <div>
         {this.state.isMounted && !window.devToolsExtension && process.env.NODE_ENV === 'development' && <DevTools />}
-        <div>
+        <div className={styles.container}>
           <Helmet
             title="Værhøna"
             titleTemplate="%s - Værhøna"
@@ -55,7 +51,7 @@ export class App extends Component {
           <Header
             intl={this.props.intl}
           />
-          <div className={styles.container}>
+          <div>
             {this.props.children}
           </div>
         </div>

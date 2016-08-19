@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 
-import { getSelectedPlace } from '../../AppActions';
+import { getSelectedPlace } from '../../../Place/PlaceReducer';
 
 // Import Style
 import styles from './Header.css';
@@ -16,11 +16,8 @@ export class Header extends Component {
       lang => <li key={lang} onClick={() => this.props.switchLanguage(lang)} className={lang === this.props.intl.locale ? styles.selected : ''}>{lang}</li>
     );
 
-    //const showSettings = this.context.router.isActive(`/${this.props.params.placeName}`);
-    //const linkToSettings  = showSettings ? `/${this.props.params.placeName}/settings` : `/`;
-   console.log('placeName', this.context.params.placeName);
-    const showSettings = !!this.context.params.placeName;
-    const linkToSettings = this.context.params.placeName ? `/${this.context.params.placeName}/settings` : `/`;
+    const showSettings = !!this.props.selectedPlace;
+    const linkToSettings = showSettings ? `/${this.props.selectedPlace.name}/settings` : `/`;
 
     return (
       <div className={styles.header}>
@@ -46,7 +43,11 @@ Header.contextTypes = {
 };
 
 Header.propTypes = {
-  intl: PropTypes.object.isRequired
+  intl: PropTypes.object.isRequired,
+  selectedPlace: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.bool
+  ])
 };
 
 function mapStateToProps (state) {

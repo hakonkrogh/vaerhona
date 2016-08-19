@@ -4,33 +4,72 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import SnapshotsNavigator from '../../../Snapshot/components/SnapshotsNavigator/SnapshotsNavigator';
 
-import { setSelectedPlace, getSelectedPlace } from '../../../App/AppActions';
+import { setSelectedPlace } from '../../../App/AppActions';
+import { fetchPlace } from '../../../Place/PlaceActions';
+import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 
 export class PlacePage extends Component {
-	componentDidMount() {
-		this.props.dispatch(setSelectedPlace({ name: this.props.params.placeName }));
+
+	componentWillMount () {
+
+		// Set place if not set
+		if (!this.props.selectedPlace) {
+			this.setState({
+				loading: true,
+				selectedPlaceNotFound: false
+			});
+			fetchPlace(this.props.params.placeName)(this.props.dispatch).then(res => {
+				this.setState({
+					loading: false
+				});
+
+				if (!res || !res.place || !res.place.cuid) {
+					this.setState({
+						selectedPlaceNotFound: true
+					});
+				}
+			});
+		}
 
 		// If there are no snapshots when loading, try to look again. This happens if we navigate here from the settings page
-		if (!this.props.snapshots || this.props.snapshots.length === 0) {
-			fetchSnapshots()(this.props.dispatch);
-		}
+		//if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.selectedPlace) {
+		//	fetchSnapshots({ name: this.props.selectedPlace.name })(this.props.dispatch);
+		//}
 	}
-	render() {
+
+	render () {
+
+		// Waiting for place...
+		if (this.state && this.state.loading) {
+			return (
+				<div>
+					<Helmet title="Loading..." />
+					<div>Loading...</div>
+				</div>
+			);
+		}
+
+		// We have a place, and it's got a name :)
+		if (this.props.selectedPlace && this.props.selectedPlace.name) {
+			return (
+				<div>
+					<Helmet title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)} />
+					<SnapshotsNavigator snapshots={this.props.snapshots} place={this.props.selectedPlace} />
+				</div>
+			);
+		}
+
+		// Apparently no valid place was found
 		return (
 			<div>
-				<Helmet title={this.props.params.placeName[0].toUpperCase() + this.props.params.placeName.substr(1)} />
-				<div>
-					<SnapshotsNavigator snapshots={this.props.snapshots} />
-				</div>
+				<Helmet title="Not a valid place" />
+				<div>The place {this.props.params.placeName} not found</div>
 			</div>
 		);
 	}
 }
-
-// Actions required to provide data for this component to render in server side.
-PlacePage.need = [() => { return fetchSnapshots(); }];
 
 PlacePage.propTypes = {
   snapshots: PropTypes.arrayOf(PropTypes.shape({
@@ -38,13 +77,22 @@ PlacePage.propTypes = {
     temperature: PropTypes.number.isRequired,
     humidity: PropTypes.number.isRequired,
     pressure: PropTypes.number.isRequired,
-  })).isRequired,
+  })),
+  selectedPlace: PropTypes.oneOfType([
+  	PropTypes.bool,
+  	PropTypes.object
+  ]),
   dispatch: PropTypes.func.isRequired
 };
 
 PlacePage.contextTypes = {
   router: React.PropTypes.object
 };
+
+PlacePage.need = [
+	params => fetchPlace(params.placeName),
+	params => fetchSnapshots({ name: params.placeName })
+];
 
 function mapStateToProps (state) {
 	return {

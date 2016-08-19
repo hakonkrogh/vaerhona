@@ -1,19 +1,30 @@
-import React, { PropTypes } from 'react';
+import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
+import { unselectPlace } from '../../../Place/PlaceActions';
+import { getSelectedPlace } from '../../../Place/PlaceReducer';
 
 // Import Style
 //import styles from '../../components/SnapshotListItem/SnapshotListItem.css';
-export function SelectPlacePage (props) {
-  return (
-    <div>
-      <Helmet title="Velg værhøne" />
-      <div>
-        Skriv inn navn på værhøne:
-      </div>
-    </div>
-  );
+export class SelectPlacePage extends Component {
+
+  componentWillMount () {
+  	if (this.props.selectedPlace) {
+  	  this.props.dispatch(unselectPlace());
+	}
+  }
+
+  render () {
+	  return (
+	    <div>
+	      <Helmet title="Velg værhøne" />
+	      <div>
+	        Skriv inn navn på værhøne:
+	      </div>
+	    </div>
+	  );
+	}
 }
 
 // Actions required to provide data for this component to render in sever side.
@@ -22,18 +33,14 @@ export function SelectPlacePage (props) {
 //}];
 
 // Retrieve data from store as props
-function mapStateToProps(state, props) {
-  return {};
+function mapStateToProps (state, props) {
+  return {
+  	selectedPlace: getSelectedPlace(state)
+  };
 }
 
-//SnapshotDetailPage.propTypes = {
-//  post: PropTypes.shape({
-//    placeCuid: PropTypes.string.isRequired,
-//    temperature: PropTypes.number.isRequired,
-//    humidity: PropTypes.number.isRequired,
-//    pressure: PropTypes.number.isRequired,
-//    cuid: PropTypes.string.isRequired,
-//  }).isRequired,
-//};
+SelectPlacePage.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 export default connect(mapStateToProps)(SelectPlacePage);

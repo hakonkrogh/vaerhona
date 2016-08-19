@@ -15,9 +15,6 @@ import { getShowAddSnapshot } from '../../../App/AppReducer';
 import { getSnapshots } from '../../SnapshotReducer';
 
 class SnapshotsNavigator extends Component {
-  componentDidMount() {
-    //this.props.dispatch(fetchSnapshots());
-  }
 
   handleDeleteSnapshot = snapshot => {
     if (confirm('Do you want to delete this snapshot')) { // eslint-disable-line
@@ -34,8 +31,8 @@ class SnapshotsNavigator extends Component {
     return (
       <div>
         <SnapshotDisplayChooser>
-          <SnapshotImage snapshots={this.props.snapshots} />
-          <SnapshotGraph snapshots={this.props.snapshots} />
+          <SnapshotImage snapshots={this.props.snapshots} place={this.props.place} />
+          <SnapshotGraph snapshots={this.props.snapshots} place={this.props.place} />
         </SnapshotDisplayChooser>
       </div>
     );
@@ -56,6 +53,7 @@ SnapshotsNavigator.propTypes = {
     humidity: PropTypes.number.isRequired,
     pressure: PropTypes.number.isRequired,
   })).isRequired,
+  place: PropTypes.object.isRequired,
   showAddSnapshot: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired
 };
