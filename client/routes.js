@@ -27,7 +27,7 @@ export default (
     <IndexRoute
       getComponent={(nextState, cb) => {
         require.ensure([], require => {
-          cb(null, require('./modules/Snapshot/pages/SelectPlacePage/SelectPlacePage').default);
+          cb(null, require('./modules/Place/pages/SelectPlacePage/SelectPlacePage').default);
         });
       }}
     />

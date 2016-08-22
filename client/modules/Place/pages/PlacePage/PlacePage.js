@@ -1,8 +1,11 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import SnapshotsNavigator from '../../../Snapshot/components/SnapshotsNavigator/SnapshotsNavigator';
+
+import Header from '../../../App/components/Header/Header';
 
 import { setSelectedPlace } from '../../../App/AppActions';
 import { fetchPlace } from '../../../Place/PlaceActions';
@@ -14,8 +17,8 @@ export class PlacePage extends Component {
 
 	componentWillMount () {
 
-		// Set place if not set
-		if (!this.props.selectedPlace) {
+		// Set place if not set (client side)
+		if (typeof document !== 'undefined' && !this.props.selectedPlace) {
 			this.setState({
 				loading: true,
 				selectedPlaceNotFound: false
@@ -46,6 +49,9 @@ export class PlacePage extends Component {
 			return (
 				<div>
 					<Helmet title="Loading..." />
+					<Header>
+						<div>Loading....</div>
+					</Header>
 					<div>Loading...</div>
 				</div>
 			);
@@ -53,9 +59,14 @@ export class PlacePage extends Component {
 
 		// We have a place, and it's got a name :)
 		if (this.props.selectedPlace && this.props.selectedPlace.name) {
+			const settingsLink = `/${this.props.selectedPlace.name}/settings`;
 			return (
 				<div>
 					<Helmet title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)} />
+					<Header>
+						<div>{this.props.selectedPlace.name}</div>
+						{/*<Link to={settingsLink}>Settings</Link>*/}
+					</Header>
 					<SnapshotsNavigator snapshots={this.props.snapshots} place={this.props.selectedPlace} />
 				</div>
 			);
@@ -65,6 +76,9 @@ export class PlacePage extends Component {
 		return (
 			<div>
 				<Helmet title="Not a valid place" />
+				<Header>
+					<div>Not a valid place</div>
+				</Header>
 				<div>The place {this.props.params.placeName} not found</div>
 			</div>
 		);

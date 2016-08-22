@@ -3,7 +3,8 @@ import {
   ADD_SNAPSHOTS,
   DELETE_SNAPSHOT,
   SHOW_PREV_SNAPSHOT,
-  SHOW_NEXT_SNAPSHOT
+  SHOW_NEXT_SNAPSHOT,
+  SHOW_SNAPSHOT_FROM_INDEX
 } from './SnapshotActions';
 
 // Initial State
@@ -60,6 +61,7 @@ const SnapshotReducer = (state = initialState, action) => {
       };
 
     case SHOW_NEXT_SNAPSHOT :
+
       if (!state.selected) {
         return state;
       }
@@ -73,6 +75,17 @@ const SnapshotReducer = (state = initialState, action) => {
       return {
         data: state.data,
         selected: state.data[selectedIndex2 + 1]
+      };
+
+    case SHOW_SNAPSHOT_FROM_INDEX :
+
+      if (!state.selected) {
+        return state;
+      }
+      
+      return {
+        data: state.data,
+        selected: state.data[action.index] || state.selected
       };
 
     default:

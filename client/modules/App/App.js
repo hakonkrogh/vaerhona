@@ -25,7 +25,9 @@ export class App extends Component {
   getChildContext () {
 
     // Enable children components to access the params
-    return { params: this.props.params }
+    return {
+      params: this.props.params
+    }
   }
 
   render () {
@@ -40,16 +42,13 @@ export class App extends Component {
               { charset: 'utf-8' },
               {
                 'http-equiv': 'X-UA-Compatible',
-                content: 'IE=edge',
+                content: 'IE=edge'
               },
               {
                 name: 'viewport',
-                content: 'width=device-width, initial-scale=1',
+                content: 'width=device-width, initial-scale=1'
               }
             ]}
-          />
-          <Header
-            intl={this.props.intl}
           />
           <div>
             {this.props.children}

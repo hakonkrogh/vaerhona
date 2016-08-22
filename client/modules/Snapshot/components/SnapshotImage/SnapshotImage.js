@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import keycode from 'keycode';
 
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
-import { getSelectedSnapshot } from '../../SnapshotReducer';
-import { showPrevSnapshot, showNextSnapshot } from '../../SnapshotActions';
+import { getSelectedSnapshot, getSnapshots } from '../../SnapshotReducer';
+import { showPrevSnapshot, showNextSnapshot, showSnapshotFromIndex } from '../../SnapshotActions';
 import { getAbsolutePathForImage } from '../../../../../shared/aws/s3';
+
+import RangeSlider from '../RangeSlider/RangeSlider';
 
 import styles from './SnapshotImage.css';
 
@@ -31,26 +33,30 @@ class SnapshotImage extends Component {
     }
   }
 
-  onKeyDown (e) {
-    console.log('key down', e);
+  onRangeSliderChange (data) {
+    this.props.dispatch(showSnapshotFromIndex(data.index));
   }
 
   render () {
-
     return (
-      <div className={styles['img-container']} onKeyDown={this.onKeyDown}>
-      	
-        {this.props.selectedSnapshot.temperature}
+      <div className={styles['snapshot-image']}>
+        
+        <div>{this.props.selectedSnapshot.dateAdded}</div>
+        <div>{this.props.selectedSnapshot.temperature} &#8451;</div>
 
-        {this.props.selectedSnapshot.dateAdded}
-
-      	<img className={styles['img']}
+      	<img className={styles['snapshot-image__img']}
           src={getAbsolutePathForImage({
 	      		place: this.props.place,
 	      		snapshot: this.props.selectedSnapshot
       		 })}
       		 alt={this.props.selectedSnapshot.temperature}
-  		 />
+  		   />
+
+         <RangeSlider
+          value={this.props.selectedSnapshot}
+          values={this.props.snapshots}
+          onChange={this.onRangeSliderChange.bind(this)}
+         />
       </div>
     );
   }
@@ -73,7 +79,8 @@ SnapshotImage.propTypes = {
 function mapStateToProps (state) {
   return {
   	selectedPlace: getSelectedPlace(state),
-  	selectedSnapshot: getSelectedSnapshot(state)
+  	selectedSnapshot: getSelectedSnapshot(state),
+    snapshots: getSnapshots(state)
   };
 }
 

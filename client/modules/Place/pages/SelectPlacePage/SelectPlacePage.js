@@ -5,6 +5,8 @@ import { FormattedMessage } from 'react-intl';
 import { unselectPlace } from '../../../Place/PlaceActions';
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
 
+import Header from '../../../App/components/Header/Header';
+
 // Import Style
 //import styles from '../../components/SnapshotListItem/SnapshotListItem.css';
 export class SelectPlacePage extends Component {
@@ -19,6 +21,7 @@ export class SelectPlacePage extends Component {
 	  return (
 	    <div>
 	      <Helmet title="Velg værhøne" />
+	      <Header />
 	      <div>
 	        Skriv inn navn på værhøne:
 	      </div>

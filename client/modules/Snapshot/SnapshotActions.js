@@ -6,6 +6,7 @@ export const ADD_SNAPSHOTS = 'ADD_SNAPSHOTS';
 export const DELETE_SNAPSHOT = 'DELETE_SNAPSHOT';
 export const SHOW_PREV_SNAPSHOT = 'SHOW_PREV_SNAPSHOT';
 export const SHOW_NEXT_SNAPSHOT = 'SHOW_NEXT_SNAPSHOT';
+export const SHOW_SNAPSHOT_FROM_INDEX = 'SHOW_SNAPSHOT_FROM_INDEX';
 
 // Export Actions
 export function addSnapshot (snapshot) {
@@ -72,5 +73,12 @@ export function showPrevSnapshot () {
 export function showNextSnapshot () {
   return {
     type: SHOW_NEXT_SNAPSHOT
+  };
+}
+
+export function showSnapshotFromIndex (index) {
+  return {
+    type: SHOW_SNAPSHOT_FROM_INDEX,
+    index
   };
 }
