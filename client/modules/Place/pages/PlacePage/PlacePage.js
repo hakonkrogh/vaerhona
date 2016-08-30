@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import SnapshotsNavigator from '../../../Snapshot/components/SnapshotsNavigator/SnapshotsNavigator';
 
+import FullHeightWrapper from '../../../App/components/FullHeightWrapper/FullHeightWrapper';
 import Header from '../../../App/components/Header/Header';
 
 import { setSelectedPlace } from '../../../App/AppActions';
@@ -13,16 +14,20 @@ import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 
+import AppIcon from '../../../App/Components/Icons/App';
+
 export class PlacePage extends Component {
 
 	componentWillMount () {
 
 		// Set place if not set (client side)
 		if (typeof document !== 'undefined' && !this.props.selectedPlace) {
+			
 			this.setState({
 				loading: true,
 				selectedPlaceNotFound: false
 			});
+
 			fetchPlace(this.props.params.placeName)(this.props.dispatch).then(res => {
 				this.setState({
 					loading: false
@@ -47,13 +52,13 @@ export class PlacePage extends Component {
 		// Waiting for place...
 		if (this.state && this.state.loading) {
 			return (
-				<div>
+				<FullHeightWrapper>
 					<Helmet title="Loading..." />
 					<Header>
 						<div>Loading....</div>
 					</Header>
 					<div>Loading...</div>
-				</div>
+				</FullHeightWrapper>
 			);
 		}
 
@@ -61,26 +66,27 @@ export class PlacePage extends Component {
 		if (this.props.selectedPlace && this.props.selectedPlace.name) {
 			const settingsLink = `/${this.props.selectedPlace.name}/settings`;
 			return (
-				<div>
+				<FullHeightWrapper>
 					<Helmet title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)} />
 					<Header>
+						<AppIcon />
 						<div>{this.props.selectedPlace.name}</div>
 						{/*<Link to={settingsLink}>Settings</Link>*/}
 					</Header>
 					<SnapshotsNavigator snapshots={this.props.snapshots} place={this.props.selectedPlace} />
-				</div>
+				</FullHeightWrapper>
 			);
 		}
 
 		// Apparently no valid place was found
 		return (
-			<div>
+			<FullHeightWrapper>
 				<Helmet title="Not a valid place" />
 				<Header>
 					<div>Not a valid place</div>
 				</Header>
 				<div>The place {this.props.params.placeName} not found</div>
-			</div>
+			</FullHeightWrapper>
 		);
 	}
 }

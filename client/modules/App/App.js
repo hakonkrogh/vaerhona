@@ -46,7 +46,7 @@ export class App extends Component {
               },
               {
                 name: 'viewport',
-                content: 'width=device-width, initial-scale=1'
+                content: 'user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1'
               }
             ]}
           />

@@ -22,7 +22,7 @@ export function getSnapshots (req, res) {
       return res.status(500).send('Error: place not found');
     }
 
-    Snapshot.find({ placeCuid: place.cuid }).sort('-dateAdded').exec((err, snapshots) => {
+    Snapshot.find({ placeCuid: place.cuid }).sort('dateAdded').exec((err, snapshots) => {
       if (err) {
         return res.status(500).send(err);
       }

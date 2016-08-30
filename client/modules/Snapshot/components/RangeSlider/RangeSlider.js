@@ -29,6 +29,9 @@ class RangeSlider extends Component {
   }
 
   onPan (event) {
+
+    // Ensure that we can not select other elements on the page while dragging
+    event.preventDefault();
     
     // Store dimensions for range
     if (event.isFirst) {

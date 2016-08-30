@@ -1,11 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import c3 from 'c3';
 
 class SnapshotGraph extends Component {
+
+  componentDidMount () {
+    if (typeof document !== 'undefined') {
+      console.log('did mount...', this.refs.outer);
+    }
+  }
+
   render() {
     return (
-      <div className="snapshot-graph">
-      	graph...
+      <div className='snapshot-graph' ref='outer'>
+      	<div>Loading</div>
       </div>
     );
   }
