@@ -16,35 +16,44 @@ import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 
 import AppIcon from '../../../../components/Icons/App';
 
+// Define the data dependencies
+const need = [
+	params => fetchPlace(params.placeName),
+	params => fetchSnapshots({ name: params.placeName })
+];
+
 export class PlacePage extends Component {
 
-	componentWillMount () {
+	componentDidMount () {
 
-		// Set place if not set (client side)
-		if (typeof document !== 'undefined' && !this.props.selectedPlace) {
+		// Client side stuff
+		if (typeof document !== 'undefined') {
+
+			// We need to get data if we navigate to here client side
+			if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
+				need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+			}
+
+			if (!this.props.selectedPlace) {
 			
-			this.setState({
-				loading: true,
-				selectedPlaceNotFound: false
-			});
-
-			fetchPlace(this.props.params.placeName)(this.props.dispatch).then(res => {
 				this.setState({
-					loading: false
+					loading: true,
+					selectedPlaceNotFound: false
 				});
 
-				if (!res || !res.place || !res.place.cuid) {
+				fetchPlace(this.props.params.placeName)(this.props.dispatch).then(res => {
 					this.setState({
-						selectedPlaceNotFound: true
+						loading: false
 					});
-				}
-			});
-		}
 
-		// If there are no snapshots when loading, try to look again. This happens if we navigate here from the settings page
-		//if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.selectedPlace) {
-		//	fetchSnapshots({ name: this.props.selectedPlace.name })(this.props.dispatch);
-		//}
+					if (!res || !res.place || !res.place.cuid) {
+						this.setState({
+							selectedPlaceNotFound: true
+						});
+					}
+				});
+			}
+		}
 	}
 
 	render () {
@@ -109,10 +118,8 @@ PlacePage.contextTypes = {
   router: React.PropTypes.object
 };
 
-PlacePage.need = [
-	params => fetchPlace(params.placeName),
-	params => fetchSnapshots({ name: params.placeName })
-];
+// Server side data requirements
+PlacePage.need = need;
 
 function mapStateToProps (state) {
 	return {

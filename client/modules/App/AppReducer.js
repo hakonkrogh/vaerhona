@@ -8,7 +8,7 @@ import {
 // Initial State
 const initialState = {
   showAddSnapshot: false,
-  mainNavigation: 'graph'
+  mainNavigation: MAIN_NAVIGATION_ITEMS[0]
 };
 
 const AppReducer = (state = initialState, action) => {

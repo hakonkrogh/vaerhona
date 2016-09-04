@@ -10,7 +10,19 @@ import { fetchPlaces } from '../../../Place/PlaceActions';
 
 import styles from './PlacesListPage.css';
 
+const need = [
+  params => fetchPlaces()
+];
+
 export class PlacesListPage extends Component {
+
+  componentDidMount () {
+    // We need to get data if we navigate to here client side
+    if ((!this.props.places || this.props.places.length === 0) && this.props.params) {
+      need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+    }
+  }
+
   render () {
     return (
       <div>
@@ -41,9 +53,7 @@ PlacesListPage.contextTypes = {
   router: React.PropTypes.object
 };
 
-PlacesListPage.need = [
-  params => fetchPlaces()
-];
+PlacesListPage.need = need;
 
 function mapStateToProps (state) {
   return {
