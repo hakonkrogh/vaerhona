@@ -25,9 +25,6 @@
 	position: absolute;
 	top: 50%;
 	left: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }
 
 .range-slider__indicator::before {
@@ -38,4 +35,6 @@
 	background: #a0a0a0;
 	display: block;
 	position: absolute;
+  top: -7px;
+  left: -7px;
 }

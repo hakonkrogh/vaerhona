@@ -26,7 +26,15 @@ export function getSnapshots (req, res) {
       if (err) {
         return res.status(500).send(err);
       }
-      res.json({ snapshots });
+
+      let returnSnapshots = snapshots.map(item => {
+        item.temperature = (Math.round(item.temperature * 10) / 10);
+        return item;
+      });
+
+      res.json({
+        snapshots: returnSnapshots
+      });
     });
   });
 }
@@ -89,7 +97,47 @@ export function addSnapshot (req, res) {
  * @returns Promise
  */
 export function addSnapshotLegacy (req, res) {
-  return addSnapshot(req, res);
+  console.log('receiving legacy snapshot...');
+
+  let placeCuid;
+  switch (req.body.placeId) {
+    case -1: placeCuid = 'cikqgkv4q01ck7453ualdn3ha'; break; // test
+    case 1: placeCuid = 'veggli'; break;
+    case 2: placeCuid = 'buvassbrenna'; break;
+    case 3: placeCuid = 'tornes'; break;
+    default: placeCuid = false;
+  }
+
+  if (!placeCuid) {
+    return res.json({
+      success: false,
+      message: `placeCuid not matched (placeId: ${req.body.placeId})`
+    });
+  }
+
+  
+  const snapshot = {
+    placeCuid,
+    temperature: req.body.outsideTemperature,
+    pressure: req.body.outsidePressure,
+    humidity: req.body.outsideHumidity,
+    image: req.body.image
+  };
+
+  addSnapshotRaw(snapshot).then(() => {
+    console.log('legacy snapshot saved!');
+    res.json({
+      success: true,
+      message: ''
+    });
+  }).catch(({ status, message }) => {
+    console.log('legacy snapshot error!', status, message);
+    res.json({
+      success: false,
+      message,
+      status
+    });
+  });
 }
 
 /**
@@ -135,8 +183,12 @@ export function addSnapshotRaw (snapshot = {}) {
           snapshot: newSnapshot
         }).then(() => {
           resolve({ snapshot: saved });
-        }).catch(err => {
-          reject(err);
+        }).catch(error => {
+          reject({
+            code: 500,
+            message: 'Error while storing image to AWS S3 bucket',
+            error
+          });
         });
 
       });

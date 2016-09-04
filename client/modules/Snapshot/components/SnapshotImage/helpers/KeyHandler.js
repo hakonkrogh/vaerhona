@@ -23,7 +23,6 @@ export default class KeyHandler {
   }
 
   onKeyPress (event) {
-    console.log('event', event);
     this.onKeyPressAndRepeat(event);
   }
 }

@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 
 // Import Components
-import Icon from './components/Icon/Icon';
+import Icon from '../Icon/Icon';
 import SnapshotImage from '../SnapshotImage/SnapshotImage';
 import SnapshotGraph from '../SnapshotGraph/SnapshotGraph';
 

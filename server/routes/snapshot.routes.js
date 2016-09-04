@@ -11,6 +11,9 @@ router.route('/snapshots/:placeName').get(SnapshotController.getSnapshots);
 // Add a new snapshot
 router.route('/snapshots').post(SnapshotController.addSnapshot);
 
+// Add a new snapshot (legacy)
+router.route('/snapshots/legacy').post(SnapshotController.addSnapshotLegacy);
+
 // Delete a snapshot by cuid
 router.route('/snapshots/:cuid').delete(SnapshotController.deleteSnapshot);
 

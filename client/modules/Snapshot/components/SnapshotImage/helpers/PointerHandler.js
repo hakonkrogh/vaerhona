@@ -30,7 +30,7 @@ export default class PointerHandler {
   }
 
   onInput (event) {
-    if (!event.isFinal) {
+    if (!event.isFinal && event.pointers.length === 1) {
       this.onPointerDownAndRepeat(event);
 
       if (event.isFirst) {
@@ -59,14 +59,13 @@ export default class PointerHandler {
   }
 
   stopInterval () {
-    if (this.intervalAndTimeoutIds) {
+    if (this.intervalAndTimeoutIds && this.intervalAndTimeoutIds.length > 0) {
       this.intervalAndTimeoutIds.forEach(id => clearTimeout(id));
       this.intervalAndTimeoutIds.length = 0;
     }
   }
 
   intervalTick () {
-    console.log('intervalTick');
     if (this.lastEvent) {
       this.onPointerDownAndRepeat(this.lastEvent);
     }

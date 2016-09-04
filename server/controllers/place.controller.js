@@ -25,6 +25,22 @@ export function addPlace (req, res) {
 }
 
 /**
+ * Gets all places
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function getPlaces (req, res) {
+  
+  Place.find().exec((err, places) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+    res.json({ places });
+  });
+}
+
+/**
  * Get a single place
  * @param req
  * @param res

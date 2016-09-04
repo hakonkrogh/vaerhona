@@ -21,9 +21,10 @@ const PlaceReducer = (state = initialState, action) => {
       };
 
     case ADD_PLACES :
+      console.log(action);
       return {
-        data: action.places,
-        selected: !state.selected ? action.places[action.places.length - 1] : state.selected
+        data: [...state.data, ...action.places],
+        selected: !state.selected && action.places ? action.places[action.places.length - 1] : state.selected
       };
 
     case DELETE_PLACE :

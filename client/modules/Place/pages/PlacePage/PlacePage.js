@@ -14,7 +14,7 @@ import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 
-import AppIcon from '../../../App/Components/Icons/App';
+import AppIcon from '../../../../components/Icons/App';
 
 export class PlacePage extends Component {
 

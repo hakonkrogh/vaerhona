@@ -14,6 +14,8 @@ import styles from './SnapshotImage.css';
 import KeyHandler from './helpers/KeyHandler';
 import PointerHandler from './helpers/PointerHandler';
 
+import { prettyDateTime } from '../../../../../shared/date';
+
 class SnapshotImage extends Component {
 
   componentDidMount () {
@@ -80,9 +82,7 @@ class SnapshotImage extends Component {
   }
 
   render () {
-
-    const dateDisplay = new Intl.DateTimeFormat('no', { weekday: 'long', year: 'numeric', month: 'narrow', day: 'numeric', hour: 'numeric', minute: 'numeric' }).format(new Date(this.props.selectedSnapshot.dateAdded));
-    const temperature = Math.round(this.props.selectedSnapshot.temperature * 10) / 10;
+    
     const imageStyle = {
       backgroundImage: `url("` + getAbsolutePathForImage({
         place: this.props.place,
@@ -94,9 +94,9 @@ class SnapshotImage extends Component {
       <div className={styles['snapshot-image']}>
         
         <div className={styles['snapshot-image__inner']}>
-          <div className={styles['snapshot-image__date']}>{dateDisplay}</div>
+          <div className={styles['snapshot-image__date']}>{prettyDateTime(this.props.selectedSnapshot.dateAdded)}</div>
           <div className={styles['snapshot-image__values']}>
-            <span>{temperature} &#8451;</span>
+            <span>{this.props.selectedSnapshot.temperature} &#8451;</span>
             <span>{this.props.selectedSnapshot.humidity} %</span>
             <span>{this.props.selectedSnapshot.pressure} hPa</span>
           </div>

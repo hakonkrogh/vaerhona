@@ -33,7 +33,7 @@ export class App extends Component {
   render () {
     return (
       <div>
-        {this.state.isMounted && !window.devToolsExtension && process.env.NODE_ENV === 'development' && <DevTools />}
+        {this.state.isMounted && !window.devToolsExtension && window.location.host.includes('localhost') && process.env.NODE_ENV === 'development' && <DevTools />}
         <div className={styles.container}>
           <Helmet
             title="Værhøna"
@@ -46,7 +46,7 @@ export class App extends Component {
               },
               {
                 name: 'viewport',
-                content: 'user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1'
+                content: 'width=device-width, initial-scale=1'
               }
             ]}
           />
