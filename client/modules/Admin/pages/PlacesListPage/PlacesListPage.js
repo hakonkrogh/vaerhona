@@ -17,8 +17,10 @@ const need = [
 export class PlacesListPage extends Component {
 
   componentDidMount () {
+
     // We need to get data if we navigate to here client side
     if ((!this.props.places || this.props.places.length === 0) && this.props.params) {
+      console.log('need to get places...', this.props.places);
       need.forEach(fn => this.props.dispatch(fn(this.props.params)));
     }
   }
@@ -30,8 +32,8 @@ export class PlacesListPage extends Component {
         <div>
           <Header>Places</Header>
           {
-            this.props.places.map(place => (
-              <div key={place.cuid}><Link to={`/${place.name}`}>{place.name} - {place.cuid}</Link></div>
+            this.props.places.map((place, index) => (
+              <div key={index}><Link to={`/${place.name}`}>{place.name} - {place.cuid}</Link></div>
             ))
           }
         </div>

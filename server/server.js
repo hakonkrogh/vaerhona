@@ -58,7 +58,9 @@ mongoose.connect(serverConfig.mongoURL, (error) => {
 app.use(compression());
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
+
 app.use(Express.static(path.resolve(__dirname, '../dist')));
+app.use(Express.static(path.resolve(__dirname, '../static')));
 
 app.use('/api', snapshots);
 app.use('/api', places);
@@ -84,7 +86,17 @@ const renderFullPage = (html, initialState) => {
         <script>window.__APP_CONFIG__ = ${JSON.stringify(APP_CONFIG)}</script>
 
         ${process.env.NODE_ENV === 'production' ? `<link rel='stylesheet' href='${assetsManifest['/app.css']}' />` : ''}
-        <link rel="shortcut icon" href="http://res.cloudinary.com/hashnode/image/upload/v1455629445/static_imgs/mern/mern-favicon-circle-fill.png" type="image/png" />
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">
+        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">
+        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">
+        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">
+        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">
+        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">
+        <meta name="msapplication-TileColor" content="#00628b">
+        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">
+        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">
+        <meta name="theme-color" content="#ffffff">
       </head>
       <body>
         <div id="root">${process.env.NODE_ENV === 'production' ? html : `<div>${html}</div>`}</div>
@@ -97,6 +109,7 @@ const renderFullPage = (html, initialState) => {
         </script>
         <script src='${process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js'}'></script>
         <script src='${process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js'}'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>
       </body>
     </html>
   `;

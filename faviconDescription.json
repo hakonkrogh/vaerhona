@@ -1,0 +1,63 @@
+
+{
+  "masterPicture": "client/components/Icons/assets/app.svg",
+  "iconsPath": "/static/favicons",
+  "design": {
+    "ios": {
+      "pictureAspect": "backgroundAndMargin",
+      "backgroundColor": "#ffffff",
+      "margin": "25%",
+      "assets": {
+        "ios6AndPriorIcons": false,
+        "ios7AndLaterIcons": true,
+        "precomposedIcons": true,
+        "declareOnlyDefaultIcon": true
+      }
+    },
+    "desktopBrowser": {},
+    "windows": {
+      "pictureAspect": "whiteSilhouette",
+      "backgroundColor": "#00628b",
+      "onConflict": "override",
+      "assets": {
+        "windows80Ie10Tile": true,
+        "windows10Ie11EdgeTiles": {
+          "small": false,
+          "medium": true,
+          "big": false,
+          "rectangle": false
+        }
+      }
+    },
+    "androidChrome": {
+      "pictureAspect": "backgroundAndMargin",
+      "margin": "17%",
+      "backgroundColor": "#ffffff",
+      "themeColor": "#ffffff",
+      "manifest": {
+        "name": "Værhøna",
+        "display": "standalone",
+        "orientation": "notSet",
+        "onConflict": "override",
+        "declared": true
+      },
+      "assets": {
+        "legacyIcon": false,
+        "lowResolutionIcons": false
+      }
+    },
+    "safariPinnedTab": {
+      "pictureAspect": "silhouette",
+      "themeColor": "#00628b"
+    }
+  },
+  "settings": {
+    "compression": 1,
+    "scalingAlgorithm": "Mitchell",
+    "errorOnImageTooSmall": false
+  },
+  "versioning": {
+    "paramName": "v",
+    "paramValue": "5A5637bzNY"
+  }
+}

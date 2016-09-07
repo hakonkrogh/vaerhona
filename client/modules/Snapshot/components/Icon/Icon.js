@@ -13,7 +13,7 @@ export default class Icon extends Component {
   render () {
 
     let icon;
-    let fillColor = this.props.selected ? '#4878dc' : '#000000';
+    let fillColor = this.props.selected ? '#00628B' : '#000000';
 
     switch (this.props.type) {
       case 'image':

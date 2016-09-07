@@ -17,8 +17,20 @@ export default class PointerHandler {
   }
   
   bind () {
-    this.hammerMc = new Hammer.Manager(this.element);
-    this.hammerMc.on('hammer.input', event => this.onInput(event));
+    this.hammerMc = new Hammer(this.element);
+
+    this.hammerMc.get('press').set({
+      time: 150
+    });
+
+    this.hammerMc.on('press', event => this.startInterval(event));
+    this.hammerMc.on('pressup', event => this.stopInterval());
+    this.hammerMc.on('hammer.input', event => {
+      if (event.isFirst && event.pointers.length === 1) {
+        this.onPointerDownAndRepeat(event);
+        this.lastRecordedEvent = event;
+      }
+    });
   }
 
   unBind () {
@@ -29,33 +41,23 @@ export default class PointerHandler {
     this.stopInterval();
   }
 
-  onInput (event) {
-    if (!event.isFinal && event.pointers.length === 1) {
-      this.onPointerDownAndRepeat(event);
-
-      if (event.isFirst) {
-        this.startInterval(event);
-      }
-    }
-    else {
-      this.stopInterval();
-    }
-  }
-
   startInterval (event) {
-    this.lastEvent = event;
+    this.lastRecordedEvent = event;
 
     this.stopInterval();
 
+    this.intervalTick();
+
     // Initially, the intervals are 100ms apart
     this.intervalAndTimeoutIds.push(setTimeout(() => {
-      this.intervalAndTimeoutIds.push(setInterval(this.intervalTick.bind(this), 100));
+      this.intervalAndTimeoutIds.push(setInterval(this.intervalTick.bind(this), 75));
 
       // Then, after 500ms, the intervals are 25ms apart
       this.intervalAndTimeoutIds.push(setTimeout(() => {
-        this.intervalAndTimeoutIds.push(setInterval(this.intervalTick.bind(this), 50));
+        this.stopInterval();
+        this.intervalAndTimeoutIds.push(setInterval(this.intervalTick.bind(this), 35));
       }, 500));
-    }, 500));
+    }, 75));
   }
 
   stopInterval () {
@@ -66,8 +68,8 @@ export default class PointerHandler {
   }
 
   intervalTick () {
-    if (this.lastEvent) {
-      this.onPointerDownAndRepeat(this.lastEvent);
+    if (this.lastRecordedEvent) {
+      this.onPointerDownAndRepeat(this.lastRecordedEvent);
     }
   }
 }

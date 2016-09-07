@@ -14,7 +14,9 @@
     "build:server": "cross-env BABEL_DISABLE_CACHE=1 NODE_ENV=production webpack --config webpack.config.server.js",
     "clean": "rimraf dist",
     "slate": "rimraf node_modules && npm install",
-    "lint": "eslint client server"
+    "lint": "eslint client server",
+    "deploy:test": "cross-env DEPLOY_TO=test node deploy/deploy.js",
+    "deploy:live": "npm run clean && npm run build && npm run build:server && cross-env DEPLOY_TO=live node deploy/deploy.js"
   },
   "pre-commit": [
     "lint",
@@ -35,7 +37,6 @@
     "babel-core": "^6.9.1",
     "base64-stream": "^0.1.3",
     "body-parser": "^1.15.1",
-    "c3": "git+https://github.com/hakonhk/c3.git",
     "compression": "^1.6.2",
     "cross-env": "^1.0.8",
     "cuid": "^1.3.8",

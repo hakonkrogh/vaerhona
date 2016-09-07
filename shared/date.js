@@ -6,6 +6,7 @@ export function prettyDate (date) {
     year: 'numeric',
     month: 'narrow'
   });
+
   return format.format(date);
 }
 
@@ -17,14 +18,26 @@ export function prettyDateTime (date) {
     year: 'numeric',
     month: 'narrow',
     day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric'
+    hour: '2-digit',
+    minute: '2-digit'
   });
+
+  return format.format(date);
+}
+
+export function prettyTime (date) {
+  date = ensureDateObject(date);
+
+  const format = new Intl.DateTimeFormat('no', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
   return format.format(date);
 }
 
 function ensureDateObject (mixed) {
-  if (typeof mixed === 'string') {
+  if (typeof mixed === 'string' || typeof mixed === 'number') {
     return new Date(mixed);
   }
 

@@ -14,7 +14,7 @@ import styles from './SnapshotImage.css';
 import KeyHandler from './helpers/KeyHandler';
 import PointerHandler from './helpers/PointerHandler';
 
-import { prettyDateTime } from '../../../../../shared/date';
+import { prettyDate, prettyTime } from '../../../../../shared/date';
 
 class SnapshotImage extends Component {
 
@@ -94,11 +94,12 @@ class SnapshotImage extends Component {
       <div className={styles['snapshot-image']}>
         
         <div className={styles['snapshot-image__inner']}>
-          <div className={styles['snapshot-image__date']}>{prettyDateTime(this.props.selectedSnapshot.dateAdded)}</div>
+          <div className={styles['snapshot-image__date']}>{prettyDate(this.props.selectedSnapshot.dateAdded)}</div>
+          <div className={styles['snapshot-image__time-of-day']}>{prettyTime(this.props.selectedSnapshot.dateAdded)}</div>
           <div className={styles['snapshot-image__values']}>
-            <span>{this.props.selectedSnapshot.temperature} &#8451;</span>
-            <span>{this.props.selectedSnapshot.humidity} %</span>
-            <span>{this.props.selectedSnapshot.pressure} hPa</span>
+            <span>{this.props.selectedSnapshot.temperature}&#8451;</span>
+            <span>{this.props.selectedSnapshot.humidity}%</span>
+            <span>{this.props.selectedSnapshot.pressure}hPa</span>
           </div>
 
           <div className={styles['snapshot-image__img']}

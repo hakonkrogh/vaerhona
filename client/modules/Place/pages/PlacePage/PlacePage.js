@@ -34,7 +34,7 @@ export class PlacePage extends Component {
 				need.forEach(fn => this.props.dispatch(fn(this.props.params)));
 			}
 
-			if (!this.props.selectedPlace) {
+			/*if (!this.props.selectedPlace) {
 			
 				this.setState({
 					loading: true,
@@ -52,18 +52,19 @@ export class PlacePage extends Component {
 						});
 					}
 				});
-			}
+			}*/
 		}
 	}
 
 	render () {
 
 		// Waiting for place...
-		if (this.state && this.state.loading) {
+		if ((this.state && this.state.loading) || (!this.props.snapshots || this.props.snapshots.length === 0)) {
 			return (
 				<FullHeightWrapper>
 					<Helmet title="Loading..." />
 					<Header>
+						<AppIcon fill='#555' />
 						<div>Loading....</div>
 					</Header>
 					<div>Loading...</div>
@@ -78,7 +79,7 @@ export class PlacePage extends Component {
 				<FullHeightWrapper>
 					<Helmet title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)} />
 					<Header>
-						<AppIcon />
+						<AppIcon fill='#555' />
 						<div>{this.props.selectedPlace.name}</div>
 						{/*<Link to={settingsLink}>Settings</Link>*/}
 					</Header>
@@ -92,6 +93,7 @@ export class PlacePage extends Component {
 			<FullHeightWrapper>
 				<Helmet title="Not a valid place" />
 				<Header>
+					<AppIcon fill='#555' />
 					<div>Not a valid place</div>
 				</Header>
 				<div>The place {this.props.params.placeName} not found</div>
