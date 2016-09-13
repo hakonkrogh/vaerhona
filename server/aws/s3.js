@@ -4,10 +4,10 @@ import { getRelativePathForImage } from '../../shared/aws/s3';
 import isWebp from 'is-webp';
 
 if (process.env.NODE_ENV === 'production') {
-  AWS.config.loadFromPath('aws.config.production.json');
+  AWS.config.loadFromPath('../__config/vaerhona/aws.config.production.json');
 }
 else {
-  AWS.config.loadFromPath('aws.config.development.json');
+  AWS.config.loadFromPath('../__config/vaerhona/aws.config.development.json');
 }
 
 /**

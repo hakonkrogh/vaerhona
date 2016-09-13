@@ -10,18 +10,17 @@
 # 
 ### END INIT INFO
 
-APP_BIN_DIR=/var/www/html/vaerhona/server/bin
+APP_DIR=/var/www/html/vaerhona
 
 case "$1" in
  start)
-   $APP_BIN_DIR/startup.sh
+   NODE_ENV=production AWS_PROFILE=production forever start --sourceDir=$APP_DIR --silent --uid "vaerhona" --append index.js
    ;;
  stop)
-   $APP_BIN_DIR/shutdown.sh
-   sleep 10
+   forever stop vaerhona
    ;;
  restart)
-   $APP_BIN_DIR/restart.sh
+   NODE_ENV=production AWS_PROFILE=production forever restart --sourceDir=$APP_DIR --silent --uid "vaerhona" --append index.js
    ;;
  *)
    echo "Usage: vaerhona {start|stop|restart}" >&2
