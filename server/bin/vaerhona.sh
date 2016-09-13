@@ -14,14 +14,14 @@ APP_BIN_DIR=/var/www/html/vaerhona/server/bin
 
 case "$1" in
  start)
-   su ubuntu -c $APP_BIN_DIR/startup.sh
+   $APP_BIN_DIR/startup.sh
    ;;
  stop)
-   su ubuntu -c $APP_BIN_DIR/shutdown.sh
+   $APP_BIN_DIR/shutdown.sh
    sleep 10
    ;;
  restart)
-   su ubuntu -c $APP_BIN_DIR/restart.sh
+   $APP_BIN_DIR/restart.sh
    ;;
  *)
    echo "Usage: vaerhona {start|stop|restart}" >&2
