@@ -14,7 +14,7 @@ APP_DIR=/var/www/html/vaerhona
 
 case "$1" in
  start)
-   NODE_ENV=production AWS_PROFILE=production forever start --sourceDir=$APP_DIR --silent --uid "vaerhona" --append index.js
+   NODE_ENV=production AWS_PROFILE=production forever start --sourceDir=$APP_DIR -w --watchDirectory $APP_DIR/dist --silent --uid "vaerhona" --append index.js
    ;;
  stop)
    forever stop vaerhona

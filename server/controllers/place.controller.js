@@ -13,16 +13,38 @@ export function addPlace (req, res) {
     res.status(403).end();
   }
 
-  const newPlace = new Place(req.body.place);
+  addPlaceRaw(req.body.place)
+    .then(saved => res.json({ place: saved }))
+    .catch(err => res.status(500).send(err));
+}
 
-  newPlace.cuid = cuid();
-  newPlace.save((err, saved) => {
-    if (err) {
-      res.status(500).send(err);
+/**
+ * Save a place
+ * @param place
+ * @returns Promise
+ */
+export function addPlaceRaw (place) {
+  return new Promise((resolve, reject) => {
+    
+    if (!place || !place.name) {
+      return reject('Missing place name');
     }
-    res.json({ place: saved });
+    
+    const newPlace = new Place(place);
+
+    if (!newPlace.cuid) {
+      newPlace.cuid = cuid();
+    }
+
+    newPlace.save((err, savedPlace) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(savedPlace);
+    });
   });
 }
+
 
 /**
  * Gets all places

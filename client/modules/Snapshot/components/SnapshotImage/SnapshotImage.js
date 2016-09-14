@@ -5,7 +5,7 @@ import keycode from 'keycode';
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { getSelectedSnapshot, getSnapshots } from '../../SnapshotReducer';
 import { showPrevSnapshot, showNextSnapshot, showSnapshotFromIndex } from '../../SnapshotActions';
-import { getAbsolutePathForImage } from '../../../../../shared/aws/s3';
+import { getAbsolutePathForImage } from '../../../../aws/s3';
 
 import RangeSlider from '../RangeSlider/RangeSlider';
 

@@ -3,6 +3,7 @@ import Place from '../models/place';
 import cuid from 'cuid';
 import fs from 'fs';
 import { saveImageFromSnapshot } from '../aws/s3';
+import { addPlaceRaw } from './place.controller';
 
 /**
  * Get all snapshots
@@ -97,6 +98,62 @@ export function addSnapshot (req, res) {
  * @returns Promise
  */
 export function addSnapshotLegacy (req, res) {
+
+  const OLD_PLACES = [
+    { placeId: -1, name: 'test' },
+    { placeId: 1,  name: 'veggli' },
+    { placeId: 2,  name: 'buvassbrenna' },
+    { placeId: 3,  name: 'tornes' }
+  ];
+  Object.freeze(OLD_PLACES);
+
+  const oldPlace = OLD_PLACES.find(place => place.placeId == req.body.placeId);
+
+  if (!oldPlace) {
+    return res.status(500).send('Error: place not found');
+  }
+
+  Place.findOne({ name: oldPlace.name }).exec((err, place) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    if (place) {
+      save({ place });
+    }
+
+    // The place was not found. Lets add it!
+    else {
+      addPlaceRaw({ name: oldPlace.name, isPublic: true })
+        .then(place => save({ place }))
+        .catch(err => res.status(500).send(err));
+    }
+  });
+
+  function save ({ place }) {
+    const snapshot = {
+      placeCuid: place.cuid,
+      temperature: req.body.outsideTemperature,
+      pressure: req.body.outsidePressure,
+      humidity: req.body.outsideHumidity,
+      image: req.body.image
+    };
+
+    addSnapshotRaw(snapshot).then(() => {
+      console.log('legacy snapshot saved!');
+      res.json({
+        success: true,
+        message: ''
+      });
+    }).catch(({ status, message }) => {
+      console.log('legacy snapshot error!', status, message);
+      res.json({
+        success: false,
+        message,
+        status
+      });
+    });
+  }
   console.log('receiving legacy snapshot...');
 
   let placeCuid;
@@ -116,28 +173,7 @@ export function addSnapshotLegacy (req, res) {
   }
 
   
-  const snapshot = {
-    placeCuid,
-    temperature: req.body.outsideTemperature,
-    pressure: req.body.outsidePressure,
-    humidity: req.body.outsideHumidity,
-    image: req.body.image
-  };
-
-  addSnapshotRaw(snapshot).then(() => {
-    console.log('legacy snapshot saved!');
-    res.json({
-      success: true,
-      message: ''
-    });
-  }).catch(({ status, message }) => {
-    console.log('legacy snapshot error!', status, message);
-    res.json({
-      success: false,
-      message,
-      status
-    });
-  });
+  
 }
 
 /**

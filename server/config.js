@@ -4,7 +4,15 @@ const config = {
   aws: {}
 };
 
-config.aws.s3BucketName = process.env.NODE_ENV === 'production' ? 'vaerhona' : 'vaerhona-test';
+const buckets = {
+  'development': 'vaerhona-development',
+  'staging': 'vaerhona-staging',
+  'production': 'vaerhona'
+};
+
+config.aws.s3BucketName = buckets[process.env.AWS_PROFILE];
 config.imageUrlBase = `https://${config.aws.s3BucketName}.s3-eu-west-1.amazonaws.com`;
+
+Object.freeze(config);
 
 export default config;

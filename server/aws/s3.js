@@ -3,12 +3,7 @@ import config from '../config';
 import { getRelativePathForImage } from '../../shared/aws/s3';
 import isWebp from 'is-webp';
 
-if (process.env.NODE_ENV === 'production') {
-  AWS.config.loadFromPath('../__config/vaerhona/aws.config.production.json');
-}
-else {
-  AWS.config.loadFromPath('../__config/vaerhona/aws.config.development.json');
-}
+AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
