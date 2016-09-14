@@ -37,7 +37,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 69);
+/******/ 	return __webpack_require__(__webpack_require__.s = 70);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -240,8 +240,16 @@
 	  aws: {}
 	};
 
-	config.aws.s3BucketName = process.env.NODE_ENV === 'production' ? 'vaerhona' : 'vaerhona-test';
+	var buckets = {
+	  'development': 'vaerhona-development',
+	  'staging': 'vaerhona-staging',
+	  'production': 'vaerhona'
+	};
+
+	config.aws.s3BucketName = buckets[process.env.AWS_PROFILE];
 	config.imageUrlBase = 'https://' + config.aws.s3BucketName + '.s3-eu-west-1.amazonaws.com';
+
+	Object.freeze(config);
 
 	exports.default = config;
 
@@ -685,7 +693,8 @@
 
 	var placeSchema = new Schema({
 	  cuid: { type: 'String', required: true },
-	  name: { type: 'String', required: true }
+	  name: { type: 'String', required: true },
+	  isPublic: { type: 'Boolean', required: true, default: false }
 	});
 
 	exports.default = _mongoose2.default.model('SnapshotPlace', placeSchema);
@@ -710,27 +719,27 @@
 
 	var _reactIntl = __webpack_require__(6);
 
-	var _intl = __webpack_require__(72);
+	var _intl = __webpack_require__(73);
 
 	var _intl2 = _interopRequireDefault(_intl);
 
-	__webpack_require__(74);
+	__webpack_require__(75);
 
-	var _no = __webpack_require__(82);
+	var _no = __webpack_require__(83);
 
 	var _no2 = _interopRequireDefault(_no);
 
-	var _no3 = __webpack_require__(50);
+	var _no3 = __webpack_require__(51);
 
 	var _no4 = _interopRequireDefault(_no3);
 
-	__webpack_require__(73);
+	__webpack_require__(74);
 
-	var _en = __webpack_require__(81);
+	var _en = __webpack_require__(82);
 
 	var _en2 = _interopRequireDefault(_en);
 
-	var _en3 = __webpack_require__(49);
+	var _en3 = __webpack_require__(50);
 
 	var _en4 = _interopRequireDefault(_en3);
 
@@ -1072,13 +1081,13 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reduxDevtools = __webpack_require__(83);
+	var _reduxDevtools = __webpack_require__(84);
 
-	var _reduxDevtoolsLogMonitor = __webpack_require__(85);
+	var _reduxDevtoolsLogMonitor = __webpack_require__(86);
 
 	var _reduxDevtoolsLogMonitor2 = _interopRequireDefault(_reduxDevtoolsLogMonitor);
 
-	var _reduxDevtoolsDockMonitor = __webpack_require__(84);
+	var _reduxDevtoolsDockMonitor = __webpack_require__(85);
 
 	var _reduxDevtoolsDockMonitor2 = _interopRequireDefault(_reduxDevtoolsDockMonitor);
 
@@ -1119,11 +1128,11 @@
 
 	var _reactIntl = __webpack_require__(6);
 
-	var _SnapshotsNavigator = __webpack_require__(65);
+	var _SnapshotsNavigator = __webpack_require__(67);
 
 	var _SnapshotsNavigator2 = _interopRequireDefault(_SnapshotsNavigator);
 
-	var _FullHeightWrapper = __webpack_require__(58);
+	var _FullHeightWrapper = __webpack_require__(60);
 
 	var _FullHeightWrapper2 = _interopRequireDefault(_FullHeightWrapper);
 
@@ -1141,7 +1150,7 @@
 
 	var _SnapshotReducer = __webpack_require__(10);
 
-	var _App = __webpack_require__(51);
+	var _App = __webpack_require__(53);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -1505,23 +1514,23 @@
 
 	var _Icon2 = _interopRequireDefault(_Icon);
 
-	var _Picture = __webpack_require__(54);
+	var _Picture = __webpack_require__(56);
 
 	var _Picture2 = _interopRequireDefault(_Picture);
 
-	var _Statistics = __webpack_require__(55);
+	var _Statistics = __webpack_require__(57);
 
 	var _Statistics2 = _interopRequireDefault(_Statistics);
 
-	var _Thermometer = __webpack_require__(56);
+	var _Thermometer = __webpack_require__(58);
 
 	var _Thermometer2 = _interopRequireDefault(_Thermometer);
 
-	var _Droplets = __webpack_require__(53);
+	var _Droplets = __webpack_require__(55);
 
 	var _Droplets2 = _interopRequireDefault(_Droplets);
 
-	var _Compass = __webpack_require__(52);
+	var _Compass = __webpack_require__(54);
 
 	var _Compass2 = _interopRequireDefault(_Compass);
 
@@ -1616,7 +1625,7 @@
 	exports.API_URL = undefined;
 	exports.default = callApi;
 
-	var _isomorphicFetch = __webpack_require__(76);
+	var _isomorphicFetch = __webpack_require__(77);
 
 	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
@@ -1666,13 +1675,144 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.addPlace = addPlace;
+	exports.addPlaceRaw = addPlaceRaw;
+	exports.getPlaces = getPlaces;
+	exports.getPlace = getPlace;
+	exports.deletePlace = deletePlace;
+
+	var _place = __webpack_require__(15);
+
+	var _place2 = _interopRequireDefault(_place);
+
+	var _cuid = __webpack_require__(32);
+
+	var _cuid2 = _interopRequireDefault(_cuid);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Save a place
+	 * @param req
+	 * @param res
+	 * @returns void
+	 */
+	function addPlace(req, res) {
+
+	  if (!req.body.place.name) {
+	    res.status(403).end();
+	  }
+
+	  addPlaceRaw(req.body.place).then(function (saved) {
+	    return res.json({ place: saved });
+	  }).catch(function (err) {
+	    return res.status(500).send(err);
+	  });
+	}
+
+	/**
+	 * Save a place
+	 * @param place
+	 * @returns Promise
+	 */
+	function addPlaceRaw(place) {
+	  return new Promise(function (resolve, reject) {
+
+	    if (!place || !place.name) {
+	      return reject('Missing place name');
+	    }
+
+	    var newPlace = new _place2.default(place);
+
+	    if (!newPlace.cuid) {
+	      newPlace.cuid = (0, _cuid2.default)();
+	    }
+
+	    newPlace.save(function (err, savedPlace) {
+	      if (err) {
+	        return reject(err);
+	      }
+	      resolve(savedPlace);
+	    });
+	  });
+	}
+
+	/**
+	 * Gets all places
+	 * @param req
+	 * @param res
+	 * @returns void
+	 */
+	function getPlaces(req, res) {
+
+	  _place2.default.find().exec(function (err, places) {
+	    if (err) {
+	      res.status(500).send(err);
+	    }
+	    res.json({ places: places });
+	  });
+	}
+
+	/**
+	 * Get a single place
+	 * @param req
+	 * @param res
+	 * @returns void
+	 */
+	function getPlace(req, res) {
+
+	  if (!req.params.name) {
+	    res.status(403).end();
+	  }
+
+	  _place2.default.findOne({ name: req.params.name }).exec(function (err, place) {
+	    if (err) {
+	      res.status(500).send(err);
+	    }
+	    res.json({ place: place });
+	  });
+	}
+
+	/**
+	 * Delete a place
+	 * @param req
+	 * @param res
+	 * @returns void
+	 */
+	function deletePlace(req, res) {
+
+	  if (!req.params.name) {
+	    res.status(403).end();
+	  }
+
+	  _place2.default.findOne({ name: req.params.name }).exec(function (err, place) {
+	    if (err) {
+	      res.status(500).send(err);
+	    }
+
+	    place.remove(function () {
+	      res.status(200).end();
+	    });
+	  });
+	}
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.getSnapshots = getSnapshots;
 	exports.addSnapshot = addSnapshot;
 	exports.addSnapshotLegacy = addSnapshotLegacy;
 	exports.addSnapshotRaw = addSnapshotRaw;
 	exports.deleteSnapshot = deleteSnapshot;
 
-	var _snapshot = __webpack_require__(28);
+	var _snapshot = __webpack_require__(29);
 
 	var _snapshot2 = _interopRequireDefault(_snapshot);
 
@@ -1680,15 +1820,17 @@
 
 	var _place2 = _interopRequireDefault(_place);
 
-	var _cuid = __webpack_require__(31);
+	var _cuid = __webpack_require__(32);
 
 	var _cuid2 = _interopRequireDefault(_cuid);
 
-	var _fs = __webpack_require__(32);
+	var _fs = __webpack_require__(33);
 
 	var _fs2 = _interopRequireDefault(_fs);
 
-	var _s = __webpack_require__(67);
+	var _s = __webpack_require__(69);
+
+	var _place3 = __webpack_require__(27);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1781,6 +1923,66 @@
 	 * @returns Promise
 	 */
 	function addSnapshotLegacy(req, res) {
+
+	  var OLD_PLACES = [{ placeId: -1, name: 'test' }, { placeId: 1, name: 'veggli' }, { placeId: 2, name: 'buvassbrenna' }, { placeId: 3, name: 'tornes' }];
+	  Object.freeze(OLD_PLACES);
+
+	  var oldPlace = OLD_PLACES.find(function (place) {
+	    return place.placeId == req.body.placeId;
+	  });
+
+	  if (!oldPlace) {
+	    return res.status(500).send('Error: place not found');
+	  }
+
+	  _place2.default.findOne({ name: oldPlace.name }).exec(function (err, place) {
+	    if (err) {
+	      return res.status(500).send(err);
+	    }
+
+	    if (place) {
+	      save({ place: place });
+	    }
+
+	    // The place was not found. Lets add it!
+	    else {
+	        (0, _place3.addPlaceRaw)({ name: oldPlace.name, isPublic: true }).then(function (place) {
+	          return save({ place: place });
+	        }).catch(function (err) {
+	          return res.status(500).send(err);
+	        });
+	      }
+	  });
+
+	  function save(_ref) {
+	    var place = _ref.place;
+
+	    var snapshot = {
+	      placeCuid: place.cuid,
+	      temperature: req.body.outsideTemperature,
+	      pressure: req.body.outsidePressure,
+	      humidity: req.body.outsideHumidity,
+	      image: req.body.image
+	    };
+
+	    addSnapshotRaw(snapshot).then(function () {
+	      console.log('legacy snapshot saved!');
+	      res.json({
+	        success: true,
+	        message: ''
+	      });
+	    }).catch(function (_ref2) {
+	      var status = _ref2.status;
+	      var message = _ref2.message;
+
+	      console.log('legacy snapshot error!', status, message);
+	      res.json({
+	        success: false,
+	        message: message,
+	        status: status
+	      });
+	    });
+	  }
 	  console.log('receiving legacy snapshot...');
 
 	  var placeCuid = void 0;
@@ -1803,32 +2005,6 @@
 	      message: 'placeCuid not matched (placeId: ' + req.body.placeId + ')'
 	    });
 	  }
-
-	  var snapshot = {
-	    placeCuid: placeCuid,
-	    temperature: req.body.outsideTemperature,
-	    pressure: req.body.outsidePressure,
-	    humidity: req.body.outsideHumidity,
-	    image: req.body.image
-	  };
-
-	  addSnapshotRaw(snapshot).then(function () {
-	    console.log('legacy snapshot saved!');
-	    res.json({
-	      success: true,
-	      message: ''
-	    });
-	  }).catch(function (_ref) {
-	    var status = _ref.status;
-	    var message = _ref.message;
-
-	    console.log('legacy snapshot error!', status, message);
-	    res.json({
-	      success: false,
-	      message: message,
-	      status: status
-	    });
-	  });
 	}
 
 	/**
@@ -1922,7 +2098,7 @@
 	}
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1952,24 +2128,16 @@
 	exports.default = _mongoose2.default.model('Snapshot', snapshotSchema);
 
 /***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
+/* 30 */
+/***/ function(module, exports) {
 
 	"use strict";
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	exports.getRelativePathForImage = getRelativePathForImage;
-	exports.getAbsolutePathForImage = getAbsolutePathForImage;
-
-	var _config = __webpack_require__(7);
-
-	var _config2 = _interopRequireDefault(_config);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	/**
 	 * Returns the relative path for an image for a snapshot (ex: /test/1/1/cuid.jpg)
 	 * @param place
@@ -1981,24 +2149,11 @@
 	  var snapshot = _ref.snapshot;
 
 	  var date = new Date(snapshot.dateAdded);
-	  return place.name + '/' + date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + snapshot.cuid + '.jpg';
-	}
-
-	/**
-	 * Returns the absolute path for an image for a snapshot (ex: http://some-domain/test/1/1/cuid.jpg)
-	 * @param place
-	 * @param snapshot
-	 * @returns string
-	*/
-	function getAbsolutePathForImage(_ref2) {
-	  var place = _ref2.place;
-	  var snapshot = _ref2.snapshot;
-
-	  return _config2.default.imageUrlBase + '/' + getRelativePathForImage({ place: place, snapshot: snapshot });
+	  return place.name + "/" + date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + snapshot.cuid + ".jpg";
 	}
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2061,31 +2216,31 @@
 	}
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	module.exports = require("cuid");
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = require("fs");
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = require("hammerjs");
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux");
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2124,7 +2279,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(IntlWrapper);
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2143,7 +2298,7 @@
 
 	var _reactRouter = __webpack_require__(3);
 
-	var _App = __webpack_require__(57);
+	var _App = __webpack_require__(59);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -2211,7 +2366,7 @@
 	}));
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2222,9 +2377,9 @@
 	});
 	exports.configureStore = configureStore;
 
-	var _redux = __webpack_require__(34);
+	var _redux = __webpack_require__(35);
 
-	var _reduxThunk = __webpack_require__(86);
+	var _reduxThunk = __webpack_require__(87);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
@@ -2232,7 +2387,7 @@
 
 	var _DevTools2 = _interopRequireDefault(_DevTools);
 
-	var _reducers = __webpack_require__(66);
+	var _reducers = __webpack_require__(68);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -2267,7 +2422,7 @@
 	}
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2364,7 +2519,7 @@
 	  }
 	};
 
-	var _snapshot = __webpack_require__(28);
+	var _snapshot = __webpack_require__(29);
 
 	var _snapshot2 = _interopRequireDefault(_snapshot);
 
@@ -2372,16 +2527,16 @@
 
 	var _place2 = _interopRequireDefault(_place);
 
-	var _snapshot3 = __webpack_require__(27);
+	var _snapshot3 = __webpack_require__(28);
 
-	var _fs = __webpack_require__(32);
+	var _fs = __webpack_require__(33);
 
 	var _fs2 = _interopRequireDefault(_fs);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2393,7 +2548,7 @@
 
 	var _express = __webpack_require__(11);
 
-	var _place = __webpack_require__(68);
+	var _place = __webpack_require__(27);
 
 	var PlaceController = _interopRequireWildcard(_place);
 
@@ -2416,7 +2571,7 @@
 	exports.default = router;
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2428,7 +2583,7 @@
 
 	var _express = __webpack_require__(11);
 
-	var _snapshot = __webpack_require__(27);
+	var _snapshot = __webpack_require__(28);
 
 	var SnapshotController = _interopRequireWildcard(_snapshot);
 
@@ -2454,7 +2609,7 @@
 	exports.default = router;
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2465,7 +2620,7 @@
 	});
 	exports.fetchComponentData = fetchComponentData;
 
-	var _promiseUtils = __webpack_require__(70);
+	var _promiseUtils = __webpack_require__(71);
 
 	function fetchComponentData(store, components, params) {
 	  var needs = components.reduce(function (prev, current) {
@@ -2481,16 +2636,16 @@
 	  */
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
 
 	var webpack = __webpack_require__(16);
-	var cssnext = __webpack_require__(78);
-	var postcssFocus = __webpack_require__(79);
-	var postcssReporter = __webpack_require__(80);
+	var cssnext = __webpack_require__(79);
+	var postcssFocus = __webpack_require__(80);
+	var postcssReporter = __webpack_require__(81);
 
 	module.exports = {
 	  devtool: 'cheap-module-eval-source-map',
@@ -2555,43 +2710,43 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, ""))
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports) {
 
 	module.exports = require("body-parser");
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports) {
 
 	module.exports = require("compression");
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports) {
 
 	module.exports = require("path");
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports) {
 
 	module.exports = require("react-dom/server");
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	module.exports = require("webpack-dev-middleware");
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	module.exports = require("webpack-hot-middleware");
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2629,7 +2784,7 @@
 	};
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2667,7 +2822,52 @@
 	};
 
 /***/ },
-/* 51 */
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.getAbsolutePathForImage = getAbsolutePathForImage;
+
+	var _config = __webpack_require__(7);
+
+	var _config2 = _interopRequireDefault(_config);
+
+	var _s = __webpack_require__(30);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * Returns the absolute path for an image for a snapshot (ex: http://some-domain/test/1/1/cuid.jpg)
+	 * @param place
+	 * @param snapshot
+	 * @returns string
+	*/
+	function getAbsolutePathForImage(_ref) {
+	  var place = _ref.place;
+	  var snapshot = _ref.snapshot;
+
+
+	  var imageUrlBase = void 0;
+
+	  // Client side config
+	  if (typeof __APP_CONFIG__ !== 'undefined') {
+	    imageUrlBase = __APP_CONFIG__.imageUrlBase;
+	  }
+	  // Server side
+	  else {
+	      imageUrlBase = _config2.default.imageUrlBase;
+	    }
+
+	  return imageUrlBase + '/' + (0, _s.getRelativePathForImage)({ place: place, snapshot: snapshot });
+	}
+
+/***/ },
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2756,7 +2956,7 @@
 	};
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2829,7 +3029,7 @@
 	};
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2902,7 +3102,7 @@
 	};
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2975,7 +3175,7 @@
 	};
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3048,7 +3248,7 @@
 	};
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3121,7 +3321,7 @@
 	};
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3244,7 +3444,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3300,7 +3500,7 @@
 	exports.default = FullHeightWrapper;
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3348,7 +3548,7 @@
 	exports.default = IntlReducer;
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3366,7 +3566,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _hammerjs = __webpack_require__(33);
+	var _hammerjs = __webpack_require__(34);
 
 	var _hammerjs2 = _interopRequireDefault(_hammerjs);
 
@@ -3528,7 +3728,7 @@
 	exports.default = RangeSlider;
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3560,7 +3760,7 @@
 
 	var _SnapshotGraph2 = _interopRequireDefault(_SnapshotGraph);
 
-	var _date = __webpack_require__(30);
+	var _date = __webpack_require__(31);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3766,7 +3966,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(SnapshotGraph);
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -3786,7 +3986,7 @@
 
 	var _reactRedux = __webpack_require__(1);
 
-	var _keycode = __webpack_require__(77);
+	var _keycode = __webpack_require__(78);
 
 	var _keycode2 = _interopRequireDefault(_keycode);
 
@@ -3796,9 +3996,9 @@
 
 	var _SnapshotActions = __webpack_require__(9);
 
-	var _s = __webpack_require__(29);
+	var _s = __webpack_require__(52);
 
-	var _RangeSlider = __webpack_require__(60);
+	var _RangeSlider = __webpack_require__(62);
 
 	var _RangeSlider2 = _interopRequireDefault(_RangeSlider);
 
@@ -3813,15 +4013,15 @@
 
 	var _SnapshotImage2 = _interopRequireDefault(_SnapshotImage);
 
-	var _KeyHandler = __webpack_require__(63);
+	var _KeyHandler = __webpack_require__(65);
 
 	var _KeyHandler2 = _interopRequireDefault(_KeyHandler);
 
-	var _PointerHandler = __webpack_require__(64);
+	var _PointerHandler = __webpack_require__(66);
 
 	var _PointerHandler2 = _interopRequireDefault(_PointerHandler);
 
-	var _date = __webpack_require__(30);
+	var _date = __webpack_require__(31);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3953,7 +4153,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(SnapshotImage);
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4012,7 +4212,7 @@
 	exports.default = KeyHandler;
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4024,7 +4224,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _hammerjs = __webpack_require__(33);
+	var _hammerjs = __webpack_require__(34);
 
 	var _hammerjs2 = _interopRequireDefault(_hammerjs);
 
@@ -4131,7 +4331,7 @@
 	exports.default = PointerHandler;
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4155,11 +4355,11 @@
 
 	var _Icon2 = _interopRequireDefault(_Icon);
 
-	var _SnapshotImage = __webpack_require__(62);
+	var _SnapshotImage = __webpack_require__(64);
 
 	var _SnapshotImage2 = _interopRequireDefault(_SnapshotImage);
 
-	var _SnapshotGraph = __webpack_require__(61);
+	var _SnapshotGraph = __webpack_require__(63);
 
 	var _SnapshotGraph2 = _interopRequireDefault(_SnapshotGraph);
 
@@ -4293,7 +4493,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(SnapshotsNavigator);
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4303,7 +4503,7 @@
 	  value: true
 	});
 
-	var _redux = __webpack_require__(34);
+	var _redux = __webpack_require__(35);
 
 	var _AppReducer = __webpack_require__(20);
 
@@ -4317,7 +4517,7 @@
 
 	var _PlaceReducer2 = _interopRequireDefault(_PlaceReducer);
 
-	var _IntlReducer = __webpack_require__(59);
+	var _IntlReducer = __webpack_require__(61);
 
 	var _IntlReducer2 = _interopRequireDefault(_IntlReducer);
 
@@ -4337,7 +4537,7 @@
 	     */
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4348,7 +4548,7 @@
 	});
 	exports.saveImageFromSnapshot = saveImageFromSnapshot;
 
-	var _awsSdk = __webpack_require__(71);
+	var _awsSdk = __webpack_require__(72);
 
 	var _awsSdk2 = _interopRequireDefault(_awsSdk);
 
@@ -4356,19 +4556,15 @@
 
 	var _config2 = _interopRequireDefault(_config);
 
-	var _s = __webpack_require__(29);
+	var _s = __webpack_require__(30);
 
-	var _isWebp = __webpack_require__(75);
+	var _isWebp = __webpack_require__(76);
 
 	var _isWebp2 = _interopRequireDefault(_isWebp);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	if (process.env.NODE_ENV === 'production') {
-	  _awsSdk2.default.config.loadFromPath('aws.config.production.json');
-	} else {
-	  _awsSdk2.default.config.loadFromPath('aws.config.development.json');
-	}
+	_awsSdk2.default.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
 	/**
 	 * Takes a base64 image string and stores the required images to a S3 bucket
@@ -4440,114 +4636,7 @@
 	}
 
 /***/ },
-/* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.addPlace = addPlace;
-	exports.getPlaces = getPlaces;
-	exports.getPlace = getPlace;
-	exports.deletePlace = deletePlace;
-
-	var _place = __webpack_require__(15);
-
-	var _place2 = _interopRequireDefault(_place);
-
-	var _cuid = __webpack_require__(31);
-
-	var _cuid2 = _interopRequireDefault(_cuid);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * Save a place
-	 * @param req
-	 * @param res
-	 * @returns void
-	 */
-	function addPlace(req, res) {
-
-	  if (!req.body.place.name) {
-	    res.status(403).end();
-	  }
-
-	  var newPlace = new _place2.default(req.body.place);
-
-	  newPlace.cuid = (0, _cuid2.default)();
-	  newPlace.save(function (err, saved) {
-	    if (err) {
-	      res.status(500).send(err);
-	    }
-	    res.json({ place: saved });
-	  });
-	}
-
-	/**
-	 * Gets all places
-	 * @param req
-	 * @param res
-	 * @returns void
-	 */
-	function getPlaces(req, res) {
-
-	  _place2.default.find().exec(function (err, places) {
-	    if (err) {
-	      res.status(500).send(err);
-	    }
-	    res.json({ places: places });
-	  });
-	}
-
-	/**
-	 * Get a single place
-	 * @param req
-	 * @param res
-	 * @returns void
-	 */
-	function getPlace(req, res) {
-
-	  if (!req.params.name) {
-	    res.status(403).end();
-	  }
-
-	  _place2.default.findOne({ name: req.params.name }).exec(function (err, place) {
-	    if (err) {
-	      res.status(500).send(err);
-	    }
-	    res.json({ place: place });
-	  });
-	}
-
-	/**
-	 * Delete a place
-	 * @param req
-	 * @param res
-	 * @returns void
-	 */
-	function deletePlace(req, res) {
-
-	  if (!req.params.name) {
-	    res.status(403).end();
-	  }
-
-	  _place2.default.findOne({ name: req.params.name }).exec(function (err, place) {
-	    if (err) {
-	      res.status(500).send(err);
-	    }
-
-	    place.remove(function () {
-	      res.status(200).end();
-	    });
-	  });
-	}
-
-/***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -4566,7 +4655,7 @@
 
 	var _express2 = _interopRequireDefault(_express);
 
-	var _compression = __webpack_require__(44);
+	var _compression = __webpack_require__(45);
 
 	var _compression2 = _interopRequireDefault(_compression);
 
@@ -4574,15 +4663,15 @@
 
 	var _mongoose2 = _interopRequireDefault(_mongoose);
 
-	var _bodyParser = __webpack_require__(43);
+	var _bodyParser = __webpack_require__(44);
 
 	var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-	var _path = __webpack_require__(45);
+	var _path = __webpack_require__(46);
 
 	var _path2 = _interopRequireDefault(_path);
 
-	var _IntlWrapper = __webpack_require__(35);
+	var _IntlWrapper = __webpack_require__(36);
 
 	var _IntlWrapper2 = _interopRequireDefault(_IntlWrapper);
 
@@ -4590,19 +4679,19 @@
 
 	var _webpack2 = _interopRequireDefault(_webpack);
 
-	var _webpackConfig = __webpack_require__(42);
+	var _webpackConfig = __webpack_require__(43);
 
 	var _webpackConfig2 = _interopRequireDefault(_webpackConfig);
 
-	var _webpackDevMiddleware = __webpack_require__(47);
+	var _webpackDevMiddleware = __webpack_require__(48);
 
 	var _webpackDevMiddleware2 = _interopRequireDefault(_webpackDevMiddleware);
 
-	var _webpackHotMiddleware = __webpack_require__(48);
+	var _webpackHotMiddleware = __webpack_require__(49);
 
 	var _webpackHotMiddleware2 = _interopRequireDefault(_webpackHotMiddleware);
 
-	var _store = __webpack_require__(37);
+	var _store = __webpack_require__(38);
 
 	var _reactRedux = __webpack_require__(1);
 
@@ -4610,7 +4699,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _server = __webpack_require__(46);
+	var _server = __webpack_require__(47);
 
 	var _reactRouter = __webpack_require__(3);
 
@@ -4618,21 +4707,21 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _routes = __webpack_require__(36);
+	var _routes = __webpack_require__(37);
 
 	var _routes2 = _interopRequireDefault(_routes);
 
-	var _fetchData = __webpack_require__(41);
+	var _fetchData = __webpack_require__(42);
 
-	var _snapshot = __webpack_require__(40);
+	var _snapshot = __webpack_require__(41);
 
 	var _snapshot2 = _interopRequireDefault(_snapshot);
 
-	var _place = __webpack_require__(39);
+	var _place = __webpack_require__(40);
 
 	var _place2 = _interopRequireDefault(_place);
 
-	var _dummyData = __webpack_require__(38);
+	var _dummyData = __webpack_require__(39);
 
 	var _dummyData2 = _interopRequireDefault(_dummyData);
 
@@ -4670,9 +4759,9 @@
 	  }
 
 	  // feed some dummy data in DB.
-	  if (process.env.NODE_ENV === 'development') {
-	    (0, _dummyData2.default)();
-	  }
+	  //if (process.env.NODE_ENV === 'development') {
+	  //  dummyData();
+	  //}
 	});
 
 	// Apply body Parser and server public assets and routes
@@ -4744,7 +4833,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, "server"))
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4775,97 +4864,97 @@
 	}
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports) {
 
 	module.exports = require("aws-sdk");
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports) {
 
 	module.exports = require("intl");
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports) {
 
 	module.exports = require("intl/locale-data/jsonp/en");
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports) {
 
 	module.exports = require("intl/locale-data/jsonp/nb-NO");
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports) {
 
 	module.exports = require("is-webp");
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports) {
 
 	module.exports = require("isomorphic-fetch");
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports) {
 
 	module.exports = require("keycode");
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports) {
 
 	module.exports = require("postcss-cssnext");
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports) {
 
 	module.exports = require("postcss-focus");
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports) {
 
 	module.exports = require("postcss-reporter");
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports) {
 
 	module.exports = require("react-intl/locale-data/en");
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports) {
 
 	module.exports = require("react-intl/locale-data/no");
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux-devtools");
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux-devtools-dock-monitor");
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux-devtools-log-monitor");
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux-thunk");
