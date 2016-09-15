@@ -5,6 +5,9 @@ const router = new Router();
 // Get all snapshots
 router.route('/snapshots/:placeName').get(SnapshotController.getSnapshots);
 
+// Get all snapshots (legacy)
+router.route('/snapshots-legacy/:placeName').get(SnapshotController.getSnapshotsLegacy);
+
 // Get one snapshot by cuid
 //router.route('/snapshots/:cuid').get(SnapshotController.getSnapshot);
 

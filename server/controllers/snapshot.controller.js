@@ -20,7 +20,7 @@ export function getSnapshots (req, res) {
     }
 
     if (!place) {
-      return res.status(500).send('Error: place not found');
+      return res.status(500).send(`Error: place not found!`);
     }
 
     Snapshot.find({ placeCuid: place.cuid }).sort('dateAdded').exec((err, snapshots) => {
@@ -28,13 +28,58 @@ export function getSnapshots (req, res) {
         return res.status(500).send(err);
       }
 
-      let returnSnapshots = snapshots.map(item => {
-        item.temperature = (Math.round(item.temperature * 10) / 10);
-        return item;
-      });
-
       res.json({
-        snapshots: returnSnapshots
+        snapshots: snapshots.map(item => {
+          item.temperature = (Math.round(item.temperature * 10) / 10);
+          return item;
+        })
+      });
+    });
+  });
+}
+
+/**
+ * Get all snapshots (legacy method used by old værhøna.no)
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function getSnapshotsLegacy (req, res) {
+  
+  // Get place by name
+  Place.findOne({ name: req.params.placeName }).exec((err, place) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    if (!place) {
+      return res.status(500).send(`Error: place not found!`);
+    }
+
+    Snapshot.find({ placeCuid: place.cuid }).sort('dateAdded').exec((err, snapshots) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+
+      res.jsonp({
+        success: true,
+        message: '',
+        firstSnapshotTime: Math.floor(new Date(snapshots[snapshots.length - 1].dateAdded).getTime() / 1000),
+        data: snapshots.map(item => {
+          let snp = {};
+          snp.temperature = (Math.round(item.temperature * 10) / 10);
+          snp.time = Math.floor(new Date(item.dateAdded).getTime() / 1000);
+          snp.outside_temperature = item.temperature;
+          snp.outside_pressure = item.pressure;
+          snp.outside_humidity = item.humidity;
+          snp.outside_altitude = 0;
+          snp.image = item.cuid + '.jpg';
+          snp.image_base64 = null;
+          snp.motion_event = 0;
+          snp.complete = "1";
+          snp.cuid = item.cuid;
+          return snp;
+        })
       });
     });
   });
