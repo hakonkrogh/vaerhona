@@ -405,7 +405,8 @@ select {
  *    Known issue: inner spacing remains in IE 6.
  */
 button,
-html input[type="button"], input[type="reset"],
+html input[type="button"],
+input[type="reset"],
 input[type="submit"] {
   -webkit-appearance: button;
   /* 2 */
@@ -550,10 +551,7 @@ table {
   -moz-user-select: none;
   -ms-user-select: none;
   -ms-touch-action: none;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
   /*touch-action: none;*/
   /* Kills native scroll in Chrome >=35 */
 }
@@ -738,7 +736,7 @@ table {
   display: block;
   overflow: hidden;
   text-align: right;
-  padding: 0 0.5em 0.5em 0.5em;
+  padding: 0 .5em .5em .5em;
 }
 
 .mbsc-mobiscroll .dwbw {
@@ -837,10 +835,8 @@ table {
 .dw-bf {
   -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000px;
-  -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-  -webkit-perspective: 1000px;
-          perspective: 1000px;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .dw-ul {
@@ -886,7 +882,7 @@ table {
   text-decoration: none;
   text-align: center;
   opacity: 1;
-  transition: opacity 0.2s linear;
+  transition: opacity .2s linear;
 }
 
 .dwa .dwwb {
@@ -991,7 +987,7 @@ table {
 
 /* Default theme */
 .mbsc-mobiscroll .dwc {
-  padding: 2em 0.25em 0 0.25em;
+  padding: 2em .25em 0 .25em;
 }
 
 .mbsc-mobiscroll .dwl {
@@ -1005,7 +1001,7 @@ table {
 }
 
 .mbsc-mobiscroll .dwfl {
-  padding: 0.5em 0.25em;
+  padding: .5em .25em;
 }
 
 .mbsc-mobiscroll .dw-li {
@@ -1085,10 +1081,8 @@ table {
   -webkit-animation-duration: 200ms;
   -moz-animation-fill-mode: forwards;
   -moz-animation-duration: 200ms;
-  -webkit-animation-fill-mode: forwards;
-          animation-fill-mode: forwards;
-  -webkit-animation-duration: 200ms;
-          animation-duration: 200ms;
+  animation-fill-mode: forwards;
+  animation-duration: 200ms;
 }
 
 .dw-trans .dwo {
@@ -1126,11 +1120,9 @@ table {
   -webkit-transform: translateX(0);
   -moz-backface-visibility: hidden;
   -moz-transform: translateX(0);
-  -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-  -webkit-transform: translateX(0);
-      -ms-transform: translateX(0);
-          transform: translateX(0);
+  backface-visibility: hidden;
+  -ms-transform: translateX(0);
+      transform: translateX(0);
 }
 
 .dw-swing,
@@ -1156,11 +1148,9 @@ table {
   -webkit-animation-name: dw-p-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-p-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-p-in;
-          animation-name: dw-p-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-p-in;
 }
 
 .dw-out .dw-pop {
@@ -1175,11 +1165,9 @@ table {
   -webkit-transform: scale(1);
   -moz-animation-name: dw-fl-in;
   -moz-transform: scale(1);
-  -webkit-animation-name: dw-fl-in;
-          animation-name: dw-fl-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
+  animation-name: dw-fl-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
 }
 
 .dw-out .dw-flip {
@@ -1194,11 +1182,9 @@ table {
   -webkit-animation-name: dw-sw-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sw-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-sw-in;
-          animation-name: dw-sw-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-sw-in;
 }
 
 .dw-out .dw-swing {
@@ -1212,11 +1198,9 @@ table {
   -webkit-animation-name: dw-sh-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sh-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-sh-in;
-          animation-name: dw-sh-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-sh-in;
 }
 
 .dw-out .dw-slidehorizontal {
@@ -1231,11 +1215,9 @@ table {
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sv-in;
   -moz-transform: scale(1);
-  -webkit-animation-name: dw-sv-in;
-          animation-name: dw-sv-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
+  animation-name: dw-sv-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
 }
 
 .dw-out .dw-slidevertical {
@@ -1249,11 +1231,9 @@ table {
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sd-in;
   -moz-transform: scale(1);
-  -webkit-animation-name: dw-sd-in;
-          animation-name: dw-sd-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
+  animation-name: dw-sd-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
 }
 
 .dw-out .dw-slidedown {
@@ -1268,11 +1248,9 @@ table {
   -webkit-animation-name: dw-su-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-su-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-su-in;
-          animation-name: dw-su-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-su-in;
 }
 
 .dw-out .dw-slideup {
@@ -1872,6 +1850,14 @@ textarea {
    These examples override the primary ('mobile first') styles.
    Modify as content requires.
    ========================================================================== */
+@media only screen and (min-width: 35em) {
+  /* Style adjustments for viewports that meet the condition */
+}
+
+@media print, (-webkit-min-device-pixel-ratio: 1.25), (-webkit-min-device-pixel-ratio: 120), (min-resolution: 120dppx) {
+  /* Style adjustments for high resolution devices */
+}
+
 /* ==========================================================================
    Print styles.
    Inlined to avoid required HTTP connection: h5bp.com/r
@@ -2069,14 +2055,10 @@ header.site-header .buttons .ico.pictures {
   -moz-mask-size: 22px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/pictures.svg");
-          mask-image: url("/gfx/svg/pictures.svg");
-  -webkit-mask-size: 22px;
-          mask-size: 22px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/pictures.svg");
+  mask-size: 22px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 header.site-header .buttons .ico.statistics {
@@ -2088,14 +2070,10 @@ header.site-header .buttons .ico.statistics {
   -moz-mask-size: 22px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/statistics.svg");
-          mask-image: url("/gfx/svg/statistics.svg");
-  -webkit-mask-size: 22px;
-          mask-size: 22px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/statistics.svg");
+  mask-size: 22px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 header.site-header .buttons .ico.refresh {
@@ -2107,18 +2085,13 @@ header.site-header .buttons .ico.refresh {
   -moz-mask-size: 22px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/refresh.svg");
-          mask-image: url("/gfx/svg/refresh.svg");
-  -webkit-mask-size: 22px;
-          mask-size: 22px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/refresh.svg");
+  mask-size: 22px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
-.no-touch header.site-header .buttons .ico:hover,
-header.site-header .buttons .ico.spin {
+.no-touch header.site-header .buttons .ico:hover, header.site-header .buttons .ico.spin {
   opacity: .85;
 }
 
@@ -2234,7 +2207,6 @@ header.site-header .dates i:before {
   margin: 100px 0 20px;
   background-size: 100% auto;
   background: -owg-linear-gradient(#12ae6f, #57d4a2);
-  -pie-background: -pie-linear-gradient(#12ae6f, #57d4a2);
   background: linear-gradient(#12ae6f, #57d4a2);
   -webkit-mask-image: url("/gfx/logo.png");
   -webkit-mask-size: 50px;
@@ -2244,14 +2216,10 @@ header.site-header .dates i:before {
   -moz-mask-size: 50px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/logo.png");
-          mask-image: url("/gfx/logo.png");
-  -webkit-mask-size: 50px;
-          mask-size: 50px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/logo.png");
+  mask-size: 50px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .no-place-set .sub {
@@ -2300,9 +2268,8 @@ body {
   height: 100%;
   transition: -webkit-transform 1000ms;
   transition: transform 1000ms;
+  transition: transform 1000ms, -webkit-transform 1000ms;
   -webkit-transform-style: preserve-3d;
-  -ms-transform-style: preserve-3d;
-  -o-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 
@@ -2320,8 +2287,6 @@ body {
   height: 100%;
   background: #222;
   -webkit-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
@@ -2384,14 +2349,10 @@ body {
   -moz-mask-size: 20px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/thermometer.svg");
-          mask-image: url("/gfx/svg/thermometer.svg");
-  -webkit-mask-size: 20px;
-          mask-size: 20px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/thermometer.svg");
+  mask-size: 20px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .content-section.chart .types li.droplets:before {
@@ -2403,14 +2364,10 @@ body {
   -moz-mask-size: 20px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/droplets.svg");
-          mask-image: url("/gfx/svg/droplets.svg");
-  -webkit-mask-size: 20px;
-          mask-size: 20px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/droplets.svg");
+  mask-size: 20px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .content-section.chart .types li.compass:before {
@@ -2422,14 +2379,10 @@ body {
   -moz-mask-size: 20px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/compass.svg");
-          mask-image: url("/gfx/svg/compass.svg");
-  -webkit-mask-size: 20px;
-          mask-size: 20px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/compass.svg");
+  mask-size: 20px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .no.touch .content-section.chart .types li:hover {

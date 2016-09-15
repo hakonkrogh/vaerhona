@@ -71,7 +71,6 @@
   margin: 100px 0 20px;
   background-size: 100% auto;
   background: -owg-linear-gradient(#12ae6f, #57d4a2);
-  -pie-background: -pie-linear-gradient(#12ae6f, #57d4a2);
   background: linear-gradient(#12ae6f, #57d4a2);
   -webkit-mask-image: url("/gfx/logo.png");
   -webkit-mask-size: 50px;
@@ -81,14 +80,10 @@
   -moz-mask-size: 50px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/logo.png");
-          mask-image: url("/gfx/logo.png");
-  -webkit-mask-size: 50px;
-          mask-size: 50px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/logo.png");
+  mask-size: 50px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .no-place-set .sub {

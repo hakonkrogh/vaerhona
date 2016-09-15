@@ -1,3 +1,5 @@
+var settings = require('./settings.js');
+
 var data;
 
 var current = {
@@ -196,58 +198,8 @@ var displayImage = (function () {
 			weather.$.imgWrap.append($img);
 		}
 		$img.css({
-			backgroundImage: `url(${ResolveImg(current.item.img_url)})`
+			backgroundImage: `url(${ResolveImg(current.item)})`
 		});
-		return;
-
-		var $imgs = weather.$.imgWrap.children(),
-			newUrls = [],
-			imgsInsert = [];
-
-		// Load this and 5 before and after
-		handleItem(current.item);
-		handleItem(items[current.index + 1]);
-		handleItem(items[current.index + 2]);
-		handleItem(items[current.index + 3]);
-		handleItem(items[current.index + 4]);
-		handleItem(items[current.index + 5]);
-		handleItem(items[current.index - 1]);
-		handleItem(items[current.index - 2]);
-		handleItem(items[current.index - 3]);
-		handleItem(items[current.index - 4]);
-		handleItem(items[current.index - 5]);
-		
-		// Insert new
-		if (imgsInsert.length > 0) {
-			weather.$.imgWrap.append(imgsInsert.join(""));
-		}
-
-		// Remove old
-		var removes = [];
-		for (var i = 0; i < loadedUrls.length; i++) {
-			var url = loadedUrls[i];
-			if (newUrls.indexOf(url) === -1) {
-				$imgs.filter("[data-url='" + url + "']").remove();
-				removes.push(i);
-			}
-		}
-
-		// Store new
-		loadedUrls = newUrls;
-
-		// Mark selected
-		weather.$.imgWrap.children().removeClass("selected").filter("[data-url='" + current.item.img_url + "']").addClass("selected");
-
-		function handleItem (item) {
-			if (item) {
-				newUrls.push(item.img_url);
-
-				// Not loaded
-				if (loadedUrls.indexOf(item.img_url) === -1) {
-					imgsInsert.push("<div data-url='" + item.img_url + "' style='background-image: url(" + ResolveImg(item.img_url) + ")' />");
-				}
-			}
-		}
 	};
 }());
 
@@ -258,7 +210,7 @@ var yLast = 0;  // last y location on the screen
 var xImage = 0; // last x location on the image
 var yImage = 0; // last y location on the image
 
-function ResolveImg (src, checkStoredImage) {
+function ResolveImg (snapshot, checkStoredImage) {
 	
 	if (typeof checkStoredImage === "undefined") {
 		checkStoredImage = true;
@@ -275,7 +227,15 @@ function ResolveImg (src, checkStoredImage) {
 		}
 	}
 
-	return "http://www.vhsys.no/images/" + src;
+	let date = new Date(snapshot.date);
+
+	let imagePath = `${settings.place}/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}.jpg`;
+
+	// Development
+	let s3BucketName = location.host.indexOf('localhost') !== -1 ? 'vaerhona-development' : 'vaerhona';
+
+	// Live
+	return `https://${s3BucketName}.s3-eu-west-1.amazonaws.com/${imagePath}`;
 }
 
 function GetCurrentIndex () {

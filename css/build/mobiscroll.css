@@ -55,10 +55,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   -ms-touch-action: none;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
   /*touch-action: none;*/
   /* Kills native scroll in Chrome >=35 */
 }
@@ -243,7 +240,7 @@
   display: block;
   overflow: hidden;
   text-align: right;
-  padding: 0 0.5em 0.5em 0.5em;
+  padding: 0 .5em .5em .5em;
 }
 
 .mbsc-mobiscroll .dwbw {
@@ -342,10 +339,8 @@
 .dw-bf {
   -webkit-backface-visibility: hidden;
   -webkit-perspective: 1000px;
-  -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-  -webkit-perspective: 1000px;
-          perspective: 1000px;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 .dw-ul {
@@ -391,7 +386,7 @@
   text-decoration: none;
   text-align: center;
   opacity: 1;
-  transition: opacity 0.2s linear;
+  transition: opacity .2s linear;
 }
 
 .dwa .dwwb {
@@ -496,7 +491,7 @@
 
 /* Default theme */
 .mbsc-mobiscroll .dwc {
-  padding: 2em 0.25em 0 0.25em;
+  padding: 2em .25em 0 .25em;
 }
 
 .mbsc-mobiscroll .dwl {
@@ -510,7 +505,7 @@
 }
 
 .mbsc-mobiscroll .dwfl {
-  padding: 0.5em 0.25em;
+  padding: .5em .25em;
 }
 
 .mbsc-mobiscroll .dw-li {
@@ -590,10 +585,8 @@
   -webkit-animation-duration: 200ms;
   -moz-animation-fill-mode: forwards;
   -moz-animation-duration: 200ms;
-  -webkit-animation-fill-mode: forwards;
-          animation-fill-mode: forwards;
-  -webkit-animation-duration: 200ms;
-          animation-duration: 200ms;
+  animation-fill-mode: forwards;
+  animation-duration: 200ms;
 }
 
 .dw-trans .dwo {
@@ -631,11 +624,9 @@
   -webkit-transform: translateX(0);
   -moz-backface-visibility: hidden;
   -moz-transform: translateX(0);
-  -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-  -webkit-transform: translateX(0);
-      -ms-transform: translateX(0);
-          transform: translateX(0);
+  backface-visibility: hidden;
+  -ms-transform: translateX(0);
+      transform: translateX(0);
 }
 
 .dw-swing,
@@ -661,11 +652,9 @@
   -webkit-animation-name: dw-p-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-p-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-p-in;
-          animation-name: dw-p-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-p-in;
 }
 
 .dw-out .dw-pop {
@@ -680,11 +669,9 @@
   -webkit-transform: scale(1);
   -moz-animation-name: dw-fl-in;
   -moz-transform: scale(1);
-  -webkit-animation-name: dw-fl-in;
-          animation-name: dw-fl-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
+  animation-name: dw-fl-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
 }
 
 .dw-out .dw-flip {
@@ -699,11 +686,9 @@
   -webkit-animation-name: dw-sw-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sw-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-sw-in;
-          animation-name: dw-sw-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-sw-in;
 }
 
 .dw-out .dw-swing {
@@ -717,11 +702,9 @@
   -webkit-animation-name: dw-sh-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sh-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-sh-in;
-          animation-name: dw-sh-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-sh-in;
 }
 
 .dw-out .dw-slidehorizontal {
@@ -736,11 +719,9 @@
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sv-in;
   -moz-transform: scale(1);
-  -webkit-animation-name: dw-sv-in;
-          animation-name: dw-sv-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
+  animation-name: dw-sv-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
 }
 
 .dw-out .dw-slidevertical {
@@ -754,11 +735,9 @@
   -webkit-transform: scale(1);
   -moz-animation-name: dw-sd-in;
   -moz-transform: scale(1);
-  -webkit-animation-name: dw-sd-in;
-          animation-name: dw-sd-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
+  animation-name: dw-sd-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
 }
 
 .dw-out .dw-slidedown {
@@ -773,11 +752,9 @@
   -webkit-animation-name: dw-su-in;
   -webkit-transform: scale(1);
   -moz-animation-name: dw-su-in;
-  -webkit-transform: scale(1);
-      -ms-transform: scale(1);
-          transform: scale(1);
-  -webkit-animation-name: dw-su-in;
-          animation-name: dw-su-in;
+  -ms-transform: scale(1);
+      transform: scale(1);
+  animation-name: dw-su-in;
 }
 
 .dw-out .dw-slideup {

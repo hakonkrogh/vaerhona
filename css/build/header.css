@@ -62,14 +62,10 @@ header.site-header .buttons .ico.pictures {
   -moz-mask-size: 22px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/pictures.svg");
-          mask-image: url("/gfx/svg/pictures.svg");
-  -webkit-mask-size: 22px;
-          mask-size: 22px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/pictures.svg");
+  mask-size: 22px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 header.site-header .buttons .ico.statistics {
@@ -81,14 +77,10 @@ header.site-header .buttons .ico.statistics {
   -moz-mask-size: 22px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/statistics.svg");
-          mask-image: url("/gfx/svg/statistics.svg");
-  -webkit-mask-size: 22px;
-          mask-size: 22px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/statistics.svg");
+  mask-size: 22px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 header.site-header .buttons .ico.refresh {
@@ -100,18 +92,13 @@ header.site-header .buttons .ico.refresh {
   -moz-mask-size: 22px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/refresh.svg");
-          mask-image: url("/gfx/svg/refresh.svg");
-  -webkit-mask-size: 22px;
-          mask-size: 22px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/refresh.svg");
+  mask-size: 22px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
-.no-touch header.site-header .buttons .ico:hover,
-header.site-header .buttons .ico.spin {
+.no-touch header.site-header .buttons .ico:hover, header.site-header .buttons .ico.spin {
   opacity: .85;
 }
 

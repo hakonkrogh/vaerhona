@@ -119,15 +119,15 @@ function GetDataFromAPI (from, to, callback) {
 	var date_from = new Date(from.getTime());
 	var date_to = new Date(to.getTime());
 
+	let host = location.host.indexOf('localhost') !== -1 ? "http://10.0.0.8:8000" : "https://vhlive.kroghweb.no";
+
 	$.ajax({
-		url: "http://www.vhsys.no/api/",
+		url: `${host}/api/snapshots-legacy/${settings.place}`,
 		dataType: "jsonp",
 		cache: false,
 		data: {
 			from: CreateDateKeyDb(date_from),
-			to: CreateDateKeyDb(date_to),
-			place: settings.place,
-			testdata: kw.testapi
+			to: CreateDateKeyDb(date_to)
 		}
 	}).then(function (response) {
 		if (response && response.success) {
@@ -172,7 +172,8 @@ function GetDataFromAPI (from, to, callback) {
 				tmp_i: Round(parseFloat(item.inside_temperature), 1),
 				prs_o: parseInt(item.outside_pressure),
 				hum_o: parseFloat(item.outside_humidity),
-				img: item.image
+				img: item.image,
+				cuid: item.cuid
 			};
 
 			CreateImageUrl(parsedItem);
@@ -241,8 +242,8 @@ function Save () {
 		items.push($.extend({}, items_all[i]));
 	}
 
-	// Remove date property before saving
-	items.map(function (item) {
+	// Remove certain properties before saving
+	items.forEach(function (item) {
 		delete item.date;
 		delete item.img_url;
 	});

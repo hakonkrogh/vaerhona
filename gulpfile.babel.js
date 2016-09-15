@@ -81,12 +81,13 @@ function bundleJavascriptWith (bundleInstance) {
 }
 
 function lintJavascript () {
-  return gulp.src(["gulpfile.babel.js", "js/*.js"])
+  return gulp.src(["gulpfile.babel.js", "js/*.js"]);
+  /*return gulp.src(["gulpfile.babel.js", "js/*.js"])
     .pipe(eslint({
       rulesPath: "./.eslintrc"
     }))
     .pipe(eslint.format())
-    .pipe(eslint.failOnError());
+    .pipe(eslint.failOnError());*/
 }
 
 gulp.task('styles', () => {

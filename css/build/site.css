@@ -71,7 +71,6 @@
   margin: 100px 0 20px;
   background-size: 100% auto;
   background: -owg-linear-gradient(#12ae6f, #57d4a2);
-  -pie-background: -pie-linear-gradient(#12ae6f, #57d4a2);
   background: linear-gradient(#12ae6f, #57d4a2);
   -webkit-mask-image: url("/gfx/logo.png");
   -webkit-mask-size: 50px;
@@ -81,14 +80,10 @@
   -moz-mask-size: 50px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/logo.png");
-          mask-image: url("/gfx/logo.png");
-  -webkit-mask-size: 50px;
-          mask-size: 50px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/logo.png");
+  mask-size: 50px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .no-place-set .sub {
@@ -137,9 +132,8 @@ body {
   height: 100%;
   transition: -webkit-transform 1000ms;
   transition: transform 1000ms;
+  transition: transform 1000ms, -webkit-transform 1000ms;
   -webkit-transform-style: preserve-3d;
-  -ms-transform-style: preserve-3d;
-  -o-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 
@@ -157,8 +151,6 @@ body {
   height: 100%;
   background: #222;
   -webkit-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
@@ -221,14 +213,10 @@ body {
   -moz-mask-size: 20px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/thermometer.svg");
-          mask-image: url("/gfx/svg/thermometer.svg");
-  -webkit-mask-size: 20px;
-          mask-size: 20px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/thermometer.svg");
+  mask-size: 20px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .content-section.chart .types li.droplets:before {
@@ -240,14 +228,10 @@ body {
   -moz-mask-size: 20px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/droplets.svg");
-          mask-image: url("/gfx/svg/droplets.svg");
-  -webkit-mask-size: 20px;
-          mask-size: 20px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/droplets.svg");
+  mask-size: 20px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .content-section.chart .types li.compass:before {
@@ -259,14 +243,10 @@ body {
   -moz-mask-size: 20px;
   -moz-mask-position: center center;
   -moz-mask-repeat: no-repeat;
-  -webkit-mask-image: url("/gfx/svg/compass.svg");
-          mask-image: url("/gfx/svg/compass.svg");
-  -webkit-mask-size: 20px;
-          mask-size: 20px;
-  -webkit-mask-position: center center;
-          mask-position: center center;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
+  mask-image: url("/gfx/svg/compass.svg");
+  mask-size: 20px;
+  mask-position: center center;
+  mask-repeat: no-repeat;
 }
 
 .no.touch .content-section.chart .types li:hover {
