@@ -406,12 +406,10 @@ function GetDataFromAPI(from, to, callback) {
 	var date_from = new Date(from.getTime());
 	var date_to = new Date(to.getTime());
 
-	var host = location.host.indexOf('local2host') !== -1 ? "http://10.0.0.8:8000" : "https://vhlive.kroghweb.no";
+	var host = location.host.indexOf('localhost') !== -1 ? "http://10.0.0.8:8000" : "https://vhlive.kroghweb.no";
 
 	$.ajax({
 		url: host + '/api/snapshots-legacy/' + settings.place,
-		//url: "https://vhlive.kroghweb.no/api/snapshots/legacy",
-		//url: "http://www.vhsys.no/api/",
 		dataType: "jsonp",
 		cache: false,
 		data: {
