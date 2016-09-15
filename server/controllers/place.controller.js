@@ -1,5 +1,6 @@
 import Place from '../models/place';
 import cuid from 'cuid';
+import config from '../config';
 
 /**
  * Save a place
@@ -30,6 +31,10 @@ export function addPlaceRaw (place) {
       return reject('Missing place name');
     }
     
+    if (config.PROTECTED_ROOT_NAMES.includes(place.name)) {
+      return reject(`The name ${place.name} is protected and cannot be used`);
+    }
+
     const newPlace = new Place(place);
 
     if (!newPlace.cuid) {

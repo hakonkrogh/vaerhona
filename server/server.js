@@ -60,7 +60,7 @@ app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 
 app.use(Express.static(path.resolve(__dirname, '../dist')));
-app.use(Express.static(path.resolve(__dirname, '../static')));
+app.use('static', Express.static(path.resolve(__dirname, '../static')));
 
 app.use('/api', snapshots);
 app.use('/api', places);
@@ -87,15 +87,15 @@ const renderFullPage = (html, initialState) => {
 
         ${process.env.NODE_ENV === 'production' ? `<link rel='stylesheet' href='${assetsManifest['/app.css']}' />` : ''}
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png?v=5A5637bzNY">
-        <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">
-        <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">
-        <link rel="manifest" href="/favicons/manifest.json?v=5A5637bzNY">
-        <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">
-        <link rel="shortcut icon" href="/favicons/favicon.ico?v=5A5637bzNY">
+        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">
+        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">
+        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">
+        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">
+        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">
+        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">
         <meta name="msapplication-TileColor" content="#00628b">
-        <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png?v=5A5637bzNY">
-        <meta name="msapplication-config" content="/favicons/browserconfig.xml?v=5A5637bzNY">
+        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">
+        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">
         <meta name="theme-color" content="#ffffff">
       </head>
       <body>
