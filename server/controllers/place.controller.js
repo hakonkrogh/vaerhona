@@ -1,4 +1,5 @@
 import Place from '../models/place';
+import { getLatestSnapshotForPlace } from './snapshot.controller';
 import cuid from 'cuid';
 import config from '../config';
 
@@ -81,9 +82,50 @@ export function getPlace (req, res) {
 
   Place.findOne({ name: req.params.name }).exec((err, place) => {
     if (err) {
-      res.status(500).send(err);
+      return res.status(500).send(err);
     }
     res.json({ place });
+  });
+}
+
+/**
+ * Get the places to display on the front page
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function getFrontpagePlaces (req, res) {
+  Place
+  .find({
+    isPublic: true
+  })
+  .limit(10)
+  .exec((err, places) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    let snaphotsGetter = [];
+    let returnObj = [];
+
+    // Get the latest snapshot for each place
+    places.forEach(place => {
+      snaphotsGetter.push(new Promise((resolve, reject) => {
+        getLatestSnapshotForPlace(place)
+        .then(snapshot => {
+          place.lastSnapshot = snapshot;
+          returnObj.push(place);
+        })
+        .catch(err => reject(err));
+      }));
+    });
+
+    Promise.all(snaphotsGetter).then(() => {
+      res.json(returnObj);
+    }, error => {
+      return res.status(500).send(err);
+    });
+
   });
 }
 

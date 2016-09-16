@@ -279,6 +279,31 @@ export function addSnapshotRaw (snapshot = {}) {
 }
 
 /**
+ * Get the latest snapshot for a given place
+ * @param place
+ * @returns Prmomise
+ */
+export function getLatestSnapshotForPlace (place) {
+  return new Promise((resolve, reject) => {
+
+    if (!place || !place.cuid) {
+      return reject('Place is not defined correctly');
+    }
+
+    Snapshot.findOne({ placeCuid: place.cuid }).sort('dateAdded').exec((err, snapshot) => {
+      if (err) {
+        return reject(err);
+      }
+      if (!snapshot) {
+        reject('Could not find snapshot for place');
+      }
+      
+      resolve(snapshot);
+    });
+  })
+}
+
+/**
  * Get a single snapshot
  * @param req
  * @param res

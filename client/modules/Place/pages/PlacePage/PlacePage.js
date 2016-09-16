@@ -13,6 +13,7 @@ import { fetchPlace } from '../../../Place/PlaceActions';
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
+import { getAbsolutePathForImage } from '../../../../aws/s3';
 
 import AppIcon from '../../../../components/Icons/App';
 
@@ -75,9 +76,14 @@ export class PlacePage extends Component {
 		// We have a place, and it's got a name :)
 		if (this.props.selectedPlace && this.props.selectedPlace.name) {
 			const settingsLink = `/${this.props.selectedPlace.name}/settings`;
+			const firstImageLink = getAbsolutePathForImage({ place: this.props.selectedPlace, snapshot: this.props.snapshots[0] });
+
 			return (
 				<FullHeightWrapper>
-					<Helmet title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)} />
+					<Helmet
+						title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)}
+						link={[{ 'rel': 'prefetch', 'href': firstImageLink }]}
+					/>
 					<Header>
 						<AppIcon fill='#555' />
 						<div>{this.props.selectedPlace.name}</div>
