@@ -16,17 +16,17 @@ class RangeSlider extends Component {
     if (typeof document !== 'undefined' && !this.eventsBinded) {
       this.eventsBinded = true;
 
-      this.hammerMc = new Hammer.Manager(this.refs.outer);
-      //this.hammerMc.add(new Hammer.Pan());
-      //this.hammerMc.get('pan').set({ threshold: 0 });
-      //this.hammerMc.on('pan', this.onPan);
-      this.hammerMc.on('hammer.input', event => this.onPan(event));
+      this.hammertime = new Hammer.Manager(this.refs.wrap);
+      //this.hammertime.add(new Hammer.Pan());
+      //this.hammertime.get('pan').set({ threshold: 0 });
+      //this.hammertime.on('pan', this.onPan);
+      this.hammertime.on('hammer.input', event => this.onPan(event));
     }
   }
 
   componentWillUnmount () {
-    if (this.eventsBinded && this.hammerMc) {
-      this.hammerMc.destroy();
+    if (this.eventsBinded && this.hammertime) {
+      this.hammertime.destroy();
     }
   }
 
@@ -37,17 +37,10 @@ class RangeSlider extends Component {
     
     // Store dimensions for range
     if (event.isFirst) {
-      const children = this.refs.outer.childNodes;
-      if (children.length !== 1) {
-        throw new Error('The child count for the range slider outer is not 1 as assumed');
-      }
-
-      const child = children[0];
-
       this._tmpDimensions = {
-        width: child.clientWidth,
-        offsetLeft: child.offsetLeft,
-        outerWidth: this.refs.outer.clientWidth
+        width: this.refs.outer.clientWidth,
+        offsetLeft: this.refs.outer.offsetLeft,
+        outerWidth: this.refs.wrap.clientWidth
       };
     }
 
@@ -107,13 +100,13 @@ class RangeSlider extends Component {
     let lastDate = prettyDate(new Date(this.props.values[this.props.values.length - 1].dateAdded));
 
     return (
-      <div className={styles['range-slider'] + ' ' + (this.props.values.length <= 1 ? styles['range-slider--hide'] : '')} ref='outer'>
+      <div className={styles['range-slider'] + ' ' + (this.props.values.length <= 1 ? styles['range-slider--hide'] : '')} ref='wrap'>
         <div className={styles['range-slider__dates']}>
           <div className={styles['range-slider__dates__from']}>{firstDate}</div>
           <div className={styles['range-slider__dates__to']}>{lastDate}</div>
         </div>
 
-        <div className={styles['range-slider__outer']}>
+        <div className={styles['range-slider__outer']} ref='outer'>
           <div className={styles['range-slider__inner']}>
             <div className={styles['range-slider__line']}></div>
             <div className={styles['range-slider__indicator']} style={{ left: this.getIndicatorPercentage() + '%' }}></div>

@@ -3767,11 +3767,11 @@
 	      if (typeof document !== 'undefined' && !this.eventsBinded) {
 	        this.eventsBinded = true;
 
-	        this.hammerMc = new _hammerjs2.default.Manager(this.refs.outer);
-	        //this.hammerMc.add(new Hammer.Pan());
-	        //this.hammerMc.get('pan').set({ threshold: 0 });
-	        //this.hammerMc.on('pan', this.onPan);
-	        this.hammerMc.on('hammer.input', function (event) {
+	        this.hammertime = new _hammerjs2.default.Manager(this.refs.wrap);
+	        //this.hammertime.add(new Hammer.Pan());
+	        //this.hammertime.get('pan').set({ threshold: 0 });
+	        //this.hammertime.on('pan', this.onPan);
+	        this.hammertime.on('hammer.input', function (event) {
 	          return _this2.onPan(event);
 	        });
 	      }
@@ -3779,8 +3779,8 @@
 	  }, {
 	    key: 'componentWillUnmount',
 	    value: function componentWillUnmount() {
-	      if (this.eventsBinded && this.hammerMc) {
-	        this.hammerMc.destroy();
+	      if (this.eventsBinded && this.hammertime) {
+	        this.hammertime.destroy();
 	      }
 	    }
 	  }, {
@@ -3792,17 +3792,10 @@
 
 	      // Store dimensions for range
 	      if (event.isFirst) {
-	        var children = this.refs.outer.childNodes;
-	        if (children.length !== 1) {
-	          throw new Error('The child count for the range slider outer is not 1 as assumed');
-	        }
-
-	        var child = children[0];
-
 	        this._tmpDimensions = {
-	          width: child.clientWidth,
-	          offsetLeft: child.offsetLeft,
-	          outerWidth: this.refs.outer.clientWidth
+	          width: this.refs.outer.clientWidth,
+	          offsetLeft: this.refs.outer.offsetLeft,
+	          outerWidth: this.refs.wrap.clientWidth
 	        };
 	      }
 
@@ -3871,7 +3864,7 @@
 
 	      return _react2.default.createElement(
 	        'div',
-	        { className: _RangeSlider2.default['range-slider'] + ' ' + (this.props.values.length <= 1 ? _RangeSlider2.default['range-slider--hide'] : ''), ref: 'outer' },
+	        { className: _RangeSlider2.default['range-slider'] + ' ' + (this.props.values.length <= 1 ? _RangeSlider2.default['range-slider--hide'] : ''), ref: 'wrap' },
 	        _jsx('div', {
 	          className: _RangeSlider2.default['range-slider__dates']
 	        }, void 0, _jsx('div', {
@@ -3879,16 +3872,18 @@
 	        }, void 0, firstDate), _jsx('div', {
 	          className: _RangeSlider2.default['range-slider__dates__to']
 	        }, void 0, lastDate)),
-	        _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__outer']
-	        }, void 0, _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__inner']
-	        }, void 0, _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__line']
-	        }), _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__indicator'],
-	          style: { left: this.getIndicatorPercentage() + '%' }
-	        })))
+	        _react2.default.createElement(
+	          'div',
+	          { className: _RangeSlider2.default['range-slider__outer'], ref: 'outer' },
+	          _jsx('div', {
+	            className: _RangeSlider2.default['range-slider__inner']
+	          }, void 0, _jsx('div', {
+	            className: _RangeSlider2.default['range-slider__line']
+	          }), _jsx('div', {
+	            className: _RangeSlider2.default['range-slider__indicator'],
+	            style: { left: this.getIndicatorPercentage() + '%' }
+	          }))
+	        )
 	      );
 	    }
 	  }]);
