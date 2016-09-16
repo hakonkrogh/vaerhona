@@ -1,4 +1,6 @@
 import Express from 'express';
+import helmet from 'helmet';
+//import session = from 'express-session';
 import compression from 'compression';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
@@ -21,6 +23,9 @@ if (process.env.NODE_ENV === 'development') {
   app.use(webpackHotMiddleware(compiler));
 }
 
+// Ensure extra response headers
+app.use(helmet());
+
 // React And Redux Setup
 import { configureStore } from '../client/store';
 import { Provider } from 'react-redux';
@@ -42,16 +47,16 @@ const APP_CONFIG = {};
 APP_CONFIG.imageUrlBase = serverConfig.imageUrlBase;
 
 // MongoDB Connection
-mongoose.connect(serverConfig.mongoURL, (error) => {
+mongoose.connect(serverConfig.mongoURL, error => {
   if (error) {
     console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;
   }
 
   // feed some dummy data in DB.
-  //if (process.env.NODE_ENV === 'development') {
-  //  dummyData();
-  //}
+  if (process.env.NODE_ENV === 'development') {
+    dummyData();
+  }
 });
 
 // Apply body Parser and server public assets and routes
@@ -121,6 +126,20 @@ const renderError = err => {
     `:<br><br><pre style="color:red">${softTab}${err.stack.replace(/\n/g, `<br>${softTab}`)}</pre>` : '';
   return renderFullPage(`Server Error${errTrace}`, {});
 };
+
+// Basic session
+/*app.use(session({  
+  secret: 'mySecretCookieSalt',
+  key: 'myCookieSessionId', 
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    domain: 'example.com',
+    path: '/foo/bar',
+    // Cookie will expire in 1 hour from when it's generated 
+    expires: new Date( Date.now() + 60 * 60 * 1000 )
+  }
+}));*/
 
 // Server Side Rendering based on routes matched by React-router.
 app.use((req, res, next) => {

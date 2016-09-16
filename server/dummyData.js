@@ -1,3 +1,4 @@
+import cuid from 'cuid';
 import Snapshot from './models/snapshot';
 import Place from './models/place';
 import { addSnapshotRaw } from './controllers/snapshot.controller';
@@ -5,32 +6,31 @@ import fs from 'fs';
 
 export default function () {
 
-  const placeCuid = 'cikqgkv4q01ck7453ualdn3ha';
-
   Place.count().exec((err, count) => {
     if (count === 0) {
-      const place = new Place({ cuid: placeCuid, name: 'test' });
+      const places = [
+        new Place({ cuid: cuid(), name: 'test' }),
+        new Place({ cuid: cuid(), name: 'test2' }),
+        new Place({ cuid: cuid(), name: 'test3' })
+      ];
 
-      Place.create([place], error => {
+      Place.create(places, error => {
         if (!error) {
-          console.log(`Successfully added 1 dummy place: ${place.name}`);
+          console.log(`Successfully added ${places.length} dummy place(s)`);
 
-          checkSnapshots();
+          addSnapshots({ place: places[0] });
         }
         else {
           console.log(`Failed to add 1 dummy place:`, error);
         }
       });
     }
-    else {
-      checkSnapshots();
-    }
   });
   
-  function checkSnapshots () {
+  function addSnapshots ({ place }) {
     Snapshot.count().exec((err, count) => {
       
-      if (count > 0) {
+      if (count > 2) {
         return;
       }
 
@@ -66,7 +66,7 @@ export default function () {
           date.setHours(date.getHours() + 1);
 
           snapshots.push(addSnapshotRaw({
-            placeCuid,
+            placeCuid: place.cuid,
             image,
             temperature,
             humidity,

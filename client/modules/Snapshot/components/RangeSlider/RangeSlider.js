@@ -8,6 +8,8 @@ import Hammer from 'hammerjs';
 
 import styles from './RangeSlider.css';
 
+import { prettyDate, prettyTime } from '../../../../../shared/date';
+
 class RangeSlider extends Component {
 
   componentDidMount () {
@@ -100,15 +102,22 @@ class RangeSlider extends Component {
   }
 
   render () {
+
+    let firstDate = prettyDate(new Date(this.props.values[0].dateAdded));
+    let lastDate = prettyDate(new Date(this.props.values[this.props.values.length - 1].dateAdded));
+
     return (
-      <div className={styles['range-slider']} ref='outer'>
-        <div className={styles['range-slider__inner']}>
-          <div className={styles['range-slider__line']}></div>
-          {
-            this.props.values.length > 0
-            ? <div className={styles['range-slider__indicator']} style={{ left: this.getIndicatorPercentage() + '%' }}></div>
-            : null
-          }
+      <div className={styles['range-slider'] + ' ' + (this.props.values.length <= 1 ? styles['range-slider--hide'] : '')} ref='outer'>
+        <div className={styles['range-slider__dates']}>
+          <div className={styles['range-slider__dates__from']}>{firstDate}</div>
+          <div className={styles['range-slider__dates__to']}>{lastDate}</div>
+        </div>
+
+        <div className={styles['range-slider__outer']}>
+          <div className={styles['range-slider__inner']}>
+            <div className={styles['range-slider__line']}></div>
+            <div className={styles['range-slider__indicator']} style={{ left: this.getIndicatorPercentage() + '%' }}></div>
+          </div>
         </div>
       </div>
     );

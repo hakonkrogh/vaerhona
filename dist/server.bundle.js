@@ -66,6 +66,37 @@
 
 /***/ },
 /* 4 */
+/***/ function(module, exports) {
+
+	"use strict";
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var config = {
+	  mongoURL: process.env.MONGO_URL || 'mongodb://localhost:27017/vaerhona',
+	  port: process.env.PORT || 8000,
+	  aws: {}
+	};
+
+	var buckets = {
+	  'development': 'vaerhona-development',
+	  'staging': 'vaerhona-staging',
+	  'production': 'vaerhona'
+	};
+
+	config.aws.s3BucketName = buckets[process.env.AWS_PROFILE];
+	config.imageUrlBase = 'https://' + config.aws.s3BucketName + '.s3-eu-west-1.amazonaws.com';
+
+	config.PROTECTED_ROOT_NAMES = ['api', 'static', 'admin'];
+
+	Object.freeze(config);
+
+	exports.default = config;
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -127,7 +158,7 @@
 	exports.default = Header;
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -219,39 +250,10 @@
 	exports.default = PlaceReducer;
 
 /***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	module.exports = require("react-intl");
-
-/***/ },
 /* 7 */
 /***/ function(module, exports) {
 
-	"use strict";
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var config = {
-	  mongoURL: process.env.MONGO_URL || 'mongodb://localhost:27017/vaerhona',
-	  port: process.env.PORT || 8000,
-	  aws: {}
-	};
-
-	var buckets = {
-	  'development': 'vaerhona-development',
-	  'staging': 'vaerhona-staging',
-	  'production': 'vaerhona'
-	};
-
-	config.aws.s3BucketName = buckets[process.env.AWS_PROFILE];
-	config.imageUrlBase = 'https://' + config.aws.s3BucketName + '.s3-eu-west-1.amazonaws.com';
-
-	Object.freeze(config);
-
-	exports.default = config;
+	module.exports = require("react-intl");
 
 /***/ },
 /* 8 */
@@ -717,7 +719,7 @@
 	});
 	exports.localizationData = exports.enabledLanguages = undefined;
 
-	var _reactIntl = __webpack_require__(6);
+	var _reactIntl = __webpack_require__(7);
 
 	var _intl = __webpack_require__(73);
 
@@ -820,7 +822,7 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _Header = __webpack_require__(4);
+	var _Header = __webpack_require__(5);
 
 	var _Header2 = _interopRequireDefault(_Header);
 
@@ -908,11 +910,11 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _Header = __webpack_require__(4);
+	var _Header = __webpack_require__(5);
 
 	var _Header2 = _interopRequireDefault(_Header);
 
-	var _PlaceReducer = __webpack_require__(5);
+	var _PlaceReducer = __webpack_require__(6);
 
 	var _PlaceActions = __webpack_require__(8);
 
@@ -1126,7 +1128,7 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _reactIntl = __webpack_require__(6);
+	var _reactIntl = __webpack_require__(7);
 
 	var _SnapshotsNavigator = __webpack_require__(67);
 
@@ -1136,7 +1138,7 @@
 
 	var _FullHeightWrapper2 = _interopRequireDefault(_FullHeightWrapper);
 
-	var _Header = __webpack_require__(4);
+	var _Header = __webpack_require__(5);
 
 	var _Header2 = _interopRequireDefault(_Header);
 
@@ -1144,7 +1146,7 @@
 
 	var _PlaceActions = __webpack_require__(8);
 
-	var _PlaceReducer = __webpack_require__(5);
+	var _PlaceReducer = __webpack_require__(6);
 
 	var _SnapshotActions = __webpack_require__(9);
 
@@ -1300,13 +1302,13 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _reactIntl = __webpack_require__(6);
+	var _reactIntl = __webpack_require__(7);
 
 	var _PlaceActions = __webpack_require__(8);
 
-	var _PlaceReducer = __webpack_require__(5);
+	var _PlaceReducer = __webpack_require__(6);
 
-	var _Header = __webpack_require__(4);
+	var _Header = __webpack_require__(5);
 
 	var _Header2 = _interopRequireDefault(_Header);
 
@@ -1388,7 +1390,7 @@
 
 	var _reactRedux = __webpack_require__(1);
 
-	var _reactIntl = __webpack_require__(6);
+	var _reactIntl = __webpack_require__(7);
 
 	var _reactRouter = __webpack_require__(3);
 
@@ -1629,7 +1631,7 @@
 
 	var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
-	var _config = __webpack_require__(7);
+	var _config = __webpack_require__(4);
 
 	var _config2 = _interopRequireDefault(_config);
 
@@ -1689,6 +1691,10 @@
 
 	var _cuid2 = _interopRequireDefault(_cuid);
 
+	var _config = __webpack_require__(4);
+
+	var _config2 = _interopRequireDefault(_config);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	/**
@@ -1720,6 +1726,10 @@
 
 	    if (!place || !place.name) {
 	      return reject('Missing place name');
+	    }
+
+	    if (_config2.default.PROTECTED_ROOT_NAMES.includes(place.name)) {
+	      return reject('The name ' + place.name + ' is protected and cannot be used');
 	    }
 
 	    var newPlace = new _place2.default(place);
@@ -1807,6 +1817,7 @@
 	  value: true
 	});
 	exports.getSnapshots = getSnapshots;
+	exports.getSnapshotsLegacy = getSnapshotsLegacy;
 	exports.addSnapshot = addSnapshot;
 	exports.addSnapshotLegacy = addSnapshotLegacy;
 	exports.addSnapshotRaw = addSnapshotRaw;
@@ -1849,7 +1860,7 @@
 	    }
 
 	    if (!place) {
-	      return res.status(500).send('Error: place not found');
+	      return res.status(500).send('Error: place not found!');
 	    }
 
 	    _snapshot2.default.find({ placeCuid: place.cuid }).sort('dateAdded').exec(function (err, snapshots) {
@@ -1857,13 +1868,58 @@
 	        return res.status(500).send(err);
 	      }
 
-	      var returnSnapshots = snapshots.map(function (item) {
-	        item.temperature = Math.round(item.temperature * 10) / 10;
-	        return item;
-	      });
-
 	      res.json({
-	        snapshots: returnSnapshots
+	        snapshots: snapshots.map(function (item) {
+	          item.temperature = Math.round(item.temperature * 10) / 10;
+	          return item;
+	        })
+	      });
+	    });
+	  });
+	}
+
+	/**
+	 * Get all snapshots (legacy method used by old værhøna.no)
+	 * @param req
+	 * @param res
+	 * @returns void
+	 */
+	function getSnapshotsLegacy(req, res) {
+
+	  // Get place by name
+	  _place2.default.findOne({ name: req.params.placeName }).exec(function (err, place) {
+	    if (err) {
+	      return res.status(500).send(err);
+	    }
+
+	    if (!place) {
+	      return res.status(500).send('Error: place not found!');
+	    }
+
+	    _snapshot2.default.find({ placeCuid: place.cuid }).sort('dateAdded').exec(function (err, snapshots) {
+	      if (err) {
+	        return res.status(500).send(err);
+	      }
+
+	      res.jsonp({
+	        success: true,
+	        message: '',
+	        firstSnapshotTime: Math.floor(new Date(snapshots[snapshots.length - 1].dateAdded).getTime() / 1000),
+	        data: snapshots.map(function (item) {
+	          var snp = {};
+	          snp.temperature = Math.round(item.temperature * 10) / 10;
+	          snp.time = Math.floor(new Date(item.dateAdded).getTime() / 1000);
+	          snp.outside_temperature = item.temperature;
+	          snp.outside_pressure = item.pressure;
+	          snp.outside_humidity = item.humidity;
+	          snp.outside_altitude = 0;
+	          snp.image = item.cuid + '.jpg';
+	          snp.image_base64 = null;
+	          snp.motion_event = 0;
+	          snp.complete = "1";
+	          snp.cuid = item.cuid;
+	          return snp;
+	        })
 	      });
 	    });
 	  });
@@ -2255,7 +2311,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactIntl = __webpack_require__(6);
+	var _reactIntl = __webpack_require__(7);
 
 	var _reactRedux = __webpack_require__(1);
 
@@ -2594,6 +2650,9 @@
 	// Get all snapshots
 	router.route('/snapshots/:placeName').get(SnapshotController.getSnapshots);
 
+	// Get all snapshots (legacy)
+	router.route('/snapshots-legacy/:placeName').get(SnapshotController.getSnapshotsLegacy);
+
 	// Get one snapshot by cuid
 	//router.route('/snapshots/:cuid').get(SnapshotController.getSnapshot);
 
@@ -2833,7 +2892,7 @@
 	});
 	exports.getAbsolutePathForImage = getAbsolutePathForImage;
 
-	var _config = __webpack_require__(7);
+	var _config = __webpack_require__(4);
 
 	var _config2 = _interopRequireDefault(_config);
 
@@ -3356,7 +3415,7 @@
 
 	var _DevTools2 = _interopRequireDefault(_DevTools);
 
-	var _Header = __webpack_require__(4);
+	var _Header = __webpack_require__(5);
 
 	var _Header2 = _interopRequireDefault(_Header);
 
@@ -3990,7 +4049,7 @@
 
 	var _keycode2 = _interopRequireDefault(_keycode);
 
-	var _PlaceReducer = __webpack_require__(5);
+	var _PlaceReducer = __webpack_require__(6);
 
 	var _SnapshotReducer = __webpack_require__(10);
 
@@ -4513,7 +4572,7 @@
 
 	var _SnapshotReducer2 = _interopRequireDefault(_SnapshotReducer);
 
-	var _PlaceReducer = __webpack_require__(5);
+	var _PlaceReducer = __webpack_require__(6);
 
 	var _PlaceReducer2 = _interopRequireDefault(_PlaceReducer);
 
@@ -4552,7 +4611,7 @@
 
 	var _awsSdk2 = _interopRequireDefault(_awsSdk);
 
-	var _config = __webpack_require__(7);
+	var _config = __webpack_require__(4);
 
 	var _config2 = _interopRequireDefault(_config);
 
@@ -4725,7 +4784,7 @@
 
 	var _dummyData2 = _interopRequireDefault(_dummyData);
 
-	var _config = __webpack_require__(7);
+	var _config = __webpack_require__(4);
 
 	var _config2 = _interopRequireDefault(_config);
 
@@ -4770,7 +4829,7 @@
 	app.use(_bodyParser2.default.urlencoded({ limit: '20mb', extended: false }));
 
 	app.use(_express2.default.static(_path2.default.resolve(__dirname, '../dist')));
-	app.use(_express2.default.static(_path2.default.resolve(__dirname, '../static')));
+	app.use('static', _express2.default.static(_path2.default.resolve(__dirname, '../static')));
 
 	app.use('/api', _snapshot2.default);
 	app.use('/api', _place2.default);
@@ -4783,7 +4842,7 @@
 	  var assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
 	  var chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
 
-	  return '\n    <!doctype html>\n    <html>\n      <head>\n        ' + head.base.toString() + '\n        ' + head.title.toString() + '\n        ' + head.meta.toString() + '\n        ' + head.link.toString() + '\n        ' + head.script.toString() + '\n\n        <script>window.__APP_CONFIG__ = ' + JSON.stringify(APP_CONFIG) + '</script>\n\n        ' + (process.env.NODE_ENV === 'production' ? '<link rel=\'stylesheet\' href=\'' + assetsManifest['/app.css'] + '\' />' : '') + '\n\n        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png?v=5A5637bzNY">\n        <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">\n        <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">\n        <link rel="manifest" href="/favicons/manifest.json?v=5A5637bzNY">\n        <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">\n        <link rel="shortcut icon" href="/favicons/favicon.ico?v=5A5637bzNY">\n        <meta name="msapplication-TileColor" content="#00628b">\n        <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png?v=5A5637bzNY">\n        <meta name="msapplication-config" content="/favicons/browserconfig.xml?v=5A5637bzNY">\n        <meta name="theme-color" content="#ffffff">\n      </head>\n      <body>\n        <div id="root">' + (process.env.NODE_ENV === 'production' ? html : '<div>' + html + '</div>') + '</div>\n        <script>\n          window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + ';\n          ' + (process.env.NODE_ENV === 'production' ? '//<![CDATA[\n          window.webpackManifest = ' + JSON.stringify(chunkManifest) + ';\n          //]]>' : '') + '\n        </script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js') + '\'></script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js') + '\'></script>\n        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>\n      </body>\n    </html>\n  ';
+	  return '\n    <!doctype html>\n    <html>\n      <head>\n        ' + head.base.toString() + '\n        ' + head.title.toString() + '\n        ' + head.meta.toString() + '\n        ' + head.link.toString() + '\n        ' + head.script.toString() + '\n\n        <script>window.__APP_CONFIG__ = ' + JSON.stringify(APP_CONFIG) + '</script>\n\n        ' + (process.env.NODE_ENV === 'production' ? '<link rel=\'stylesheet\' href=\'' + assetsManifest['/app.css'] + '\' />' : '') + '\n\n        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">\n        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">\n        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">\n        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">\n        <meta name="msapplication-TileColor" content="#00628b">\n        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">\n        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">\n        <meta name="theme-color" content="#ffffff">\n      </head>\n      <body>\n        <div id="root">' + (process.env.NODE_ENV === 'production' ? html : '<div>' + html + '</div>') + '</div>\n        <script>\n          window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + ';\n          ' + (process.env.NODE_ENV === 'production' ? '//<![CDATA[\n          window.webpackManifest = ' + JSON.stringify(chunkManifest) + ';\n          //]]>' : '') + '\n        </script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js') + '\'></script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js') + '\'></script>\n        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>\n      </body>\n    </html>\n  ';
 	};
 
 	var renderError = function renderError(err) {

@@ -31,10 +31,23 @@ export class App extends Component {
   }
 
   render () {
+
+    let containerClassName = styles.container;
+    if (typeof process !== 'undefined') {
+      if (process.env.NODE_ENV === 'development') {
+        containerClassName = styles['container--development'];
+      }
+    }
+    else if (typeof location !== 'undefined') {
+      if (location.host.includes('localhost')) {
+        containerClassName = styles['container--development'];
+      }
+    }
+
     return (
       <div>
         {this.state.isMounted && !window.devToolsExtension && window.location.host.includes('localhost') && process.env.NODE_ENV === 'development' && <DevTools />}
-        <div className={styles.container}>
+        <div className={containerClassName}>
           <Helmet
             title="Værhøna"
             titleTemplate="%s - Værhøna"

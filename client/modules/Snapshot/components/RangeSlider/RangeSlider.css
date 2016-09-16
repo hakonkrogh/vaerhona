@@ -1,9 +1,58 @@
 .range-slider {
-	height: 40px;
+	height: 60px;
 	display: flex;
-	padding: 0 20px;
+  flex-direction: column;
   user-select: none;
   touch-action: none;
+}
+
+.range-slider--hide {
+  visibility: hidden;
+}
+
+.range-slider__dates {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  height: 20px;
+  padding-top: 10px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.range-slider__dates__from {
+  padding-left: 10px;
+  position: relative;
+}
+.range-slider__dates__from::before {
+  content: "";
+  height: 10px;
+  width: 1px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #a0a0a0;
+}
+
+.range-slider__dates__to {
+  padding-right: 10px;
+  position: relative;
+}
+.range-slider__dates__to::before {
+  content: "";
+  height: 11px;
+  width: 1px;
+  position: absolute;
+  top: 20px;
+  right: 19px;
+  background: #a0a0a0;
+}
+
+.range-slider__outer {
+  padding: 0 20px;
+  display: flex;
+  height: 40px;
 }
 
 .range-slider__inner {
