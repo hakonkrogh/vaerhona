@@ -4064,11 +4064,17 @@
 	    value: function render() {
 	      var _this3 = this;
 
+	      var innerStyle = {};
+
+	      if (typeof location !== 'undefined' && location.host.includes('localhost')) {
+	        innerStyle.maxWidth = '600px';
+	      }
+
 	      return _jsx('div', {
 	        className: _SnapshotGraph2.default['outer']
 	      }, void 0, _react2.default.createElement(
 	        'div',
-	        { className: _SnapshotGraph2.default['inner'], ref: 'inner' },
+	        { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' },
 	        _react2.default.createElement('canvas', { ref: 'canvas' })
 	      ), _jsx('div', {
 	        className: _SnapshotGraph2.default['prop-chooser']

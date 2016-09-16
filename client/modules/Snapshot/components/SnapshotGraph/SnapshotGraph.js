@@ -116,9 +116,15 @@ class SnapshotGraph extends Component {
   }
 
   render () {
+    let innerStyle = {};
+
+    if (typeof location !== 'undefined' && location.host.includes('localhost')) {
+      innerStyle.maxWidth = '600px';
+    }
+
     return (
       <div className={styles['outer']}>
-        <div className={styles['inner']} ref='inner'>
+        <div className={styles['inner']} style={innerStyle} ref='inner'>
           <canvas ref='canvas'></canvas>
         </div>
         <div className={styles['prop-chooser']}>
