@@ -2,7 +2,7 @@ import Hammer from 'hammerjs';
 
 export default class PointerHandler {
 
-  constructor ({ element, onPointerDownAndRepeat }) {
+  constructor ({ element, onPointerDownAndRepeat, onSwipe }) {
     
     if (!element && typeof document !== 'undefined') {
       element = document;
@@ -10,6 +10,7 @@ export default class PointerHandler {
 
     this.element = element;
     this.onPointerDownAndRepeat = onPointerDownAndRepeat;
+    this.onSwipe = onSwipe;
 
     this.intervalAndTimeoutIds = [];
 
@@ -17,25 +18,32 @@ export default class PointerHandler {
   }
   
   bind () {
-    this.hammerMc = new Hammer(this.element);
+    this.hammertime = new Hammer(this.element);
 
-    this.hammerMc.get('press').set({
-      time: 150
-    });
-
-    this.hammerMc.on('press', event => this.startInterval(event));
-    this.hammerMc.on('pressup', event => this.stopInterval());
-    this.hammerMc.on('hammer.input', event => {
-      if (event.isFirst && event.pointers.length === 1) {
+    this.hammertime.get('press').set({ time: 150 });
+    this.hammertime.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
+    
+    this.hammertime.on('tap', event => {
+      if (event.pointers.length === 1) {
         this.onPointerDownAndRepeat(event);
         this.lastRecordedEvent = event;
+      }
+    });
+    this.hammertime.on('press', event => this.startInterval(event));
+    this.hammertime.on('pressup', event => this.stopInterval());
+    this.hammertime.on('swipe', event => {
+      if (event.deltaX < 0) {
+        this.onSwipe('left');
+      }
+      else {
+        this.onSwipe('right');
       }
     });
   }
 
   unBind () {
-    if (this.hammerMc) {
-      this.hammerMc.destroy();
+    if (this.hammertime) {
+      this.hammertime.destroy();
     }
 
     this.stopInterval();

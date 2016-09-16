@@ -22,12 +22,14 @@ class SnapshotImage extends Component {
     if (typeof document !== 'undefined') {
 
       this.keyHandler = new KeyHandler({
+        element: document,
         onKeyPressAndRepeat: this.navigateFromKeyDown.bind(this)
       });
 
       this.pointerHandler = new PointerHandler({
         element: this.refs.image,
-        onPointerDownAndRepeat: this.onImageClick.bind(this)
+        onPointerDownAndRepeat: this.onImageClick.bind(this),
+        onSwipe: this.onImageSwipe.bind(this)
       });
       
     }
@@ -66,6 +68,15 @@ class SnapshotImage extends Component {
     this.props.dispatch(showSnapshotFromIndex(data.index));
   }
 
+  onImageSwipe (direction) {
+    if (direction === 'left') {
+      return this.navigate({ direction: 'prev' });
+    }
+    else {
+      return this.navigate({ direction: 'next' });
+    }
+  }
+
   onImageClick (event) {
     
     // Determine position
@@ -73,11 +84,11 @@ class SnapshotImage extends Component {
     const imageWidth = this.refs.image.offsetWidth;
     const position = (clientX / imageWidth) * 100;
     
-    if (position > 50) {
-      return this.navigate({ direction: 'next' });
+    if (position < 50) {
+      return this.navigate({ direction: 'prev' });
     }
     else {
-      return this.navigate({ direction: 'prev' });
+      return this.navigate({ direction: 'next' });
     }
   }
 
