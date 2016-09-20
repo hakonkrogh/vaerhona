@@ -3705,7 +3705,7 @@
 	          content: 'IE=edge'
 	        }, {
 	          name: 'viewport',
-	          content: 'width=device-width, initial-scale=1'
+	          content: 'width=device-width, initial-scale=1, minimal-ui'
 	        }]
 	      }), _jsx('div', {}, void 0, this.props.children)));
 	    }
