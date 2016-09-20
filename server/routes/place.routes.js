@@ -9,6 +9,9 @@ router.route('/places').post(PlaceController.addPlace);
 // Get all places
 router.route('/places').get(PlaceController.getPlaces);
 
+// Get all places for frontpage
+router.route('/placesfrontpage').get(PlaceController.getFrontpagePlaces);
+
 // Get one place by name
 router.route('/places/:name').get(PlaceController.getPlace);
 

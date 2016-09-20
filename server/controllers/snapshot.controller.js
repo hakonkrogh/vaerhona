@@ -30,8 +30,7 @@ export function getSnapshots (req, res) {
 
       res.json({
         snapshots: snapshots.map(item => {
-          item.temperature = (Math.round(item.temperature * 10) / 10);
-          return item;
+          return normalizeSnapshot(item);
         })
       });
     });
@@ -67,7 +66,6 @@ export function getSnapshotsLegacy (req, res) {
         firstSnapshotTime: Math.floor(new Date(snapshots[snapshots.length - 1].dateAdded).getTime() / 1000),
         data: snapshots.map(item => {
           let snp = {};
-          snp.temperature = (Math.round(item.temperature * 10) / 10);
           snp.time = Math.floor(new Date(item.dateAdded).getTime() / 1000);
           snp.outside_temperature = item.temperature;
           snp.outside_pressure = item.pressure;
@@ -78,7 +76,7 @@ export function getSnapshotsLegacy (req, res) {
           snp.motion_event = 0;
           snp.complete = "1";
           snp.cuid = item.cuid;
-          return snp;
+          return normalizeSnapshot(snp);
         })
       });
     });
@@ -290,17 +288,31 @@ export function getLatestSnapshotForPlace (place) {
       return reject('Place is not defined correctly');
     }
 
-    Snapshot.findOne({ placeCuid: place.cuid }).sort('dateAdded').exec((err, snapshot) => {
+    Snapshot.findOne({ placeCuid: place.cuid }).sort('-dateAdded').exec((err, snapshot) => {
+      
       if (err) {
         return reject(err);
       }
-      if (!snapshot) {
-        reject('Could not find snapshot for place');
-      }
-      
-      resolve(snapshot);
+
+      resolve(normalizeSnapshot(snapshot));
     });
   })
+}
+
+/**
+ * Normalize values for a snapshot
+ * @param snapshot
+ * @returns object
+ */
+function normalizeSnapshot (snapshot) {
+
+  if (!snapshot) {
+    return;
+  }
+
+  snapshot.temperature = (Math.round(snapshot.temperature * 10) / 10);
+
+  return snapshot;
 }
 
 /**

@@ -16,12 +16,18 @@ const need = [
 
 export class PlacesListPage extends Component {
 
-  componentDidMount () {
+  componentWillMount () {
+    this.setState({ mounted: true });
+  }
 
+  componentDidMount () {
+    console.log('mount..', this.state);
     // We need to get data if we navigate to here client side
-    if ((!this.props.places || this.props.places.length === 0) && this.props.params) {
-      console.log('need to get places...', this.props.places);
-      need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+    if (this.state && this.state.mounted) {
+      if (this.props.places.length === 0) {
+        console.log('need to get places...', this.props.places);
+        need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+      }
     }
   }
 

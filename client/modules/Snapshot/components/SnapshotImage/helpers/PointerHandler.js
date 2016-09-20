@@ -30,7 +30,7 @@ export default class PointerHandler {
       }
     });
     this.hammertime.on('press', event => this.startInterval(event));
-    this.hammertime.on('pressup', event => this.stopInterval());
+    this.hammertime.on('pressup', event => this.stopTimeoutAndIntervals());
     this.hammertime.on('swipe', event => {
       if (event.deltaX < 0) {
         this.onSwipe('left');
@@ -46,32 +46,36 @@ export default class PointerHandler {
       this.hammertime.destroy();
     }
 
-    this.stopInterval();
+    this.stopTimeoutAndIntervals();
   }
 
   startInterval (event) {
     this.lastRecordedEvent = event;
 
-    this.stopInterval();
+    this.stopTimeoutAndIntervals();
 
     this.intervalTick();
 
     // Initially, the intervals are 100ms apart
-    this.intervalAndTimeoutIds.push(setTimeout(() => {
-      this.intervalAndTimeoutIds.push(setInterval(this.intervalTick.bind(this), 75));
+    this.timeoutIds.push(setTimeout(() => {
+      this.intervalIds.push(setInterval(this.intervalTick.bind(this), 75));
 
       // Then, after 500ms, the intervals are 25ms apart
-      this.intervalAndTimeoutIds.push(setTimeout(() => {
-        this.stopInterval();
-        this.intervalAndTimeoutIds.push(setInterval(this.intervalTick.bind(this), 35));
+      this.timeoutIds.push(setTimeout(() => {
+        this.stopTimeoutAndIntervals();
+        this.intervalIds.push(setInterval(this.intervalTick.bind(this), 35));
       }, 500));
     }, 75));
   }
 
-  stopInterval () {
-    if (this.intervalAndTimeoutIds && this.intervalAndTimeoutIds.length > 0) {
-      this.intervalAndTimeoutIds.forEach(id => clearTimeout(id));
-      this.intervalAndTimeoutIds.length = 0;
+  stopTimeoutAndIntervals () {
+    if (this.timeoutIds) {
+      this.timeoutIds.forEach(id => clearTimeout(id));
+      this.timeoutIds.length = 0;
+    }
+    if (this.intervalIds) {
+      this.intervalIds.forEach(id => clearInterval(id));
+      this.intervalIds.length = 0;
     }
   }
 

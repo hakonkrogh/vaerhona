@@ -1,0 +1,23 @@
+.place-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.place-preview-list__item {
+  width: 200px;
+  height: 180px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  text-align: center;
+  text-decoration: none;
+  text-transform: capitalize;
+  margin: 0 20px 20px;
+}
+
+.place-preview-list__image {
+  max-width: 100%;
+  margin-bottom: 5px;
+}

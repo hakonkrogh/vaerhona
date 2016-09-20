@@ -3,6 +3,7 @@ import callApi from '../../util/apiCaller';
 // Export Constants
 export const ADD_PLACE = 'ADD_PLACE';
 export const ADD_PLACES = 'ADD_PLACES';
+export const ADD_FRONTPAGE_PLACES = 'ADD_FRONTPAGE_PLACES';
 export const DELETE_PLACE = 'DELETE_PLACE';
 export const UNSELECT_PLACE = 'UNSELECT_PLACE';
 
@@ -38,10 +39,25 @@ export function addPlaces (places) {
   };
 }
 
+export function addFrontpagePlaces (places) {
+  return {
+    type: ADD_FRONTPAGE_PLACES,
+    places
+  };
+}
+
 export function fetchPlaces () {
   return dispatch => {
     return callApi('places').then(res => {
       dispatch(addPlaces(res.places));
+    });
+  };
+}
+
+export function fetchFrontpagePlaces () {
+  return dispatch => {
+    return callApi('placesfrontpage').then(res => {
+      dispatch(addFrontpagePlaces(res.places));
     });
   };
 }

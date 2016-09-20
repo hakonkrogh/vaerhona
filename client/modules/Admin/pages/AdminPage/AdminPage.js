@@ -14,8 +14,9 @@ export class AdminPage extends Component {
         <Helmet title="Admin" />
         <div>
           <Header>Admin</Header>
-          Admin pages...
-          <div><Link to='/admin/places'>Places</Link></div>
+          <ul className={styles['list']}>
+            <li><Link to='/admin/places'>Places</Link></li>
+          </ul>
         </div>
       </div>
     );

@@ -9,9 +9,9 @@ export default function () {
   Place.count().exec((err, count) => {
     if (count === 0) {
       const places = [
-        new Place({ cuid: cuid(), name: 'test' }),
-        new Place({ cuid: cuid(), name: 'test2' }),
-        new Place({ cuid: cuid(), name: 'test3' })
+        new Place({ cuid: cuid(), name: 'test' , isPublic: true }),
+        new Place({ cuid: cuid(), name: 'test2', isPublic: true }),
+        new Place({ cuid: cuid(), name: 'test3', isPublic: true })
       ];
 
       Place.create(places, error => {

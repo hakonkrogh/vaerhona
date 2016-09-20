@@ -1,6 +1,7 @@
 import {
   ADD_PLACE,
   ADD_PLACES,
+  ADD_FRONTPAGE_PLACES,
   DELETE_PLACE,
   UNSELECT_PLACE,
   CHANGE_MAIN_NAVIGATION
@@ -9,20 +10,37 @@ import {
 // Initial State
 const initialState = {
   data: [],
+  frontpagePlaces: [],
   selected: false
 };
 
 const PlaceReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_PLACE :
+
+      let data = state.data;
+      let isInData = false;
+      for (let item of data) {
+        if (item.cuid === action.place.cuid) {
+          isInData = true;
+          break;
+        }
+      }
+
+      if (!isInData) {
+        data = [action.place, ...data];
+      }
+
       return {
-        data: [action.place, ...state.data],
+        data,
+        frontpagePlaces: state.frontpagePlaces,
         selected: action.place
       };
 
     case ADD_PLACES :
       return {
         data: [...state.data, ...action.places],
+        frontpagePlaces: state.frontpagePlaces,
         selected: !state.selected && action.places ? action.places[action.places.length - 1] : state.selected
       };
 
@@ -36,13 +54,22 @@ const PlaceReducer = (state = initialState, action) => {
 
       return {
         data: state.data.filter(place => place.cuid !== action.cuid),
+        frontpagePlaces: state.frontpagePlaces,
         selected
       };
 
     case UNSELECT_PLACE :
       return {
         data: state.data,
+        frontpagePlaces: state.frontpagePlaces,
         selected: initialState.selected
+      }
+
+    case ADD_FRONTPAGE_PLACES :
+      return {
+        data: state.data,
+        frontpagePlaces: action.places,
+        selected: state.selected
       }
 
     default:
@@ -54,6 +81,9 @@ const PlaceReducer = (state = initialState, action) => {
 
 // Get all places
 export const getPlaces = state => state.places.data;
+
+// Get all places for frontpage
+export const getFrontpagePlaces = state => state.places.frontpagePlaces;
 
 // Get selected place
 export const getSelectedPlace = state => state.places.selected;

@@ -7,6 +7,10 @@ import {
   SHOW_SNAPSHOT_FROM_INDEX
 } from './SnapshotActions';
 
+import {
+  UNSELECT_PLACE
+} from './../Place/PlaceActions';
+
 // Initial State
 const initialState = { data: [], selected: false };
 
@@ -86,6 +90,13 @@ const SnapshotReducer = (state = initialState, action) => {
       return {
         data: state.data,
         selected: state.data[action.index] || state.selected
+      };
+
+    case UNSELECT_PLACE :
+      
+      return {
+        data: initialState.data,
+        selected: initialState.selected
       };
 
     default:

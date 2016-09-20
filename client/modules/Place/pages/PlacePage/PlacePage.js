@@ -25,14 +25,25 @@ const need = [
 
 export class PlacePage extends Component {
 
+	componentWillMount () {
+    this.setState({ mounted: true });
+  }
+
 	componentDidMount () {
 
 		// Client side stuff
 		if (typeof document !== 'undefined') {
 
 			// We need to get data if we navigate to here client side
+			//if (!this.state || !)
 			if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
-				need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+				if (!this.state.gotDataClientSide) {
+					this.setState({ gotDataClientSide: true });
+					need.forEach(fn => {
+						console.log(fn);
+						this.props.dispatch(fn(this.props.params));
+					});
+				}
 			}
 
 			/*if (!this.props.selectedPlace) {

@@ -31,7 +31,7 @@
   width: 1px;
   position: absolute;
   top: 20px;
-  left: 20px;
+  left: 40px;
   background: #a0a0a0;
 }
 
@@ -45,12 +45,12 @@
   width: 1px;
   position: absolute;
   top: 20px;
-  right: 19px;
+  right: 39px;
   background: #a0a0a0;
 }
 
 .range-slider__outer {
-  padding: 0 20px;
+  padding: 0 40px;
   display: flex;
   height: 40px;
 }

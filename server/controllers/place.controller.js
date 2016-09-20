@@ -59,7 +59,6 @@ export function addPlaceRaw (place) {
  * @returns void
  */
 export function getPlaces (req, res) {
-  
   Place.find().exec((err, places) => {
     if (err) {
       res.status(500).send(err);
@@ -95,29 +94,34 @@ export function getPlace (req, res) {
  * @returns void
  */
 export function getFrontpagePlaces (req, res) {
+  
   Place
   .find({
     isPublic: true
   })
   .limit(10)
   .exec((err, places) => {
+
     if (err) {
       return res.status(500).send(err);
     }
 
     let snaphotsGetter = [];
-    let returnObj = [];
+    let returnObj = { places: [] };
 
     // Get the latest snapshot for each place
     places.forEach(place => {
-      snaphotsGetter.push(new Promise((resolve, reject) => {
+      snaphotsGetter.push(
         getLatestSnapshotForPlace(place)
         .then(snapshot => {
-          place.lastSnapshot = snapshot;
-          returnObj.push(place);
+          if (snapshot) {
+            returnObj.places.push({
+              place,
+              snapshot
+            });
+          }
         })
-        .catch(err => reject(err));
-      }));
+      );
     });
 
     Promise.all(snaphotsGetter).then(() => {
