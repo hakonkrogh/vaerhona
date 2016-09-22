@@ -17,6 +17,8 @@ import { getAbsolutePathForImage } from '../../../../aws/s3';
 
 import AppIcon from '../../../../components/Icons/App';
 
+import styles from './PlacePage.css';
+
 // Define the data dependencies
 const need = [
 	params => fetchPlace(params.placeName),
@@ -40,7 +42,7 @@ export class PlacePage extends Component {
 				if (!this.state.gotDataClientSide) {
 					this.setState({ gotDataClientSide: true });
 					need.forEach(fn => {
-						console.log(fn);
+						console.log('execute fn in need', fn);
 						this.props.dispatch(fn(this.props.params));
 					});
 				}
@@ -70,14 +72,16 @@ export class PlacePage extends Component {
 
 	render () {
 
+		let appIcon = (<AppIcon className={styles['header-icon']} />);
+
 		// Waiting for place...
 		if ((this.state && this.state.loading) || (!this.props.snapshots || this.props.snapshots.length === 0)) {
 			return (
 				<FullHeightWrapper>
 					<Helmet title="Loading..." />
 					<Header>
-						<AppIcon fill='#555' />
-						<div>Loading....</div>
+						{appIcon}
+						<div className={styles['header-title']}>Loading....</div>
 					</Header>
 					<div>Loading...</div>
 				</FullHeightWrapper>
@@ -96,8 +100,8 @@ export class PlacePage extends Component {
 						link={[{ 'rel': 'prefetch', 'href': firstImageLink }]}
 					/>
 					<Header>
-						<AppIcon fill='#555' />
-						<div>{this.props.selectedPlace.name}</div>
+						{appIcon}
+						<div className={styles['header-title']}>{this.props.selectedPlace.name}</div>
 						{/*<Link to={settingsLink}>Settings</Link>*/}
 					</Header>
 					<SnapshotsNavigator snapshots={this.props.snapshots} place={this.props.selectedPlace} />
@@ -110,8 +114,8 @@ export class PlacePage extends Component {
 			<FullHeightWrapper>
 				<Helmet title="Not a valid place" />
 				<Header>
-					<AppIcon fill='#555' />
-					<div>Not a valid place</div>
+					{appIcon}
+					<div className={styles['header-title']}>Not a valid place</div>
 				</Header>
 				<div>The place {this.props.params.placeName} not found</div>
 			</FullHeightWrapper>

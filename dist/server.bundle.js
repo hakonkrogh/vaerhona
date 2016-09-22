@@ -1419,6 +1419,7 @@
 	      var width = _props.width;
 	      var height = _props.height;
 	      var fill = _props.fill;
+	      var className = _props.className;
 
 
 	      var style = {
@@ -1433,14 +1434,15 @@
 	      return _jsx('svg', {
 	        version: '1.1',
 	        viewBox: '0,0,1000,1000',
-	        style: style
+	        style: style,
+	        className: className
 	      }, void 0, _ref, _jsx('path', {
+	        d: 'M483.332+267.028L507.07+267.028L507.07+691.676L483.332+691.676L483.332+267.028Z',
+	        fill: fillBar
+	      }), _jsx('path', {
 	        d: 'M504.812+70.1562C383.086+70.1562+285.321+175.736+244.16+292.084C252.666+280.01+286.003+256.484+312.732+262.295C336.966+267.563+356.396+308.135+356.634+308.655C361.467+302.156+391.754+264.051+438.772+272.046C469.501+277.271+492.461+331.34+493.151+332.665C493.75+332.224+531.984+272.896+559.612+272.606C589.408+272.294+636.209+308.543+636.457+308.995C639.838+299.956+644.975+275.35+681.559+265.899C716.716+256.817+761.671+284.048+763.781+285.719C713.697+157.288+616.521+70.1562+504.812+70.1562Z',
 	        opacity: '1',
 	        fill: fillUmbrella
-	      }), _jsx('path', {
-	        d: 'M483.332+267.028L507.07+267.028L507.07+691.676L483.332+691.676L483.332+267.028Z',
-	        fill: fillBar
 	      }), _jsx('path', {
 	        d: 'M720.812+335.156C641.07+332.374+630.97+377.055+631.625+404.375C632.172+427.196+630.836+604.12+630.656+604.125C630.505+604.129+351.857+607.914+350.406+605.594C348.517+602.57+348.119+441.409+347.406+406.625C346.69+371.672+107.436+321.897+129.625+531.75C129.73+532.744+210.834+531.986+210.844+532.156C221.994+725.13+299.537+897.886+504.812+897.938C709.296+897.989+784.232+739.563+798.031+546.75C798.134+545.317+881.542+511.064+881.75+498.812C881.85+492.909+800.227+463.336+800.188+462.875C795.466+408.271+805.234+338.102+720.812+335.156ZM732.625+415.906C747.462+415.364+747.111+439.122+733.438+439.312C718.468+439.544+718.889+415.961+732.625+415.906Z',
 	        opacity: '1',
@@ -1458,7 +1460,8 @@
 	Icon.defaultProps = {
 	  width: '30px',
 	  height: '30px',
-	  fill: null
+	  fill: null,
+	  className: ''
 	};
 
 /***/ },
@@ -1839,6 +1842,13 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
+	var _PlacePage = {
+		"header-icon": "PlacePage__header-icon__JRnuR",
+		"header-title": "PlacePage__header-title__3zF-X"
+	};
+
+	var _PlacePage2 = _interopRequireDefault(_PlacePage);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1854,23 +1864,15 @@
 		return (0, _SnapshotActions.fetchSnapshots)({ name: params.placeName });
 	}];
 
-	var _ref = _jsx(_FullHeightWrapper2.default, {}, void 0, _jsx(_reactHelmet2.default, {
+	var _ref = _jsx(_reactHelmet2.default, {
 		title: 'Loading...'
-	}), _jsx(_Header2.default, {}, void 0, _jsx(_App2.default, {
-		fill: '#555'
-	}), _jsx('div', {}, void 0, 'Loading....')), _jsx('div', {}, void 0, 'Loading...'));
-
-	var _ref2 = _jsx(_App2.default, {
-		fill: '#555'
 	});
+
+	var _ref2 = _jsx('div', {}, void 0, 'Loading...');
 
 	var _ref3 = _jsx(_reactHelmet2.default, {
 		title: 'Not a valid place'
 	});
-
-	var _ref4 = _jsx(_Header2.default, {}, void 0, _jsx(_App2.default, {
-		fill: '#555'
-	}), _jsx('div', {}, void 0, 'Not a valid place'));
 
 	var PlacePage = exports.PlacePage = function (_Component) {
 		_inherits(PlacePage, _Component);
@@ -1900,7 +1902,7 @@
 						if (!this.state.gotDataClientSide) {
 							this.setState({ gotDataClientSide: true });
 							need.forEach(function (fn) {
-								console.log(fn);
+								console.log('execute fn in need', fn);
 								_this2.props.dispatch(fn(_this2.props.params));
 							});
 						}
@@ -1929,9 +1931,15 @@
 			key: 'render',
 			value: function render() {
 
+				var appIcon = _jsx(_App2.default, {
+					className: _PlacePage2.default['header-icon']
+				});
+
 				// Waiting for place...
 				if (this.state && this.state.loading || !this.props.snapshots || this.props.snapshots.length === 0) {
-					return _ref;
+					return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref, _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
+						className: _PlacePage2.default['header-title']
+					}, void 0, 'Loading....')), _ref2);
 				}
 
 				// We have a place, and it's got a name :)
@@ -1942,14 +1950,18 @@
 					return _jsx(_FullHeightWrapper2.default, {}, void 0, _jsx(_reactHelmet2.default, {
 						title: this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1),
 						link: [{ 'rel': 'prefetch', 'href': firstImageLink }]
-					}), _jsx(_Header2.default, {}, void 0, _ref2, _jsx('div', {}, void 0, this.props.selectedPlace.name)), _jsx(_SnapshotsNavigator2.default, {
+					}), _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
+						className: _PlacePage2.default['header-title']
+					}, void 0, this.props.selectedPlace.name)), _jsx(_SnapshotsNavigator2.default, {
 						snapshots: this.props.snapshots,
 						place: this.props.selectedPlace
 					}));
 				}
 
 				// Apparently no valid place was found
-				return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref3, _ref4, _jsx('div', {}, void 0, 'The place ', this.props.params.placeName, ' not found'));
+				return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref3, _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
+					className: _PlacePage2.default['header-title']
+				}, void 0, 'Not a valid place')), _jsx('div', {}, void 0, 'The place ', this.props.params.placeName, ' not found'));
 			}
 		}]);
 
@@ -4621,7 +4633,8 @@
 	    this.onPointerDownAndRepeat = onPointerDownAndRepeat;
 	    this.onSwipe = onSwipe;
 
-	    this.intervalAndTimeoutIds = [];
+	    this.timeoutIds = [];
+	    this.intervalIds = [];
 
 	    this.bind();
 	  }
@@ -4631,10 +4644,9 @@
 	    value: function bind() {
 	      var _this = this;
 
-	      this.hammertime = new _hammerjs2.default(this.element);
+	      this.hammertime = new _hammerjs2.default(this.element, { touchAction: 'auto' });
 
 	      this.hammertime.get('press').set({ time: 150 });
-	      this.hammertime.get('swipe').set({ direction: _hammerjs2.default.DIRECTION_HORIZONTAL });
 
 	      this.hammertime.on('tap', function (event) {
 	        if (event.pointers.length === 1) {
@@ -4647,13 +4659,6 @@
 	      });
 	      this.hammertime.on('pressup', function (event) {
 	        return _this.stopTimeoutAndIntervals();
-	      });
-	      this.hammertime.on('swipe', function (event) {
-	        if (event.deltaX < 0) {
-	          _this.onSwipe('left');
-	        } else {
-	          _this.onSwipe('right');
-	        }
 	      });
 	    }
 	  }, {

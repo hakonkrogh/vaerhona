@@ -12,16 +12,16 @@ export default class PointerHandler {
     this.onPointerDownAndRepeat = onPointerDownAndRepeat;
     this.onSwipe = onSwipe;
 
-    this.intervalAndTimeoutIds = [];
+    this.timeoutIds = [];
+    this.intervalIds = [];
 
     this.bind();
   }
   
   bind () {
-    this.hammertime = new Hammer(this.element);
+    this.hammertime = new Hammer(this.element, { touchAction : 'auto' });
 
     this.hammertime.get('press').set({ time: 150 });
-    this.hammertime.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
     
     this.hammertime.on('tap', event => {
       if (event.pointers.length === 1) {
@@ -31,14 +31,6 @@ export default class PointerHandler {
     });
     this.hammertime.on('press', event => this.startInterval(event));
     this.hammertime.on('pressup', event => this.stopTimeoutAndIntervals());
-    this.hammertime.on('swipe', event => {
-      if (event.deltaX < 0) {
-        this.onSwipe('left');
-      }
-      else {
-        this.onSwipe('right');
-      }
-    });
   }
 
   unBind () {
