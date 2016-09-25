@@ -4646,7 +4646,7 @@
 
 	      this.hammertime = new _hammerjs2.default(this.element, { touchAction: 'auto' });
 
-	      this.hammertime.get('press').set({ time: 150 });
+	      //this.hammertime.get('press').set({ time: 150 });
 
 	      this.hammertime.on('tap', function (event) {
 	        if (event.pointers.length === 1) {
@@ -4657,8 +4657,8 @@
 	      this.hammertime.on('press', function (event) {
 	        return _this.startInterval(event);
 	      });
-	      this.hammertime.on('pressup', function (event) {
-	        return _this.stopTimeoutAndIntervals();
+	      this.hammertime.on('hammer.input', function (event) {
+	        return event.isFinal && _this.stopTimeoutAndIntervals();
 	      });
 	    }
 	  }, {
