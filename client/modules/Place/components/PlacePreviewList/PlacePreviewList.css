@@ -6,15 +6,16 @@
 }
 
 .place-preview-list__item {
-  width: 200px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   text-align: center;
   text-decoration: none;
   text-transform: capitalize;
-  margin: 0 20px 20px;
+  margin: 0 10px 20px;
+  color: #333;
 }
 
 .place-preview-list__image {

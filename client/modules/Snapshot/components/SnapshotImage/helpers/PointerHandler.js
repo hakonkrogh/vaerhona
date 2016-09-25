@@ -21,7 +21,7 @@ export default class PointerHandler {
   bind () {
     this.hammertime = new Hammer(this.element, { touchAction : 'auto' });
 
-    this.hammertime.get('press').set({ time: 150 });
+    //this.hammertime.get('press').set({ time: 150 });
     
     this.hammertime.on('tap', event => {
       if (event.pointers.length === 1) {
@@ -30,7 +30,7 @@ export default class PointerHandler {
       }
     });
     this.hammertime.on('press', event => this.startInterval(event));
-    this.hammertime.on('pressup', event => this.stopTimeoutAndIntervals());
+    this.hammertime.on('hammer.input', event => event.isFinal && this.stopTimeoutAndIntervals());
   }
 
   unBind () {
