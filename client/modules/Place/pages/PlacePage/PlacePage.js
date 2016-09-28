@@ -12,7 +12,7 @@ import { setSelectedPlace } from '../../../App/AppActions';
 import { fetchPlace } from '../../../Place/PlaceActions';
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
-import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
+import { getSnapshots, getMinDate, getMaxDate } from '../../../Snapshot/SnapshotReducer';
 import { getAbsolutePathForImage } from '../../../../aws/s3';
 
 import AppIcon from '../../../../components/Icons/App';
@@ -22,10 +22,15 @@ import styles from './PlacePage.css';
 // Define the data dependencies
 const need = [
 	params => fetchPlace(params.placeName),
-	params => fetchSnapshots({ name: params.placeName })
+	params => fetchSnapshots({ name: params.placeName, limit: 'lastThreeDays' })
 ];
 
 export class PlacePage extends Component {
+
+	constructor (props) {
+		super(props);
+		this.state = { mounted: false };
+	}
 
 	componentWillMount () {
     this.setState({ mounted: true });
@@ -37,36 +42,13 @@ export class PlacePage extends Component {
 		if (typeof document !== 'undefined') {
 
 			// We need to get data if we navigate to here client side
-			//if (!this.state || !)
 			if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
 				if (!this.state.gotDataClientSide) {
 					this.setState({ gotDataClientSide: true });
-					need.forEach(fn => {
-						console.log('execute fn in need', fn);
-						this.props.dispatch(fn(this.props.params));
-					});
+
+					need.forEach(fn => this.props.dispatch(fn(this.props.params)));
 				}
 			}
-
-			/*if (!this.props.selectedPlace) {
-			
-				this.setState({
-					loading: true,
-					selectedPlaceNotFound: false
-				});
-
-				fetchPlace(this.props.params.placeName)(this.props.dispatch).then(res => {
-					this.setState({
-						loading: false
-					});
-
-					if (!res || !res.place || !res.place.cuid) {
-						this.setState({
-							selectedPlaceNotFound: true
-						});
-					}
-				});
-			}*/
 		}
 	}
 
@@ -147,7 +129,9 @@ PlacePage.need = need;
 function mapStateToProps (state) {
 	return {
 		selectedPlace: getSelectedPlace(state),
-		snapshots: getSnapshots(state)
+		snapshots: getSnapshots(state),
+		minDate: getMinDate(state),
+		MaxDate: getMaxDate(state)
 	};
 }
 

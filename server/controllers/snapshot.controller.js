@@ -23,15 +23,27 @@ export function getSnapshots (req, res) {
       return res.status(500).send(`Error: place not found!`);
     }
 
-    Snapshot.find({ placeCuid: place.cuid }).sort('dateAdded').exec((err, snapshots) => {
+    let query = {
+      placeCuid: place.cuid
+    };
+    
+    if (req.query) {
+      if (req.query.limit === `lastThreeDays`) {
+        let dateGreaterThen = new Date();
+        dateGreaterThen.setDate(dateGreaterThen.getDate() - 999);
+        
+        query.dateAdded = { $gt: dateGreaterThen };
+      }
+    }
+
+    Snapshot.find(query).sort('dateAdded').exec((err, snapshots) => {
+
       if (err) {
         return res.status(500).send(err);
       }
-
+      console.log('return these:', snapshots.map(item => normalizeSnapshot(item)));
       res.json({
-        snapshots: snapshots.map(item => {
-          return normalizeSnapshot(item);
-        })
+        snapshots: snapshots.map(item => normalizeSnapshot(item))
       });
     });
   });

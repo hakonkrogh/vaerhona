@@ -11,24 +11,51 @@ import {
   UNSELECT_PLACE
 } from './../Place/PlaceActions';
 
-// Initial State
-const initialState = { data: [], selected: false };
+// The dates we select from initially. The three last days
+let minDate = new Date();
+minDate.setDate(minDate.getDate() - 3);
+let maxDate = new Date();
 
-const SnapshotReducer = (state = initialState, action) => {
+// Initial State
+const getInitialState = () => {
+  return {
+    data: [],
+    selected: false,
+    minDate,
+    maxDate
+  };
+};
+
+const SnapshotReducer = (state = getInitialState(), action) => {
   switch (action.type) {
-    case ADD_SNAPSHOT :
+    case ADD_SNAPSHOT: {
       return {
         data: [action.snapshot, ...state.data],
-        selected: action.snapshot
+        selected: action.snapshot,
+        minDate: state.minDate,
+        maxDate: action.snapshot.dateAdded
       };
+    }
 
-    case ADD_SNAPSHOTS :
+    case ADD_SNAPSHOTS: {
+      if (action.snapshots && action.snapshots.length) {
+        return {
+          data: action.snapshots,
+          selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected,
+          minDate: state.minDate,
+          maxDate: state.maxDate
+        };
+      }
+
       return {
-        data: action.snapshots,
-        selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected
+        data: getInitialState().data,
+        selected: getInitialState().data,
+        minDate: state.minDate,
+        maxDate: state.maxDate
       };
+    }
 
-    case DELETE_SNAPSHOT :
+    case DELETE_SNAPSHOT: {
       let newListOfSnapshots = state.data.filter(snapshot => snapshot.cuid !== action.cuid);
       let selected = state.selected;
 
@@ -38,17 +65,20 @@ const SnapshotReducer = (state = initialState, action) => {
           selected = newListOfSnapshots[newListOfSnapshots.length - 1];
         }
         else {
-          selected = initialState.selected;
+          selected = getInitialState().selected;
         }
       }
 
       return {
         data: newListOfSnapshots,
-        selected
+        selected,
+        minDate: newListOfSnapshots[newListOfSnapshots.length - 1].dateAdded,
+        maxDate: newListOfSnapshots[0].dateAdded
       };
+    }
 
-    case SHOW_PREV_SNAPSHOT :
-
+    case SHOW_PREV_SNAPSHOT: {
+    
       if (!state.selected) {
         return state;
       }
@@ -61,43 +91,49 @@ const SnapshotReducer = (state = initialState, action) => {
 
       return {
         data: state.data,
-        selected: state.data[selectedIndex1 - 1]
+        selected: state.data[selectedIndex1 - 1],
+        minDate: state.minDate,
+        maxDate: state.maxDate
       };
+    }
 
-    case SHOW_NEXT_SNAPSHOT :
-
+    case SHOW_NEXT_SNAPSHOT : {
+    
       if (!state.selected) {
         return state;
       }
 
-      let selectedIndex2 = state.data.findIndex((snapshot, index) => snapshot.cuid === state.selected.cuid);
+      let selectedIndex = state.data.findIndex((snapshot, index) => snapshot.cuid === state.selected.cuid);
       
-      if (selectedIndex2 >= state.data.length - 1) {
+      if (selectedIndex >= state.data.length - 1) {
         return state;
       }
 
       return {
         data: state.data,
-        selected: state.data[selectedIndex2 + 1]
+        selected: state.data[selectedIndex + 1],
+        minDate: state.minDate,
+        maxDate: state.maxDate
       };
+    }
 
-    case SHOW_SNAPSHOT_FROM_INDEX :
-
+    case SHOW_SNAPSHOT_FROM_INDEX: {
+    
       if (!state.selected) {
         return state;
       }
       
       return {
         data: state.data,
-        selected: state.data[action.index] || state.selected
+        selected: state.data[action.index] || state.selected,
+        minDate: state.minDate,
+        maxDate: state.maxDate
       };
-
-    case UNSELECT_PLACE :
-      
-      return {
-        data: initialState.data,
-        selected: initialState.selected
-      };
+    }
+    
+    case UNSELECT_PLACE: {
+      return getInitialState();
+    }
 
     default:
       return state;
@@ -111,6 +147,10 @@ export const getSnapshots = state => state.snapshots.data;
 
 // Get selected snapshot
 export const getSelectedSnapshot = state => state.snapshots.selected;
+
+// Get min/max date
+export const getMinDate = state => state.snapshots.minDate;
+export const getMaxDate = state => state.snapshots.maxDate;
 
 // Get snapshot by cuid
 export const getSnapshot = (state, cuid) => state.snapshots.data.filter(snapshot => snapshot.cuid === cuid)[0];

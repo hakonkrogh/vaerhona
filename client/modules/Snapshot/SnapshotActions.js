@@ -17,7 +17,7 @@ export function addSnapshot (snapshot) {
 }
 
 export function addSnapshotRequest (snapshot) {
-  return (dispatch) => {
+  return dispatch => {
     return callApi('snapshots', 'post', {
       snapshot: {
         placeCuid: snapshot.placeCuid,
@@ -37,16 +37,16 @@ export function addSnapshots (snapshots) {
   };
 }
 
-export function fetchSnapshots (place) {
-  return (dispatch) => {
-    return callApi(`snapshots/${place.name}`).then(res => {
+export function fetchSnapshots (options) {
+  return dispatch => {
+    return callApi(`snapshots/${options.name}`, `get`, undefined, { limit: options.limit }).then((res, err) => {
       dispatch(addSnapshots(res.snapshots));
     });
   };
 }
 
 //export function fetchSnapshot (cuid) {
-//  return (dispatch) => {
+//  return dispatch => {
 //    return callApi(`snapshots/${cuid}`).then(res => dispatch(addSnapshot(res.snapshot)));
 //  };
 //}
@@ -59,7 +59,7 @@ export function deleteSnapshot (cuid) {
 }
 
 export function deleteSnapshotRequest (cuid) {
-  return (dispatch) => {
+  return dispatch => {
     return callApi(`snapshots/${cuid}`, 'delete').then(() => dispatch(deleteSnapshot(cuid)));
   };
 }
