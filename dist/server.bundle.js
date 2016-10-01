@@ -167,8 +167,10 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.UNSELECT_PLACE = exports.DELETE_PLACE = exports.ADD_FRONTPAGE_PLACES = exports.ADD_PLACES = exports.ADD_PLACE = undefined;
+	exports.TOGGLE_LOADING_SELECTED_PLACE = exports.UNSELECT_PLACE = exports.DELETE_PLACE = exports.ADD_FRONTPAGE_PLACES = exports.ADD_PLACES = exports.ADD_SELECTED_PLACE = exports.ADD_PLACE = undefined;
 	exports.addPlace = addPlace;
+	exports.addSelectedPlace = addSelectedPlace;
+	exports.toggleSelectedLoading = toggleSelectedLoading;
 	exports.unselectPlace = unselectPlace;
 	exports.addPlaceRequest = addPlaceRequest;
 	exports.addPlaces = addPlaces;
@@ -176,6 +178,7 @@
 	exports.fetchPlaces = fetchPlaces;
 	exports.fetchFrontpagePlaces = fetchFrontpagePlaces;
 	exports.fetchPlace = fetchPlace;
+	exports.fetchNewSelectedPlace = fetchNewSelectedPlace;
 	exports.deletePlace = deletePlace;
 	exports.deletePlaceRequest = deletePlaceRequest;
 
@@ -187,16 +190,36 @@
 
 	// Export Constants
 	var ADD_PLACE = exports.ADD_PLACE = 'ADD_PLACE';
+	var ADD_SELECTED_PLACE = exports.ADD_SELECTED_PLACE = 'ADD_SELECTED_PLACE';
 	var ADD_PLACES = exports.ADD_PLACES = 'ADD_PLACES';
 	var ADD_FRONTPAGE_PLACES = exports.ADD_FRONTPAGE_PLACES = 'ADD_FRONTPAGE_PLACES';
 	var DELETE_PLACE = exports.DELETE_PLACE = 'DELETE_PLACE';
 	var UNSELECT_PLACE = exports.UNSELECT_PLACE = 'UNSELECT_PLACE';
+	var TOGGLE_LOADING_SELECTED_PLACE = exports.TOGGLE_LOADING_SELECTED_PLACE = 'TOGGLE_LOADING_SELECTED_PLACE';
 
 	// Export Actions
 	function addPlace(place) {
 	  return {
 	    type: ADD_PLACE,
 	    place: place
+	  };
+	}
+
+	function addSelectedPlace(_ref) {
+	  var place = _ref.place;
+	  var snapshots = _ref.snapshots;
+
+	  return {
+	    type: ADD_SELECTED_PLACE,
+	    place: place,
+	    snapshots: snapshots
+	  };
+	}
+
+	function toggleSelectedLoading(loading) {
+	  return {
+	    type: TOGGLE_LOADING_SELECTED_PLACE,
+	    loading: loading
 	  };
 	}
 
@@ -259,6 +282,16 @@
 	  };
 	}
 
+	function fetchNewSelectedPlace(name) {
+	  return function (dispatch) {
+	    dispatch(toggleSelectedLoading(true));
+
+	    return (0, _apiCaller2.default)('placesselected/' + name).then(function (res) {
+	      return dispatch(addSelectedPlace({ place: res.place, snapshots: res.snapshots }));
+	    });
+	  };
+	}
+
 	function deletePlace(cuid) {
 	  return {
 	    type: DELETE_PLACE,
@@ -284,7 +317,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getSelectedMainNavigation = exports.getPlace = exports.getSelectedPlace = exports.getFrontpagePlaces = exports.getPlaces = undefined;
+	exports.getSelectedMainNavigation = exports.getPlace = exports.getSelectedPlaceLoading = exports.getSelectedPlace = exports.getFrontpagePlaces = exports.getPlaces = undefined;
 
 	var _PlaceActions = __webpack_require__(6);
 
@@ -294,7 +327,8 @@
 	var initialState = {
 	  data: [],
 	  frontpagePlaces: [],
-	  selected: false
+	  selected: false,
+	  loadingSelected: false
 	};
 
 	var PlaceReducer = function PlaceReducer() {
@@ -302,84 +336,120 @@
 	  var action = arguments[1];
 
 	  switch (action.type) {
+
+	    case _PlaceActions.TOGGLE_LOADING_SELECTED_PLACE:
+	      {
+	        return {
+	          data: state.data,
+	          frontpagePlaces: state.frontpagePlaces,
+	          selected: action.place,
+	          loadingSelected: action.loading
+	        };
+	      }
+
 	    case _PlaceActions.ADD_PLACE:
+	      {
+	        return {
+	          data: [action.place].concat(_toConsumableArray(state.data)),
+	          frontpagePlaces: state.frontpagePlaces,
+	          selected: action.place,
+	          loadingSelected: state.loadingSelected
+	        };
+	      }
 
-	      var data = state.data;
-	      var isInData = false;
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
+	    case _PlaceActions.ADD_SELECTED_PLACE:
+	      {
 
-	      try {
-	        for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var item = _step.value;
+	        var data = state.data;
+	        var isInData = false;
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
 
-	          if (item.cuid === action.place.cuid) {
-	            isInData = true;
-	            break;
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
 	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
+	          for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var item = _step.value;
+
+	            if (item.cuid === action.place.cuid) {
+	              isInData = true;
+	              break;
+	            }
 	          }
+	        } catch (err) {
+	          _didIteratorError = true;
+	          _iteratorError = err;
 	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
+	          try {
+	            if (!_iteratorNormalCompletion && _iterator.return) {
+	              _iterator.return();
+	            }
+	          } finally {
+	            if (_didIteratorError) {
+	              throw _iteratorError;
+	            }
 	          }
 	        }
-	      }
 
-	      if (!isInData) {
-	        data = [action.place].concat(_toConsumableArray(data));
-	      }
+	        if (!isInData) {
+	          data = [action.place].concat(_toConsumableArray(data));
+	        }
 
-	      return {
-	        data: data,
-	        frontpagePlaces: state.frontpagePlaces,
-	        selected: action.place
-	      };
+	        return {
+	          data: data,
+	          frontpagePlaces: state.frontpagePlaces,
+	          selected: action.place,
+	          loadingSelected: false
+	        };
+	      }
 
 	    case _PlaceActions.ADD_PLACES:
-	      return {
-	        data: [].concat(_toConsumableArray(state.data), _toConsumableArray(action.places)),
-	        frontpagePlaces: state.frontpagePlaces,
-	        selected: !state.selected && action.places ? action.places[action.places.length - 1] : state.selected
-	      };
-
-	    case _PlaceActions.DELETE_PLACE:
-	      var selected = state.selected;
-
-	      // We are deleting the selected one
-	      if (state.selected && state.selected.name === action.name) {
-	        selected = initialState.selected;
+	      {
+	        return {
+	          data: [].concat(_toConsumableArray(state.data), _toConsumableArray(action.places)),
+	          frontpagePlaces: state.frontpagePlaces,
+	          selected: state.selected,
+	          loadingSelected: state.loadingSelected
+	        };
 	      }
 
-	      return {
-	        data: state.data.filter(function (place) {
-	          return place.cuid !== action.cuid;
-	        }),
-	        frontpagePlaces: state.frontpagePlaces,
-	        selected: selected
-	      };
+	    case _PlaceActions.DELETE_PLACE:
+	      {
+	        var selected = state.selected;
+
+	        // We are deleting the selected one
+	        if (state.selected && state.selected.name === action.name) {
+	          selected = initialState.selected;
+	        }
+
+	        return {
+	          data: state.data.filter(function (place) {
+	            return place.cuid !== action.cuid;
+	          }),
+	          frontpagePlaces: state.frontpagePlaces,
+	          selected: selected,
+	          loadingSelected: state.loadingSelected
+	        };
+	      }
 
 	    case _PlaceActions.UNSELECT_PLACE:
-	      return {
-	        data: state.data,
-	        frontpagePlaces: state.frontpagePlaces,
-	        selected: initialState.selected
-	      };
+	      {
+	        return {
+	          data: state.data,
+	          frontpagePlaces: state.frontpagePlaces,
+	          selected: initialState.selected,
+	          loadingSelected: state.loadingSelected
+	        };
+	      }
 
 	    case _PlaceActions.ADD_FRONTPAGE_PLACES:
-	      return {
-	        data: state.data,
-	        frontpagePlaces: action.places,
-	        selected: state.selected
-	      };
+	      {
+	        return {
+	          data: state.data,
+	          frontpagePlaces: action.places,
+	          selected: state.selected,
+	          loadingSelected: state.loadingSelected
+	        };
+	      }
 
 	    default:
 	      return state;
@@ -401,6 +471,11 @@
 	// Get selected place
 	var getSelectedPlace = exports.getSelectedPlace = function getSelectedPlace(state) {
 	  return state.places.selected;
+	};
+
+	// Get selected place loading state
+	var getSelectedPlaceLoading = exports.getSelectedPlaceLoading = function getSelectedPlaceLoading(state) {
+	  return state.places.loadingSelected;
 	};
 
 	// Get place by cuid
@@ -490,16 +565,16 @@
 	  };
 	}
 
-	function fetchSnapshots(place) {
+	function fetchSnapshots(options) {
 	  return function (dispatch) {
-	    return (0, _apiCaller2.default)('snapshots/' + place.name).then(function (res) {
+	    return (0, _apiCaller2.default)('snapshots/' + options.name, 'get', undefined, { limit: options.limit }).then(function (res, err) {
 	      dispatch(addSnapshots(res.snapshots));
 	    });
 	  };
 	}
 
 	//export function fetchSnapshot (cuid) {
-	//  return (dispatch) => {
+	//  return dispatch => {
 	//    return callApi(`snapshots/${cuid}`).then(res => dispatch(addSnapshot(res.snapshot)));
 	//  };
 	//}
@@ -548,7 +623,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getSnapshot = exports.getSelectedSnapshot = exports.getSnapshots = undefined;
+	exports.getSnapshot = exports.getMaxDate = exports.getMinDate = exports.getSelectedSnapshot = exports.getSnapshots = undefined;
 
 	var _SnapshotActions = __webpack_require__(9);
 
@@ -556,101 +631,154 @@
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+	// The dates we select from initially. The three last days
+	var minDate = new Date();
+	minDate.setDate(minDate.getDate() - 3);
+	var maxDate = new Date();
+
 	// Initial State
-	var initialState = { data: [], selected: false };
+	var getInitialState = function getInitialState() {
+	  return {
+	    data: [],
+	    selected: false,
+	    minDate: minDate,
+	    maxDate: maxDate
+	  };
+	};
 
 	var SnapshotReducer = function SnapshotReducer() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? getInitialState() : arguments[0];
 	  var action = arguments[1];
 
 	  switch (action.type) {
 	    case _SnapshotActions.ADD_SNAPSHOT:
-	      return {
-	        data: [action.snapshot].concat(_toConsumableArray(state.data)),
-	        selected: action.snapshot
-	      };
+	      {
+	        return {
+	          data: [action.snapshot].concat(_toConsumableArray(state.data)),
+	          selected: action.snapshot,
+	          minDate: state.minDate,
+	          maxDate: action.snapshot.dateAdded
+	        };
+	      }
 
 	    case _SnapshotActions.ADD_SNAPSHOTS:
-	      return {
-	        data: action.snapshots,
-	        selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected
-	      };
+	      {
+	        if (action.snapshots && action.snapshots.length) {
+	          return {
+	            data: action.snapshots,
+	            selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected,
+	            minDate: state.minDate,
+	            maxDate: state.maxDate
+	          };
+	        }
+
+	        return {
+	          data: getInitialState().data,
+	          selected: getInitialState().data,
+	          minDate: state.minDate,
+	          maxDate: state.maxDate
+	        };
+	      }
 
 	    case _SnapshotActions.DELETE_SNAPSHOT:
-	      var newListOfSnapshots = state.data.filter(function (snapshot) {
-	        return snapshot.cuid !== action.cuid;
-	      });
-	      var selected = state.selected;
+	      {
+	        var newListOfSnapshots = state.data.filter(function (snapshot) {
+	          return snapshot.cuid !== action.cuid;
+	        });
+	        var selected = state.selected;
 
-	      // We are deleting the selected one. Select the last one in the reduced list
-	      if (state.selected && state.selected.cuid === action.cuid) {
-	        if (newListOfSnapshots.length > 0) {
-	          selected = newListOfSnapshots[newListOfSnapshots.length - 1];
-	        } else {
-	          selected = initialState.selected;
+	        // We are deleting the selected one. Select the last one in the reduced list
+	        if (state.selected && state.selected.cuid === action.cuid) {
+	          if (newListOfSnapshots.length > 0) {
+	            selected = newListOfSnapshots[newListOfSnapshots.length - 1];
+	          } else {
+	            selected = getInitialState().selected;
+	          }
 	        }
-	      }
 
-	      return {
-	        data: newListOfSnapshots,
-	        selected: selected
-	      };
+	        return {
+	          data: newListOfSnapshots,
+	          selected: selected,
+	          minDate: newListOfSnapshots[newListOfSnapshots.length - 1].dateAdded,
+	          maxDate: newListOfSnapshots[0].dateAdded
+	        };
+	      }
 
 	    case _SnapshotActions.SHOW_PREV_SNAPSHOT:
+	      {
 
-	      if (!state.selected) {
-	        return state;
+	        if (!state.selected) {
+	          return state;
+	        }
+
+	        var selectedIndex1 = state.data.findIndex(function (snapshot, index) {
+	          return snapshot.cuid === state.selected.cuid;
+	        });
+
+	        if (selectedIndex1 === 0) {
+	          return state;
+	        }
+
+	        return {
+	          data: state.data,
+	          selected: state.data[selectedIndex1 - 1],
+	          minDate: state.minDate,
+	          maxDate: state.maxDate
+	        };
 	      }
-
-	      var selectedIndex1 = state.data.findIndex(function (snapshot, index) {
-	        return snapshot.cuid === state.selected.cuid;
-	      });
-
-	      if (selectedIndex1 === 0) {
-	        return state;
-	      }
-
-	      return {
-	        data: state.data,
-	        selected: state.data[selectedIndex1 - 1]
-	      };
 
 	    case _SnapshotActions.SHOW_NEXT_SNAPSHOT:
+	      {
 
-	      if (!state.selected) {
-	        return state;
+	        if (!state.selected) {
+	          return state;
+	        }
+
+	        var selectedIndex = state.data.findIndex(function (snapshot, index) {
+	          return snapshot.cuid === state.selected.cuid;
+	        });
+
+	        if (selectedIndex >= state.data.length - 1) {
+	          return state;
+	        }
+
+	        return {
+	          data: state.data,
+	          selected: state.data[selectedIndex + 1],
+	          minDate: state.minDate,
+	          maxDate: state.maxDate
+	        };
 	      }
-
-	      var selectedIndex2 = state.data.findIndex(function (snapshot, index) {
-	        return snapshot.cuid === state.selected.cuid;
-	      });
-
-	      if (selectedIndex2 >= state.data.length - 1) {
-	        return state;
-	      }
-
-	      return {
-	        data: state.data,
-	        selected: state.data[selectedIndex2 + 1]
-	      };
 
 	    case _SnapshotActions.SHOW_SNAPSHOT_FROM_INDEX:
+	      {
 
-	      if (!state.selected) {
-	        return state;
+	        if (!state.selected) {
+	          return state;
+	        }
+
+	        return {
+	          data: state.data,
+	          selected: state.data[action.index] || state.selected,
+	          minDate: state.minDate,
+	          maxDate: state.maxDate
+	        };
 	      }
 
-	      return {
-	        data: state.data,
-	        selected: state.data[action.index] || state.selected
-	      };
-
 	    case _PlaceActions.UNSELECT_PLACE:
+	      {
+	        return getInitialState();
+	      }
 
-	      return {
-	        data: initialState.data,
-	        selected: initialState.selected
-	      };
+	    case _PlaceActions.ADD_SELECTED_PLACE:
+	      {
+	        return {
+	          data: action.snapshots,
+	          selected: action.snapshots[action.snapshots.length - 1],
+	          minDate: state.minDate,
+	          maxDate: state.maxDate
+	        };
+	      }
 
 	    default:
 	      return state;
@@ -667,6 +795,14 @@
 	// Get selected snapshot
 	var getSelectedSnapshot = exports.getSelectedSnapshot = function getSelectedSnapshot(state) {
 	  return state.snapshots.selected;
+	};
+
+	// Get min/max date
+	var getMinDate = exports.getMinDate = function getMinDate(state) {
+	  return state.snapshots.minDate;
+	};
+	var getMaxDate = exports.getMaxDate = function getMaxDate(state) {
+	  return state.snapshots.maxDate;
 	};
 
 	// Get snapshot by cuid
@@ -722,7 +858,15 @@
 	  var snapshot = _ref.snapshot;
 
 
+	  if (!place || !snapshot) {
+	    return '/static/images/snapshot/404.svg';
+	  }
+
 	  var imageUrlBase = void 0;
+
+	  if (typeof __NODE_ENV !== 'undefined' && __NODE_ENV === 'development') {
+	    return '/static/images/snapshot/dummy.jpg';
+	  }
 
 	  // Client side config
 	  if (typeof __APP_CONFIG__ !== 'undefined') {
@@ -809,6 +953,7 @@
 	  value: true
 	});
 	exports.getSnapshots = getSnapshots;
+	exports.getSnapshotsRaw = getSnapshotsRaw;
 	exports.getSnapshotsLegacy = getSnapshotsLegacy;
 	exports.addSnapshot = addSnapshot;
 	exports.addSnapshotLegacy = addSnapshotLegacy;
@@ -853,19 +998,53 @@
 	    }
 
 	    if (!place) {
-	      return res.status(500).send('Error: place not found!');
+	      return res.status(500).send('Error: place ' + req.params.placeName + ' not found!');
 	    }
 
-	    _snapshot2.default.find({ placeCuid: place.cuid }).sort('dateAdded').exec(function (err, snapshots) {
+	    getSnapshotsRaw({
+	      placeCuid: place.cuid,
+	      limit: req.query.limit
+	    }).then(function (snapshots) {
+	      return res.json({ snapshots: snapshots });
+	    }).catch(function (err) {
+	      return res.status(500).send(err);
+	    });
+	  });
+	}
+
+	/**
+	 * Get snapshots
+	 * @param placeCuid
+	 * @returns Promise
+	 */
+	function getSnapshotsRaw(_ref) {
+	  var placeCuid = _ref.placeCuid;
+	  var limit = _ref.limit;
+
+	  return new Promise(function (resolve, reject) {
+
+	    var query = {
+	      placeCuid: placeCuid
+	    };
+
+	    if (limit) {
+	      if (limit === 'lastThreeDays') {
+	        var dateGreaterThen = new Date();
+	        dateGreaterThen.setDate(dateGreaterThen.getDate() - 3);
+
+	        query.dateAdded = { $gt: dateGreaterThen };
+	      }
+	    }
+
+	    _snapshot2.default.find(query).sort('dateAdded').exec(function (err, snapshots) {
+
 	      if (err) {
-	        return res.status(500).send(err);
+	        return reject(err);
 	      }
 
-	      res.json({
-	        snapshots: snapshots.map(function (item) {
-	          return normalizeSnapshot(item);
-	        })
-	      });
+	      resolve(snapshots.map(function (item) {
+	        return normalizeSnapshot(item);
+	      }));
 	    });
 	  });
 	}
@@ -1001,8 +1180,8 @@
 	      }
 	  });
 
-	  function save(_ref) {
-	    var place = _ref.place;
+	  function save(_ref2) {
+	    var place = _ref2.place;
 
 	    var snapshot = {
 	      placeCuid: place.cuid,
@@ -1013,43 +1192,19 @@
 	    };
 
 	    addSnapshotRaw(snapshot).then(function () {
-	      console.log('legacy snapshot saved!');
 	      res.json({
 	        success: true,
 	        message: ''
 	      });
-	    }).catch(function (_ref2) {
-	      var status = _ref2.status;
-	      var message = _ref2.message;
+	    }).catch(function (_ref3) {
+	      var status = _ref3.status;
+	      var message = _ref3.message;
 
-	      console.log('legacy snapshot error!', status, message);
 	      res.json({
 	        success: false,
 	        message: message,
 	        status: status
 	      });
-	    });
-	  }
-	  console.log('receiving legacy snapshot...');
-
-	  var placeCuid = void 0;
-	  switch (req.body.placeId) {
-	    case -1:
-	      placeCuid = 'cikqgkv4q01ck7453ualdn3ha';break; // test
-	    case 1:
-	      placeCuid = 'veggli';break;
-	    case 2:
-	      placeCuid = 'buvassbrenna';break;
-	    case 3:
-	      placeCuid = 'tornes';break;
-	    default:
-	      placeCuid = false;
-	  }
-
-	  if (!placeCuid) {
-	    return res.json({
-	      success: false,
-	      message: 'placeCuid not matched (placeId: ' + req.body.placeId + ')'
 	    });
 	  }
 	}
@@ -1091,21 +1246,25 @@
 	          });
 	        }
 
-	        newSnapshot.image = snapshot.image;
+	        // Store image
+	        if (snapshot.image) {
+	          newSnapshot.image = snapshot.image;
 
-	        // Store image to AWS S3
-	        (0, _s.saveImageFromSnapshot)({
-	          place: place,
-	          snapshot: newSnapshot
-	        }).then(function () {
-	          resolve({ snapshot: saved });
-	        }).catch(function (error) {
-	          reject({
-	            code: 500,
-	            message: 'Error while storing image to AWS S3 bucket',
-	            error: error
+	          (0, _s.saveImageFromSnapshot)({
+	            place: place,
+	            snapshot: newSnapshot
+	          }).then(function () {
+	            resolve({ snapshot: saved });
+	          }).catch(function (error) {
+	            reject({
+	              code: 500,
+	              message: 'Error while storing image to AWS S3 bucket',
+	              error: error
+	            });
 	          });
-	        });
+	        } else {
+	          resolve({ snapshot: saved });
+	        }
 	      });
 	    });
 	  });
@@ -1146,6 +1305,8 @@
 	  }
 
 	  snapshot.temperature = Math.round(snapshot.temperature * 10) / 10;
+	  snapshot.humidity = Math.round(snapshot.humidity * 10) / 10;
+	  snapshot.pressure = Math.round(snapshot.pressure * 10) / 10;
 
 	  return snapshot;
 	}
@@ -1220,6 +1381,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	exports.prettyDate = prettyDate;
 	exports.prettyDateTime = prettyDateTime;
 	exports.prettyTime = prettyTime;
@@ -1270,7 +1434,9 @@
 	    return mixed;
 	  }
 
-	  throw new Error('Can not convert to date object', mixed);
+	  console.warn('Can not convert to date object', typeof mixed === 'undefined' ? 'undefined' : _typeof(mixed));
+
+	  return new Date();
 	}
 
 /***/ },
@@ -1305,7 +1471,7 @@
 
 	__webpack_require__(77);
 
-	var _no = __webpack_require__(85);
+	var _no = __webpack_require__(86);
 
 	var _no2 = _interopRequireDefault(_no);
 
@@ -1315,7 +1481,7 @@
 
 	__webpack_require__(76);
 
-	var _en = __webpack_require__(84);
+	var _en = __webpack_require__(85);
 
 	var _en2 = _interopRequireDefault(_en);
 
@@ -1767,13 +1933,13 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reduxDevtools = __webpack_require__(86);
+	var _reduxDevtools = __webpack_require__(87);
 
-	var _reduxDevtoolsLogMonitor = __webpack_require__(88);
+	var _reduxDevtoolsLogMonitor = __webpack_require__(89);
 
 	var _reduxDevtoolsLogMonitor2 = _interopRequireDefault(_reduxDevtoolsLogMonitor);
 
-	var _reduxDevtoolsDockMonitor = __webpack_require__(87);
+	var _reduxDevtoolsDockMonitor = __webpack_require__(88);
 
 	var _reduxDevtoolsDockMonitor2 = _interopRequireDefault(_reduxDevtoolsDockMonitor);
 
@@ -1844,7 +2010,8 @@
 
 	var _PlacePage = {
 		"header-icon": "PlacePage__header-icon__JRnuR",
-		"header-title": "PlacePage__header-title__3zF-X"
+		"header-title": "PlacePage__header-title__3zF-X",
+		"content-centered": "PlacePage__content-centered__16fwK"
 	};
 
 	var _PlacePage2 = _interopRequireDefault(_PlacePage);
@@ -1859,18 +2026,14 @@
 
 	// Define the data dependencies
 	var need = [function (params) {
-		return (0, _PlaceActions.fetchPlace)(params.placeName);
-	}, function (params) {
-		return (0, _SnapshotActions.fetchSnapshots)({ name: params.placeName });
+		return (0, _PlaceActions.fetchNewSelectedPlace)(params.placeName);
 	}];
 
 	var _ref = _jsx(_reactHelmet2.default, {
 		title: 'Loading...'
 	});
 
-	var _ref2 = _jsx('div', {}, void 0, 'Loading...');
-
-	var _ref3 = _jsx(_reactHelmet2.default, {
+	var _ref2 = _jsx(_reactHelmet2.default, {
 		title: 'Not a valid place'
 	});
 
@@ -1897,34 +2060,15 @@
 				if (typeof document !== 'undefined') {
 
 					// We need to get data if we navigate to here client side
-					//if (!this.state || !)
 					if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
-						if (!this.state.gotDataClientSide) {
+						if (this.state && !this.state.gotDataClientSide) {
 							this.setState({ gotDataClientSide: true });
+
 							need.forEach(function (fn) {
-								console.log('execute fn in need', fn);
-								_this2.props.dispatch(fn(_this2.props.params));
+								return _this2.props.dispatch(fn(_this2.props.params));
 							});
 						}
 					}
-
-					/*if (!this.props.selectedPlace) {
-	    
-	    	this.setState({
-	    		loading: true,
-	    		selectedPlaceNotFound: false
-	    	});
-	    		fetchPlace(this.props.params.placeName)(this.props.dispatch).then(res => {
-	    		this.setState({
-	    			loading: false
-	    		});
-	    			if (!res || !res.place || !res.place.cuid) {
-	    			this.setState({
-	    				selectedPlaceNotFound: true
-	    			});
-	    		}
-	    	});
-	    }*/
 				}
 			}
 		}, {
@@ -1936,10 +2080,12 @@
 				});
 
 				// Waiting for place...
-				if (this.state && this.state.loading || !this.props.snapshots || this.props.snapshots.length === 0) {
+				if (this.props.placeLoading) {
 					return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref, _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
 						className: _PlacePage2.default['header-title']
-					}, void 0, 'Loading....')), _ref2);
+					}, void 0, this.props.params.placeName)), _jsx('div', {
+						className: _PlacePage2.default['content-centered']
+					}, void 0, 'Loading...'));
 				}
 
 				// We have a place, and it's got a name :)
@@ -1959,9 +2105,9 @@
 				}
 
 				// Apparently no valid place was found
-				return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref3, _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
-					className: _PlacePage2.default['header-title']
-				}, void 0, 'Not a valid place')), _jsx('div', {}, void 0, 'The place ', this.props.params.placeName, ' not found'));
+				return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref2, _jsx(_Header2.default, {}, void 0, appIcon), _jsx('div', {
+					className: _PlacePage2.default['content-centered']
+				}, void 0, 'The place ', this.props.params.placeName, ' not found'));
 			}
 		}]);
 
@@ -1978,7 +2124,10 @@
 	function mapStateToProps(state) {
 		return {
 			selectedPlace: (0, _PlaceReducer.getSelectedPlace)(state),
-			snapshots: (0, _SnapshotReducer.getSnapshots)(state)
+			snapshots: (0, _SnapshotReducer.getSnapshots)(state),
+			minDate: (0, _SnapshotReducer.getMinDate)(state),
+			maxDate: (0, _SnapshotReducer.getMaxDate)(state),
+			placeLoading: (0, _PlaceReducer.getSelectedPlaceLoading)(state)
 		};
 	}
 
@@ -2358,6 +2507,10 @@
 
 	var _config2 = _interopRequireDefault(_config);
 
+	var _querystring = __webpack_require__(84);
+
+	var _querystring2 = _interopRequireDefault(_querystring);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var API_URL = exports.API_URL = typeof window === 'undefined' || process.env.NODE_ENV === 'test' ? process.env.BASE_URL || 'http://localhost:' + (process.env.PORT || _config2.default.port) + '/api' : '/api';
@@ -2365,8 +2518,15 @@
 	function callApi(endpoint) {
 	  var method = arguments.length <= 1 || arguments[1] === undefined ? 'get' : arguments[1];
 	  var body = arguments[2];
+	  var queryParameters = arguments[3];
 
-	  return (0, _isomorphicFetch2.default)(API_URL + '/' + endpoint, {
+	  var url = API_URL + '/' + endpoint;
+
+	  if (queryParameters) {
+	    url += '?' + _querystring2.default.stringify(queryParameters);
+	  }
+
+	  return (0, _isomorphicFetch2.default)(url, {
 	    headers: { 'content-type': 'application/json' },
 	    method: method,
 	    body: JSON.stringify(body)
@@ -2405,6 +2565,7 @@
 	exports.getPlaces = getPlaces;
 	exports.getPlace = getPlace;
 	exports.getFrontpagePlaces = getFrontpagePlaces;
+	exports.getSelectedPlaceData = getSelectedPlaceData;
 	exports.deletePlace = deletePlace;
 
 	var _place = __webpack_require__(17);
@@ -2547,6 +2708,28 @@
 	  });
 	}
 
+	function getSelectedPlaceData(req, res) {
+
+	  if (!req.params.name) {
+	    res.status(403).end();
+	  }
+
+	  _place2.default.findOne({ name: req.params.name }).exec(function (err, place) {
+	    if (err) {
+	      return res.status(500).send(err);
+	    }
+
+	    (0, _snapshot.getSnapshotsRaw)({
+	      placeCuid: place.cuid,
+	      limit: 'lastThreeDays'
+	    }).then(function (snapshots) {
+	      return res.json({ place: place, snapshots: snapshots });
+	    }).catch(function (err) {
+	      return res.status(500).send(err);
+	    });
+	  });
+	}
+
 	/**
 	 * Delete a place
 	 * @param req
@@ -2621,7 +2804,9 @@
 	  var place = _ref.place;
 	  var snapshot = _ref.snapshot;
 
+
 	  var date = new Date(snapshot.dateAdded);
+
 	  return place.name + "/" + date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + snapshot.cuid + ".jpg";
 	}
 
@@ -2783,7 +2968,7 @@
 
 	var _redux = __webpack_require__(37);
 
-	var _reduxThunk = __webpack_require__(89);
+	var _reduxThunk = __webpack_require__(90);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
@@ -2847,7 +3032,9 @@
 	          if (!error) {
 	            console.log('Successfully added ' + places.length + ' dummy place(s)');
 
-	            addSnapshots({ place: places[0] });
+	            addSnapshots({ place: places[0], snapshotsToAdd: 60 });
+	            addSnapshots({ place: places[1], snapshotsToAdd: 200 });
+	            addSnapshots({ place: places[2], snapshotsToAdd: 1000 });
 	          } else {
 	            console.log('Failed to add 1 dummy place:', error);
 	          }
@@ -2858,6 +3045,7 @@
 
 	  function addSnapshots(_ref) {
 	    var place = _ref.place;
+	    var snapshotsToAdd = _ref.snapshotsToAdd;
 
 	    _snapshot2.default.count().exec(function (err, count) {
 
@@ -2865,9 +3053,7 @@
 	        return;
 	      }
 
-	      var snapshotsToAdd = 5;
-
-	      _fs2.default.readFile('./server/dummy-images/snapshot.jpg.base64', 'utf8', function (err, image) {
+	      _fs2.default.readFile('./static/images/snapshot/dummy.jpg.base64', 'utf8', function (err, image) {
 
 	        if (err) {
 	          return console.log(err);
@@ -2877,7 +3063,7 @@
 	          return console.log('Error: dummy image contents not found');
 	        }
 
-	        console.log('Adding ' + snapshotsToAdd + ' dummy snapshots...');
+	        console.log('Adding ' + snapshotsToAdd + ' dummy snapshots to {place.name} ...');
 
 	        var snapshots = [];
 
@@ -2888,6 +3074,9 @@
 
 	        var date = new Date();
 	        date.setHours(date.getHours() - snapshotsToAdd);
+
+	        // Skip uploading to AWS S3 for dummy data
+	        image = null;
 
 	        for (var i = 0; i < snapshotsToAdd; i++) {
 	          temperature += Math.round(Math.random() * 10) / 10 * (Math.random() > .5 ? -1 : 1);
@@ -2907,9 +3096,9 @@
 	        }
 
 	        Promise.all(snapshots).then(function (addedSnapshots) {
-	          console.log('Successfully added ' + addedSnapshots.length + ' dummy snapshots');
+	          console.log('Successfully added ' + addedSnapshots.length + ' dummy snapshots to {place.name}');
 	        }, function (error) {
-	          console.log('Failed to add ' + snapshotsToAdd + ' dummy snapshots:', error);
+	          console.log('Failed to add ' + snapshotsToAdd + ' dummy snapshots to {place.name}:', error);
 	        });
 	      });
 	    });
@@ -2967,6 +3156,9 @@
 
 	// Get all places
 	router.route('/places').get(PlaceController.getPlaces);
+
+	// Gets all the data required to display a selected place
+	router.route('/placesselected/:name').get(PlaceController.getSelectedPlaceData);
 
 	// Get all places for frontpage
 	router.route('/placesfrontpage').get(PlaceController.getFrontpagePlaces);
@@ -4032,63 +4224,68 @@
 	  }, {
 	    key: 'onPan',
 	    value: function onPan(event) {
+	      var _this3 = this;
 
 	      // Ensure that we can not select other elements on the page while dragging
 	      event.preventDefault();
 
 	      // Store dimensions for range
 	      if (event.isFirst) {
+	        var computedStyle = getComputedStyle(this.refs.outer, null);
 	        this._tmpDimensions = {
-	          width: this.refs.outer.clientWidth,
-	          offsetLeft: this.refs.outer.offsetLeft,
-	          outerWidth: this.refs.wrap.clientWidth
+	          width: this.refs.inner.clientWidth,
+	          paddingLeft: parseInt(computedStyle.getPropertyValue("padding-left"), 10),
+	          paddingRight: parseInt(computedStyle.getPropertyValue("padding-right"), 10)
 	        };
 	      }
 
 	      if (event.isFinal) {
 	        delete this._tmpDimensions;
 	      } else {
-	        var adj = this._tmpDimensions.offsetLeft;
+	        (function () {
+	          var adj = _this3._tmpDimensions.paddingLeft;
 
-	        var pct = (event.center.x - adj) / this._tmpDimensions.width * 100;
+	          var pct = (event.center.x - adj) / _this3._tmpDimensions.width * 100;
 
-	        if (pct > 100) {
-	          pct = 100;
-	        } else if (pct < 0) {
-	          pct = 0;
-	        }
-
-	        // Determine the closest index for this percentage
-	        var closestIndex = void 0;
-	        var closestPct = -1;
-	        for (var i = 0; i < this.props.values.length; i++) {
-	          var indexPct = i === 0 ? 0 : i / (this.props.values.length - 1) * 100;
-	          var indexDistance = Math.abs(indexPct - pct);
-
-	          if (closestPct === -1 || indexDistance < closestPct) {
-	            closestIndex = i;
-	            closestPct = indexDistance;
+	          if (pct > 100) {
+	            pct = 100;
+	          } else if (pct < 0) {
+	            pct = 0;
 	          }
-	        }
 
-	        if (this.props.onChange) {
-	          this.props.onChange({
-	            index: closestIndex
-	          });
-	        }
+	          // Determine the closest index for this percentage
+	          var closestIndex = void 0;
+	          var closestPct = -1;
+	          for (var i = 0; i < _this3.props.values.length; i++) {
+	            var indexPct = i === 0 ? 0 : i / (_this3.props.values.length - 1) * 100;
+	            var indexDistance = Math.abs(indexPct - pct);
+
+	            if (closestPct === -1 || indexDistance < closestPct) {
+	              closestIndex = i;
+	              closestPct = indexDistance;
+	            }
+	          }
+
+	          if (_this3.props.onChange) {
+	            clearTimeout(_this3._onChangeTimeout);
+	            _this3._onChangeTimeout = setTimeout(function () {
+	              return _this3.props.onChange({ index: closestIndex });
+	            }, 5);
+	          }
+	        })();
 	      }
 	    }
 	  }, {
 	    key: 'getSelectedIndex',
 	    value: function getSelectedIndex() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      if (typeof this.props.value === 'undefined') {
 	        return 0;
 	      }
 
 	      return this.props.values.findIndex(function (value) {
-	        return value.cuid === _this3.props.value.cuid;
+	        return value.cuid === _this4.props.value.cuid;
 	      });
 	    }
 
@@ -4121,14 +4318,17 @@
 	        _react2.default.createElement(
 	          'div',
 	          { className: _RangeSlider2.default['range-slider__outer'], ref: 'outer' },
-	          _jsx('div', {
-	            className: _RangeSlider2.default['range-slider__inner']
-	          }, void 0, _jsx('div', {
-	            className: _RangeSlider2.default['range-slider__line']
-	          }), _jsx('div', {
-	            className: _RangeSlider2.default['range-slider__indicator'],
-	            style: { left: this.getIndicatorPercentage() + '%' }
-	          }))
+	          _react2.default.createElement(
+	            'div',
+	            { className: _RangeSlider2.default['range-slider__inner'], ref: 'inner' },
+	            _jsx('div', {
+	              className: _RangeSlider2.default['range-slider__line']
+	            }),
+	            _jsx('div', {
+	              className: _RangeSlider2.default['range-slider__indicator'],
+	              style: { left: this.getIndicatorPercentage() + '%' }
+	            })
+	          )
 	        )
 	      );
 	    }
@@ -5171,7 +5371,7 @@
 	app.use(_bodyParser2.default.urlencoded({ limit: '20mb', extended: false }));
 
 	app.use(_express2.default.static(_path2.default.resolve(__dirname, '../dist')));
-	app.use('static', _express2.default.static(_path2.default.resolve(__dirname, '../static')));
+	app.use('/static', _express2.default.static(_path2.default.resolve(__dirname, '../static')));
 
 	app.use('/api', _snapshot2.default);
 	app.use('/api', _place2.default);
@@ -5184,7 +5384,7 @@
 	  var assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
 	  var chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
 
-	  return '\n    <!doctype html>\n    <html>\n      <head>\n        ' + head.base.toString() + '\n        ' + head.title.toString() + '\n        ' + head.meta.toString() + '\n        ' + head.link.toString() + '\n        ' + head.script.toString() + '\n\n        <script>window.__APP_CONFIG__ = ' + JSON.stringify(APP_CONFIG) + '</script>\n\n        ' + (process.env.NODE_ENV === 'production' ? '<link rel=\'stylesheet\' href=\'' + assetsManifest['/app.css'] + '\' />' : '') + '\n\n        <link rel="preconnect" href="' + _config2.default.imageUrlBase + '">\n\n        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">\n        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">\n        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">\n        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">\n        <meta name="msapplication-TileColor" content="#00628b">\n        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">\n        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">\n        <meta name="theme-color" content="#ffffff">\n        <meta name="apple-mobile-web-app-capable" content="yes" />\n      </head>\n      <body>\n        <div id="root">' + (process.env.NODE_ENV === 'production' ? html : '<div>' + html + '</div>') + '</div>\n        <script>\n          window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + ';\n          ' + (process.env.NODE_ENV === 'production' ? '//<![CDATA[\n          window.webpackManifest = ' + JSON.stringify(chunkManifest) + ';\n          //]]>' : '') + '\n        </script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js') + '\'></script>\n        <script async defer src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js') + '\'></script>\n        <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>\n      </body>\n    </html>\n  ';
+	  return '\n    <!doctype html>\n    <html>\n      <head>\n        ' + head.base.toString() + '\n        ' + head.title.toString() + '\n        ' + head.meta.toString() + '\n        ' + head.link.toString() + '\n        ' + head.script.toString() + '\n\n        <script>window.__APP_CONFIG__ = ' + JSON.stringify(APP_CONFIG) + '</script>\n\n        ' + (process.env.NODE_ENV === 'production' ? '<link rel=\'stylesheet\' href=\'' + assetsManifest['/app.css'] + '\' />' : '') + '\n\n        <link rel="preconnect" href="' + _config2.default.imageUrlBase + '">\n\n        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">\n        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">\n        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">\n        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">\n        <meta name="msapplication-TileColor" content="#00628b">\n        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">\n        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">\n        <meta name="theme-color" content="#ffffff">\n        <meta name="apple-mobile-web-app-capable" content="yes" />\n      </head>\n      <body>\n        <div id="root">' + (process.env.NODE_ENV === 'production' ? html : '<div>' + html + '</div>') + '</div>\n        <script>\n          window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + ';\n          window.__NODE_ENV = \'' + process.env.NODE_ENV + '\';\n          ' + (process.env.NODE_ENV === 'production' ? '//<![CDATA[\n          window.webpackManifest = ' + JSON.stringify(chunkManifest) + ';\n          //]]>' : '') + '\n        </script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js') + '\'></script>\n        <script async defer src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js') + '\'></script>\n        <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>\n      </body>\n    </html>\n  ';
 	};
 
 	var renderError = function renderError(err) {
@@ -5342,34 +5542,40 @@
 /* 84 */
 /***/ function(module, exports) {
 
-	module.exports = require("react-intl/locale-data/en");
+	module.exports = require("querystring");
 
 /***/ },
 /* 85 */
 /***/ function(module, exports) {
 
-	module.exports = require("react-intl/locale-data/no");
+	module.exports = require("react-intl/locale-data/en");
 
 /***/ },
 /* 86 */
 /***/ function(module, exports) {
 
-	module.exports = require("redux-devtools");
+	module.exports = require("react-intl/locale-data/no");
 
 /***/ },
 /* 87 */
 /***/ function(module, exports) {
 
-	module.exports = require("redux-devtools-dock-monitor");
+	module.exports = require("redux-devtools");
 
 /***/ },
 /* 88 */
 /***/ function(module, exports) {
 
-	module.exports = require("redux-devtools-log-monitor");
+	module.exports = require("redux-devtools-dock-monitor");
 
 /***/ },
 /* 89 */
+/***/ function(module, exports) {
+
+	module.exports = require("redux-devtools-log-monitor");
+
+/***/ },
+/* 90 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux-thunk");
