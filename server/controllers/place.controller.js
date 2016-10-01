@@ -1,5 +1,5 @@
 import Place from '../models/place';
-import { getLatestSnapshotForPlace } from './snapshot.controller';
+import { getLatestSnapshotForPlace, getSnapshotsRaw } from './snapshot.controller';
 import cuid from 'cuid';
 import config from '../config';
 
@@ -130,6 +130,26 @@ export function getFrontpagePlaces (req, res) {
       return res.status(500).send(err);
     });
 
+  });
+}
+
+export function getSelectedPlaceData (req, res) {
+
+  if (!req.params.name) {
+    res.status(403).end();
+  }
+
+  Place.findOne({ name: req.params.name }).exec((err, place) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    getSnapshotsRaw({
+      placeCuid: place.cuid,
+      limit: req.query.limit
+    })
+    .then(snapshots => res.json({ place, snapshots }))
+    .catch(err => res.status(500).send(err));
   });
 }
 

@@ -9,6 +9,10 @@ import { getRelativePathForImage } from '../../shared/aws/s3';
 */
 export function getAbsolutePathForImage ({ place, snapshot }) {
 
+  if (!place || !snapshot) {
+    return '/static/images/404.svg';
+  }
+
   let imageUrlBase;
 
   // Client side config

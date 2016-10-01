@@ -2,16 +2,33 @@ import callApi from '../../util/apiCaller';
 
 // Export Constants
 export const ADD_PLACE = 'ADD_PLACE';
+export const ADD_SELECTED_PLACE = 'ADD_SELECTED_PLACE';
 export const ADD_PLACES = 'ADD_PLACES';
 export const ADD_FRONTPAGE_PLACES = 'ADD_FRONTPAGE_PLACES';
 export const DELETE_PLACE = 'DELETE_PLACE';
 export const UNSELECT_PLACE = 'UNSELECT_PLACE';
+export const TOGGLE_LOADING_SELECTED_PLACE = 'TOGGLE_LOADING_SELECTED_PLACE';
 
 // Export Actions
 export function addPlace (place) {
   return {
     type: ADD_PLACE,
     place
+  };
+}
+
+export function addSelectedPlace ({ place, snapshots }) {
+  return {
+    type: ADD_SELECTED_PLACE,
+    place,
+    snapshots
+  };
+}
+
+export function toggleSelectedLoading (loading) {
+  return {
+    type: TOGGLE_LOADING_SELECTED_PLACE,
+    loading
   };
 }
 
@@ -68,6 +85,16 @@ export function fetchPlace (name) {
       if (res.place) {
         return dispatch(addPlace(res.place))
       }
+    });
+  };
+}
+
+export function fetchNewSelectedPlace (name) {
+  return dispatch => {
+    dispatch(toggleSelectedLoading(true));
+
+    return callApi(`placesselected/${name}`).then(res => {
+      return dispatch(addSelectedPlace({ place: res.place, snapshots: res.snapshots }))
     });
   };
 }

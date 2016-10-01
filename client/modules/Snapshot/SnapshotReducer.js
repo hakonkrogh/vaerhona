@@ -8,7 +8,8 @@ import {
 } from './SnapshotActions';
 
 import {
-  UNSELECT_PLACE
+  UNSELECT_PLACE,
+  ADD_SELECTED_PLACE
 } from './../Place/PlaceActions';
 
 // The dates we select from initially. The three last days
@@ -133,6 +134,15 @@ const SnapshotReducer = (state = getInitialState(), action) => {
     
     case UNSELECT_PLACE: {
       return getInitialState();
+    }
+
+    case ADD_SELECTED_PLACE : {
+      return {
+        data: action.snapshots,
+        selected: action.snapshots[action.snapshots.length - 1],
+        minDate: state.minDate,
+        maxDate: state.maxDate
+      };
     }
 
     default:

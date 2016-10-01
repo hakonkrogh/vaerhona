@@ -20,15 +20,32 @@ export function getSnapshots (req, res) {
     }
 
     if (!place) {
-      return res.status(500).send(`Error: place not found!`);
+      return res.status(500).send(`Error: place ${req.params.placeName} not found!`);
     }
 
+    getSnapshotsRaw({
+      placeCuid: place.cuid,
+      limit: req.query.limit
+    })
+    .then(snapshots => res.json({ snapshots }))
+    .catch(err => res.status(500).send(err));
+  });
+}
+
+/**
+ * Get snapshots
+ * @param placeCuid
+ * @returns Promise
+ */
+export function getSnapshotsRaw ({ placeCuid, limit }) {
+  return new Promise((resolve, reject) => {
+
     let query = {
-      placeCuid: place.cuid
+      placeCuid
     };
     
-    if (req.query) {
-      if (req.query.limit === `lastThreeDays`) {
+    if (limit) {
+      if (limit === `lastThreeDays`) {
         let dateGreaterThen = new Date();
         dateGreaterThen.setDate(dateGreaterThen.getDate() - 999);
         
@@ -39,13 +56,12 @@ export function getSnapshots (req, res) {
     Snapshot.find(query).sort('dateAdded').exec((err, snapshots) => {
 
       if (err) {
-        return res.status(500).send(err);
+        return reject(err);
       }
-      console.log('return these:', snapshots.map(item => normalizeSnapshot(item)));
-      res.json({
-        snapshots: snapshots.map(item => normalizeSnapshot(item))
-      });
+      
+      resolve(snapshots.map(item => normalizeSnapshot(item)));
     });
+
   });
 }
 
@@ -195,13 +211,11 @@ export function addSnapshotLegacy (req, res) {
     };
 
     addSnapshotRaw(snapshot).then(() => {
-      console.log('legacy snapshot saved!');
       res.json({
         success: true,
         message: ''
       });
     }).catch(({ status, message }) => {
-      console.log('legacy snapshot error!', status, message);
       res.json({
         success: false,
         message,
@@ -209,7 +223,6 @@ export function addSnapshotLegacy (req, res) {
       });
     });
   }
-  console.log('receiving legacy snapshot...');
 
   let placeCuid;
   switch (req.body.placeId) {

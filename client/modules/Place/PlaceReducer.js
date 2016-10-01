@@ -1,23 +1,45 @@
 import {
   ADD_PLACE,
+  ADD_SELECTED_PLACE,
   ADD_PLACES,
   ADD_FRONTPAGE_PLACES,
   DELETE_PLACE,
   UNSELECT_PLACE,
-  CHANGE_MAIN_NAVIGATION
+  CHANGE_MAIN_NAVIGATION,
+  TOGGLE_LOADING_SELECTED_PLACE
 } from './PlaceActions';
 
 // Initial State
 const initialState = {
   data: [],
   frontpagePlaces: [],
-  selected: false
+  selected: false,
+  loadingSelected: false
 };
 
 const PlaceReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_PLACE :
 
+    case TOGGLE_LOADING_SELECTED_PLACE : {
+      return {
+        data: state.data,
+        frontpagePlaces: state.frontpagePlaces,
+        selected: action.place,
+        loadingSelected: action.loading
+      };
+    }
+
+    case ADD_PLACE : {
+      return {
+        data: [action.place, ...state.data],
+        frontpagePlaces: state.frontpagePlaces,
+        selected: action.place,
+        loadingSelected: state.loadingSelected
+      };
+    }
+
+    case ADD_SELECTED_PLACE : {
+      
       let data = state.data;
       let isInData = false;
       for (let item of data) {
@@ -34,17 +56,21 @@ const PlaceReducer = (state = initialState, action) => {
       return {
         data,
         frontpagePlaces: state.frontpagePlaces,
-        selected: action.place
+        selected: action.place,
+        loadingSelected: false
       };
+    }
 
-    case ADD_PLACES :
+    case ADD_PLACES : {
       return {
         data: [...state.data, ...action.places],
         frontpagePlaces: state.frontpagePlaces,
-        selected: !state.selected && action.places ? action.places[action.places.length - 1] : state.selected
+        selected: state.selected,
+        loadingSelected: state.loadingSelected
       };
+    }
 
-    case DELETE_PLACE :
+    case DELETE_PLACE : {
       let selected = state.selected;
 
       // We are deleting the selected one
@@ -55,22 +81,28 @@ const PlaceReducer = (state = initialState, action) => {
       return {
         data: state.data.filter(place => place.cuid !== action.cuid),
         frontpagePlaces: state.frontpagePlaces,
-        selected
+        selected,
+        loadingSelected: state.loadingSelected
       };
+    }
 
-    case UNSELECT_PLACE :
+    case UNSELECT_PLACE : {
       return {
         data: state.data,
         frontpagePlaces: state.frontpagePlaces,
-        selected: initialState.selected
+        selected: initialState.selected,
+        loadingSelected: state.loadingSelected
       }
+    }
 
-    case ADD_FRONTPAGE_PLACES :
+    case ADD_FRONTPAGE_PLACES : {
       return {
         data: state.data,
         frontpagePlaces: action.places,
-        selected: state.selected
+        selected: state.selected,
+        loadingSelected: state.loadingSelected
       }
+    }
 
     default:
       return state;
@@ -87,6 +119,9 @@ export const getFrontpagePlaces = state => state.places.frontpagePlaces;
 
 // Get selected place
 export const getSelectedPlace = state => state.places.selected;
+
+// Get selected place loading state
+export const getSelectedPlaceLoading = state => state.places.loadingSelected;
 
 // Get place by cuid
 export const getPlace = (state, cuid) => state.places.data.filter(place => place.cuid === cuid)[0];

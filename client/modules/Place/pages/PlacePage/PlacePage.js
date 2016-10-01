@@ -9,8 +9,8 @@ import FullHeightWrapper from '../../../App/components/FullHeightWrapper/FullHei
 import Header from '../../../App/components/Header/Header';
 
 import { setSelectedPlace } from '../../../App/AppActions';
-import { fetchPlace } from '../../../Place/PlaceActions';
-import { getSelectedPlace } from '../../../Place/PlaceReducer';
+import { fetchNewSelectedPlace } from '../../../Place/PlaceActions';
+import { getSelectedPlace, getSelectedPlaceLoading } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots, getMinDate, getMaxDate } from '../../../Snapshot/SnapshotReducer';
 import { getAbsolutePathForImage } from '../../../../aws/s3';
@@ -21,16 +21,10 @@ import styles from './PlacePage.css';
 
 // Define the data dependencies
 const need = [
-	params => fetchPlace(params.placeName),
-	params => fetchSnapshots({ name: params.placeName, limit: 'lastThreeDays' })
+	params => fetchNewSelectedPlace(params.placeName)
 ];
 
 export class PlacePage extends Component {
-
-	constructor (props) {
-		super(props);
-		this.state = { mounted: false };
-	}
 
 	componentWillMount () {
     this.setState({ mounted: true });
@@ -43,7 +37,7 @@ export class PlacePage extends Component {
 
 			// We need to get data if we navigate to here client side
 			if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
-				if (!this.state.gotDataClientSide) {
+				if (this.state && !this.state.gotDataClientSide) {
 					this.setState({ gotDataClientSide: true });
 
 					need.forEach(fn => this.props.dispatch(fn(this.props.params)));
@@ -57,15 +51,15 @@ export class PlacePage extends Component {
 		let appIcon = (<AppIcon className={styles['header-icon']} />);
 
 		// Waiting for place...
-		if ((this.state && this.state.loading) || (!this.props.snapshots || this.props.snapshots.length === 0)) {
+		if (this.props.placeLoading) {
 			return (
 				<FullHeightWrapper>
 					<Helmet title="Loading..." />
 					<Header>
 						{appIcon}
-						<div className={styles['header-title']}>Loading....</div>
+						<div className={styles['header-title']}>{this.props.params.placeName}</div>
 					</Header>
-					<div>Loading...</div>
+					<div className={styles['content-centered']}>Loading...</div>
 				</FullHeightWrapper>
 			);
 		}
@@ -97,9 +91,8 @@ export class PlacePage extends Component {
 				<Helmet title="Not a valid place" />
 				<Header>
 					{appIcon}
-					<div className={styles['header-title']}>Not a valid place</div>
 				</Header>
-				<div>The place {this.props.params.placeName} not found</div>
+				<div className={styles['content-centered']}>The place {this.props.params.placeName} not found</div>
 			</FullHeightWrapper>
 		);
 	}
@@ -116,7 +109,8 @@ PlacePage.propTypes = {
   	PropTypes.bool,
   	PropTypes.object
   ]),
-  dispatch: PropTypes.func.isRequired
+  dispatch: PropTypes.func.isRequired,
+  placeLoading: PropTypes.bool
 };
 
 PlacePage.contextTypes = {
@@ -131,7 +125,8 @@ function mapStateToProps (state) {
 		selectedPlace: getSelectedPlace(state),
 		snapshots: getSnapshots(state),
 		minDate: getMinDate(state),
-		MaxDate: getMaxDate(state)
+		maxDate: getMaxDate(state),
+		placeLoading: getSelectedPlaceLoading(state)
 	};
 }
 

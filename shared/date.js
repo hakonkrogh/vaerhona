@@ -45,5 +45,7 @@ function ensureDateObject (mixed) {
     return mixed;
   }
 
-  throw new Error('Can not convert to date object', mixed);
+  console.warn('Can not convert to date object', typeof mixed);
+
+  return new Date();
 }
