@@ -146,7 +146,7 @@ export function getSelectedPlaceData (req, res) {
 
     getSnapshotsRaw({
       placeCuid: place.cuid,
-      limit: req.query.limit
+      limit: 'lastThreeDays'
     })
     .then(snapshots => res.json({ place, snapshots }))
     .catch(err => res.status(500).send(err));

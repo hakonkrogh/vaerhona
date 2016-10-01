@@ -47,12 +47,12 @@ export function getSnapshotsRaw ({ placeCuid, limit }) {
     if (limit) {
       if (limit === `lastThreeDays`) {
         let dateGreaterThen = new Date();
-        dateGreaterThen.setDate(dateGreaterThen.getDate() - 999);
+        dateGreaterThen.setDate(dateGreaterThen.getDate() - 3);
         
         query.dateAdded = { $gt: dateGreaterThen };
       }
     }
-
+    
     Snapshot.find(query).sort('dateAdded').exec((err, snapshots) => {
 
       if (err) {
@@ -223,25 +223,6 @@ export function addSnapshotLegacy (req, res) {
       });
     });
   }
-
-  let placeCuid;
-  switch (req.body.placeId) {
-    case -1: placeCuid = 'cikqgkv4q01ck7453ualdn3ha'; break; // test
-    case 1: placeCuid = 'veggli'; break;
-    case 2: placeCuid = 'buvassbrenna'; break;
-    case 3: placeCuid = 'tornes'; break;
-    default: placeCuid = false;
-  }
-
-  if (!placeCuid) {
-    return res.json({
-      success: false,
-      message: `placeCuid not matched (placeId: ${req.body.placeId})`
-    });
-  }
-
-  
-  
 }
 
 /**
@@ -279,21 +260,25 @@ export function addSnapshotRaw (snapshot = {}) {
           });
         }
 
-        newSnapshot.image = snapshot.image;
+        // Store image
+        if (snapshot.image) {
+          newSnapshot.image = snapshot.image;
 
-        // Store image to AWS S3
-        saveImageFromSnapshot({
-          place,
-          snapshot: newSnapshot
-        }).then(() => {
-          resolve({ snapshot: saved });
-        }).catch(error => {
-          reject({
-            code: 500,
-            message: 'Error while storing image to AWS S3 bucket',
-            error
+          saveImageFromSnapshot({
+            place,
+            snapshot: newSnapshot
+          }).then(() => {
+            resolve({ snapshot: saved });
+          }).catch(error => {
+            reject({
+              code: 500,
+              message: 'Error while storing image to AWS S3 bucket',
+              error
+            });
           });
-        });
+        } else {
+          resolve({ snapshot: saved });
+        }
 
       });
     });
@@ -336,6 +321,8 @@ function normalizeSnapshot (snapshot) {
   }
 
   snapshot.temperature = (Math.round(snapshot.temperature * 10) / 10);
+  snapshot.humidity = (Math.round(snapshot.humidity * 10) / 10);
+  snapshot.pressure = (Math.round(snapshot.pressure * 10) / 10);
 
   return snapshot;
 }

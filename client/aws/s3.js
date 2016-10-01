@@ -10,10 +10,14 @@ import { getRelativePathForImage } from '../../shared/aws/s3';
 export function getAbsolutePathForImage ({ place, snapshot }) {
 
   if (!place || !snapshot) {
-    return '/static/images/404.svg';
+    return '/static/images/snapshot/404.svg';
   }
 
   let imageUrlBase;
+
+  if (typeof __NODE_ENV !== 'undefined' && __NODE_ENV === 'development') {
+    return `/static/images/snapshot/dummy.jpg`;
+  }
 
   // Client side config
   if (typeof __APP_CONFIG__ !== 'undefined') {

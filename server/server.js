@@ -65,7 +65,7 @@ app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 
 app.use(Express.static(path.resolve(__dirname, '../dist')));
-app.use('static', Express.static(path.resolve(__dirname, '../static')));
+app.use('/static', Express.static(path.resolve(__dirname, '../static')));
 
 app.use('/api', snapshots);
 app.use('/api', places);
@@ -110,6 +110,7 @@ const renderFullPage = (html, initialState) => {
         <div id="root">${process.env.NODE_ENV === 'production' ? html : `<div>${html}</div>`}</div>
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+          window.__NODE_ENV = '${process.env.NODE_ENV}';
           ${process.env.NODE_ENV === 'production' ?
           `//<![CDATA[
           window.webpackManifest = ${JSON.stringify(chunkManifest)};

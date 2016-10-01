@@ -37,10 +37,11 @@ class RangeSlider extends Component {
     
     // Store dimensions for range
     if (event.isFirst) {
+      let computedStyle = getComputedStyle(this.refs.outer, null);
       this._tmpDimensions = {
-        width: this.refs.outer.clientWidth,
-        offsetLeft: this.refs.outer.offsetLeft,
-        outerWidth: this.refs.wrap.clientWidth
+        width: this.refs.inner.clientWidth,
+        paddingLeft: parseInt(computedStyle.getPropertyValue("padding-left"), 10),
+        paddingRight: parseInt(computedStyle.getPropertyValue("padding-right"), 10)
       };
     }
 
@@ -48,7 +49,7 @@ class RangeSlider extends Component {
       delete this._tmpDimensions;
     }
     else {
-      const adj = this._tmpDimensions.offsetLeft;
+      const adj = this._tmpDimensions.paddingLeft;
 
       let pct = ((event.center.x - adj) / this._tmpDimensions.width) * 100;
 
@@ -73,9 +74,8 @@ class RangeSlider extends Component {
       }
 
       if (this.props.onChange) {
-        this.props.onChange({
-          index: closestIndex
-        });
+        clearTimeout(this._onChangeTimeout);
+        this._onChangeTimeout = setTimeout(() => this.props.onChange({ index: closestIndex }), 5);
       }
     }
   }
@@ -107,7 +107,7 @@ class RangeSlider extends Component {
         </div>
 
         <div className={styles['range-slider__outer']} ref='outer'>
-          <div className={styles['range-slider__inner']}>
+          <div className={styles['range-slider__inner']} ref='inner'>
             <div className={styles['range-slider__line']}></div>
             <div className={styles['range-slider__indicator']} style={{ left: this.getIndicatorPercentage() + '%' }}></div>
           </div>
