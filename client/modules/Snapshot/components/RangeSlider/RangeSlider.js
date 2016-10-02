@@ -101,9 +101,9 @@ class RangeSlider extends Component {
 
     return (
       <div className={styles['range-slider'] + ' ' + (this.props.values.length <= 1 ? styles['range-slider--hide'] : '')} ref='wrap'>
-        <div className={styles['range-slider__dates']}>
-          <div className={styles['range-slider__dates__from']}>{firstDate}</div>
-          <div className={styles['range-slider__dates__to']}>{lastDate}</div>
+        <div className={styles['range-slider__values']}>
+          <div className={styles['range-slider__values__from']}>{firstDate}</div>
+          <div className={styles['range-slider__values__to']}>{lastDate}</div>
         </div>
 
         <div className={styles['range-slider__outer']} ref='outer'>

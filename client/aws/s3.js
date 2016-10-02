@@ -15,7 +15,8 @@ export function getAbsolutePathForImage ({ place, snapshot }) {
 
   let imageUrlBase;
 
-  if (typeof __NODE_ENV !== 'undefined' && __NODE_ENV === 'development') {
+  let NODE_ENV = typeof process !== 'undefined' ? process.env.NODE_ENV : __NODE_ENV;
+  if (NODE_ENV === 'development') {
     return `/static/images/snapshot/dummy.jpg`;
   }
 

@@ -10,7 +10,7 @@
   visibility: hidden;
 }
 
-.range-slider__dates {
+.range-slider__values {
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -21,11 +21,12 @@
   text-transform: capitalize;
 }
 
-.range-slider__dates__from {
+.range-slider__values__from {
+  height: 20px;
   padding-left: 10px;
   position: relative;
 }
-.range-slider__dates__from::before {
+.range-slider__values__from::before {
   content: "";
   height: 10px;
   width: 1px;
@@ -35,11 +36,12 @@
   background: #a0a0a0;
 }
 
-.range-slider__dates__to {
+.range-slider__values__to {
+  height: 20px;
   padding-right: 10px;
   position: relative;
 }
-.range-slider__dates__to::before {
+.range-slider__values__to::before {
   content: "";
   height: 11px;
   width: 1px;

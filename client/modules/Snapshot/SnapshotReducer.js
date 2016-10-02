@@ -137,6 +137,8 @@ const SnapshotReducer = (state = getInitialState(), action) => {
     }
 
     case ADD_SELECTED_PLACE : {
+      action.snapshots = action.snapshots || [];
+      
       return {
         data: action.snapshots,
         selected: action.snapshots[action.snapshots.length - 1],
