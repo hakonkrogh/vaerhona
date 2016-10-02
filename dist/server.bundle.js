@@ -772,6 +772,8 @@
 
 	    case _PlaceActions.ADD_SELECTED_PLACE:
 	      {
+	        action.snapshots = action.snapshots || [];
+
 	        return {
 	          data: action.snapshots,
 	          selected: action.snapshots[action.snapshots.length - 1],
@@ -864,7 +866,8 @@
 
 	  var imageUrlBase = void 0;
 
-	  if (typeof __NODE_ENV !== 'undefined' && __NODE_ENV === 'development') {
+	  var NODE_ENV = typeof process !== 'undefined' ? process.env.NODE_ENV : __NODE_ENV;
+	  if (NODE_ENV === 'development') {
 	    return '/static/images/snapshot/dummy.jpg';
 	  }
 
@@ -1933,13 +1936,13 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reduxDevtools = __webpack_require__(87);
+	var _reduxDevtools = __webpack_require__(91);
 
-	var _reduxDevtoolsLogMonitor = __webpack_require__(89);
+	var _reduxDevtoolsLogMonitor = __webpack_require__(93);
 
 	var _reduxDevtoolsLogMonitor2 = _interopRequireDefault(_reduxDevtoolsLogMonitor);
 
-	var _reduxDevtoolsDockMonitor = __webpack_require__(88);
+	var _reduxDevtoolsDockMonitor = __webpack_require__(92);
 
 	var _reduxDevtoolsDockMonitor2 = _interopRequireDefault(_reduxDevtoolsDockMonitor);
 
@@ -2968,7 +2971,7 @@
 
 	var _redux = __webpack_require__(37);
 
-	var _reduxThunk = __webpack_require__(90);
+	var _reduxThunk = __webpack_require__(94);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
@@ -4162,9 +4165,9 @@
 	var _RangeSlider = {
 	  "range-slider": "RangeSlider__range-slider__3J3uT",
 	  "range-slider--hide": "RangeSlider__range-slider--hide__2zA8x",
-	  "range-slider__dates": "RangeSlider__range-slider__dates__2yBwJ",
-	  "range-slider__dates__from": "RangeSlider__range-slider__dates__from__Sgqx1",
-	  "range-slider__dates__to": "RangeSlider__range-slider__dates__to__2fc2e",
+	  "range-slider__values": "RangeSlider__range-slider__values__2k-vX",
+	  "range-slider__values__from": "RangeSlider__range-slider__values__from__3rl17",
+	  "range-slider__values__to": "RangeSlider__range-slider__values__to__3LtXr",
 	  "range-slider__outer": "RangeSlider__range-slider__outer__Pedtd",
 	  "range-slider__inner": "RangeSlider__range-slider__inner__2nO9Q",
 	  "range-slider__line": "RangeSlider__range-slider__line__3CnRc",
@@ -4309,11 +4312,11 @@
 	        'div',
 	        { className: _RangeSlider2.default['range-slider'] + ' ' + (this.props.values.length <= 1 ? _RangeSlider2.default['range-slider--hide'] : ''), ref: 'wrap' },
 	        _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__dates']
+	          className: _RangeSlider2.default['range-slider__values']
 	        }, void 0, _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__dates__from']
+	          className: _RangeSlider2.default['range-slider__values__from']
 	        }, void 0, firstDate), _jsx('div', {
-	          className: _RangeSlider2.default['range-slider__dates__to']
+	          className: _RangeSlider2.default['range-slider__values__to']
 	        }, void 0, lastDate)),
 	        _react2.default.createElement(
 	          'div',
@@ -4564,6 +4567,22 @@
 
 	var _keycode2 = _interopRequireDefault(_keycode);
 
+	var _reactTimeago = __webpack_require__(87);
+
+	var _reactTimeago2 = _interopRequireDefault(_reactTimeago);
+
+	var _buildFormatter = __webpack_require__(88);
+
+	var _buildFormatter2 = _interopRequireDefault(_buildFormatter);
+
+	var _en = __webpack_require__(89);
+
+	var _en2 = _interopRequireDefault(_en);
+
+	var _no = __webpack_require__(90);
+
+	var _no2 = _interopRequireDefault(_no);
+
 	var _PlaceReducer = __webpack_require__(7);
 
 	var _SnapshotReducer = __webpack_require__(10);
@@ -4579,8 +4598,8 @@
 	var _SnapshotImage = {
 	  "snapshot-image": "SnapshotImage__snapshot-image__3TFCr",
 	  "snapshot-image__inner": "SnapshotImage__snapshot-image__inner__DqJX5",
-	  "snapshot-image__date": "SnapshotImage__snapshot-image__date__1mgWc",
-	  "snapshot-image__time-of-day": "SnapshotImage__snapshot-image__time-of-day__29gnQ",
+	  "snapshot-image__date-time": "SnapshotImage__snapshot-image__date-time__2MSoP",
+	  "snapshot-image__timeago": "SnapshotImage__snapshot-image__timeago__2bLq6",
 	  "snapshot-image__values": "SnapshotImage__snapshot-image__values__15vLD",
 	  "snapshot-image__img": "SnapshotImage__snapshot-image__img__3jyIH"
 	};
@@ -4703,15 +4722,38 @@
 	        }) + '")'
 	      };
 
+	      // Set up the time ago component
+	      var timeAgoFormatter = void 0;
+	      switch (this.props.intl.locale) {
+	        case 'no':
+	          {
+	            timeAgoFormatter = (0, _buildFormatter2.default)(_no2.default);
+	            break;
+	          }
+	        case 'en':
+	          {
+	            timeAgoFormatter = (0, _buildFormatter2.default)(_en2.default);
+	            break;
+	          }
+	        default:
+	          {
+	            timeAgoFormatter = (0, _buildFormatter2.default)(_en2.default);
+	            break;
+	          }
+	      }
+
 	      return _jsx('div', {
 	        className: _SnapshotImage2.default['snapshot-image']
 	      }, void 0, _jsx('div', {
 	        className: _SnapshotImage2.default['snapshot-image__inner']
 	      }, void 0, _jsx('div', {
-	        className: _SnapshotImage2.default['snapshot-image__date']
-	      }, void 0, (0, _date.prettyDate)(this.props.selectedSnapshot.dateAdded)), _jsx('div', {
-	        className: _SnapshotImage2.default['snapshot-image__time-of-day']
-	      }, void 0, (0, _date.prettyTime)(this.props.selectedSnapshot.dateAdded)), _jsx('div', {
+	        className: _SnapshotImage2.default['snapshot-image__date-time']
+	      }, void 0, (0, _date.prettyDateTime)(this.props.selectedSnapshot.dateAdded)), _jsx('div', {
+	        className: _SnapshotImage2.default['snapshot-image__timeago']
+	      }, void 0, _jsx(_reactTimeago2.default, {
+	        date: this.props.selectedSnapshot.dateAdded,
+	        formatter: timeAgoFormatter
+	      })), _jsx('div', {
 	        className: _SnapshotImage2.default['snapshot-image__values']
 	      }, void 0, _jsx('span', {}, void 0, this.props.selectedSnapshot.temperature, '℃'), _jsx('span', {}, void 0, this.props.selectedSnapshot.humidity, '%'), _jsx('span', {}, void 0, this.props.selectedSnapshot.pressure, 'hPa')), _react2.default.createElement('div', { className: _SnapshotImage2.default['snapshot-image__img'],
 	        style: imageStyle,
@@ -4731,7 +4773,8 @@
 	  return {
 	    selectedPlace: (0, _PlaceReducer.getSelectedPlace)(state),
 	    selectedSnapshot: (0, _SnapshotReducer.getSelectedSnapshot)(state),
-	    snapshots: (0, _SnapshotReducer.getSnapshots)(state)
+	    snapshots: (0, _SnapshotReducer.getSnapshots)(state),
+	    intl: state.intl
 	  };
 	}
 
@@ -5560,22 +5603,46 @@
 /* 87 */
 /***/ function(module, exports) {
 
-	module.exports = require("redux-devtools");
+	module.exports = require("react-timeago");
 
 /***/ },
 /* 88 */
 /***/ function(module, exports) {
 
-	module.exports = require("redux-devtools-dock-monitor");
+	module.exports = require("react-timeago/lib/formatters/buildFormatter");
 
 /***/ },
 /* 89 */
 /***/ function(module, exports) {
 
-	module.exports = require("redux-devtools-log-monitor");
+	module.exports = require("react-timeago/lib/language-strings/en");
 
 /***/ },
 /* 90 */
+/***/ function(module, exports) {
+
+	module.exports = require("react-timeago/lib/language-strings/no");
+
+/***/ },
+/* 91 */
+/***/ function(module, exports) {
+
+	module.exports = require("redux-devtools");
+
+/***/ },
+/* 92 */
+/***/ function(module, exports) {
+
+	module.exports = require("redux-devtools-dock-monitor");
+
+/***/ },
+/* 93 */
+/***/ function(module, exports) {
+
+	module.exports = require("redux-devtools-log-monitor");
+
+/***/ },
+/* 94 */
 /***/ function(module, exports) {
 
 	module.exports = require("redux-thunk");
