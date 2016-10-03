@@ -94,7 +94,10 @@ export function fetchNewSelectedPlace (name) {
     dispatch(toggleSelectedLoading(true));
 
     return callApi(`placesselected/${name}`).then(res => {
-      return dispatch(addSelectedPlace({ place: res.place, snapshots: res.snapshots }))
+      return dispatch(addSelectedPlace({
+        place: res.place,
+        snapshots: res.snapshots
+      }))
     });
   };
 }

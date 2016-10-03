@@ -37,29 +37,32 @@ export function getSnapshots (req, res) {
  * @param placeCuid
  * @returns Promise
  */
-export function getSnapshotsRaw ({ placeCuid, limit }) {
+export function getSnapshotsRaw ({ placeCuid, limit, sort }) {
   return new Promise((resolve, reject) => {
 
     let query = {
       placeCuid
     };
     
-    if (limit) {
-      if (limit === `lastThreeDays`) {
-        let dateGreaterThen = new Date();
-        dateGreaterThen.setDate(dateGreaterThen.getDate() - 3);
-        
-        query.dateAdded = { $gt: dateGreaterThen };
-      }
+    let q = Snapshot.find(query);
+
+    if (sort) {
+      q = q.sort(sort);
+    } else {
+      q = q.sort({ dateAdded: -1 });
+    }
+
+    if (typeof limit === 'number') {
+      q = q.limit(limit);
     }
     
-    Snapshot.find(query).sort('dateAdded').exec((err, snapshots) => {
+    q.exec((err, snapshots) => {
 
       if (err) {
         return reject(err);
       }
       
-      resolve(snapshots.map(item => normalizeSnapshot(item)));
+      resolve(snapshots.map(item => normalizeSnapshot(item)).reverse());
     });
 
   });
@@ -326,21 +329,6 @@ function normalizeSnapshot (snapshot) {
 
   return snapshot;
 }
-
-/**
- * Get a single snapshot
- * @param req
- * @param res
- * @returns void
- */
-//export function getSnapshot (req, res) {
-//  Snapshot.findOne({ cuid: req.params.cuid }).exec((err, snapshot) => {
-//    if (err) {
-//      res.status(500).send(err);
-//    }
-//    res.json({ snapshot });
-//  });
-//}
 
 /**
  * Delete a snapshot

@@ -12,7 +12,7 @@ import { setSelectedPlace } from '../../../App/AppActions';
 import { fetchNewSelectedPlace } from '../../../Place/PlaceActions';
 import { getSelectedPlace, getSelectedPlaceLoading } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
-import { getSnapshots, getMinDate, getMaxDate } from '../../../Snapshot/SnapshotReducer';
+import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 import { getAbsolutePathForImage } from '../../../../aws/s3';
 
 import AppIcon from '../../../../components/Icons/App';
@@ -124,8 +124,6 @@ function mapStateToProps (state) {
 	return {
 		selectedPlace: getSelectedPlace(state),
 		snapshots: getSnapshots(state),
-		minDate: getMinDate(state),
-		maxDate: getMaxDate(state),
 		placeLoading: getSelectedPlaceLoading(state)
 	};
 }

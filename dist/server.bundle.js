@@ -182,7 +182,7 @@
 	exports.deletePlace = deletePlace;
 	exports.deletePlaceRequest = deletePlaceRequest;
 
-	var _apiCaller = __webpack_require__(31);
+	var _apiCaller = __webpack_require__(32);
 
 	var _apiCaller2 = _interopRequireDefault(_apiCaller);
 
@@ -287,7 +287,10 @@
 	    dispatch(toggleSelectedLoading(true));
 
 	    return (0, _apiCaller2.default)('placesselected/' + name).then(function (res) {
-	      return dispatch(addSelectedPlace({ place: res.place, snapshots: res.snapshots }));
+	      return dispatch(addSelectedPlace({
+	        place: res.place,
+	        snapshots: res.snapshots
+	      }));
 	    });
 	  };
 	}
@@ -520,7 +523,7 @@
 	exports.showNextSnapshot = showNextSnapshot;
 	exports.showSnapshotFromIndex = showSnapshotFromIndex;
 
-	var _apiCaller = __webpack_require__(31);
+	var _apiCaller = __webpack_require__(32);
 
 	var _apiCaller2 = _interopRequireDefault(_apiCaller);
 
@@ -623,7 +626,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getSnapshot = exports.getMaxDate = exports.getMinDate = exports.getSelectedSnapshot = exports.getSnapshots = undefined;
+	exports.getSnapshot = exports.getSelectedSnapshot = exports.getSnapshots = undefined;
 
 	var _SnapshotActions = __webpack_require__(9);
 
@@ -631,18 +634,11 @@
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-	// The dates we select from initially. The three last days
-	var minDate = new Date();
-	minDate.setDate(minDate.getDate() - 3);
-	var maxDate = new Date();
-
 	// Initial State
 	var getInitialState = function getInitialState() {
 	  return {
 	    data: [],
-	    selected: false,
-	    minDate: minDate,
-	    maxDate: maxDate
+	    selected: false
 	  };
 	};
 
@@ -655,9 +651,7 @@
 	      {
 	        return {
 	          data: [action.snapshot].concat(_toConsumableArray(state.data)),
-	          selected: action.snapshot,
-	          minDate: state.minDate,
-	          maxDate: action.snapshot.dateAdded
+	          selected: action.snapshot
 	        };
 	      }
 
@@ -666,17 +660,13 @@
 	        if (action.snapshots && action.snapshots.length) {
 	          return {
 	            data: action.snapshots,
-	            selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected,
-	            minDate: state.minDate,
-	            maxDate: state.maxDate
+	            selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected
 	          };
 	        }
 
 	        return {
 	          data: getInitialState().data,
-	          selected: getInitialState().data,
-	          minDate: state.minDate,
-	          maxDate: state.maxDate
+	          selected: getInitialState().data
 	        };
 	      }
 
@@ -698,9 +688,7 @@
 
 	        return {
 	          data: newListOfSnapshots,
-	          selected: selected,
-	          minDate: newListOfSnapshots[newListOfSnapshots.length - 1].dateAdded,
-	          maxDate: newListOfSnapshots[0].dateAdded
+	          selected: selected
 	        };
 	      }
 
@@ -721,9 +709,7 @@
 
 	        return {
 	          data: state.data,
-	          selected: state.data[selectedIndex1 - 1],
-	          minDate: state.minDate,
-	          maxDate: state.maxDate
+	          selected: state.data[selectedIndex1 - 1]
 	        };
 	      }
 
@@ -744,9 +730,7 @@
 
 	        return {
 	          data: state.data,
-	          selected: state.data[selectedIndex + 1],
-	          minDate: state.minDate,
-	          maxDate: state.maxDate
+	          selected: state.data[selectedIndex + 1]
 	        };
 	      }
 
@@ -759,9 +743,7 @@
 
 	        return {
 	          data: state.data,
-	          selected: state.data[action.index] || state.selected,
-	          minDate: state.minDate,
-	          maxDate: state.maxDate
+	          selected: state.data[action.index] || state.selected
 	        };
 	      }
 
@@ -776,9 +758,7 @@
 
 	        return {
 	          data: action.snapshots,
-	          selected: action.snapshots[action.snapshots.length - 1],
-	          minDate: state.minDate,
-	          maxDate: state.maxDate
+	          selected: action.snapshots[action.snapshots.length - 1]
 	        };
 	      }
 
@@ -797,14 +777,6 @@
 	// Get selected snapshot
 	var getSelectedSnapshot = exports.getSelectedSnapshot = function getSelectedSnapshot(state) {
 	  return state.snapshots.selected;
-	};
-
-	// Get min/max date
-	var getMinDate = exports.getMinDate = function getMinDate(state) {
-	  return state.snapshots.minDate;
-	};
-	var getMaxDate = exports.getMaxDate = function getMaxDate(state) {
-	  return state.snapshots.maxDate;
 	};
 
 	// Get snapshot by cuid
@@ -827,10 +799,16 @@
 /* 12 */
 /***/ function(module, exports) {
 
-	module.exports = require("mongoose");
+	module.exports = require("fs");
 
 /***/ },
 /* 13 */
+/***/ function(module, exports) {
+
+	module.exports = require("mongoose");
+
+/***/ },
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -845,7 +823,7 @@
 
 	var _config2 = _interopRequireDefault(_config);
 
-	var _s = __webpack_require__(34);
+	var _s = __webpack_require__(35);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -884,7 +862,7 @@
 	}
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -919,7 +897,7 @@
 	}
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -934,7 +912,7 @@
 
 	exports.switchLanguage = switchLanguage;
 
-	var _setup = __webpack_require__(21);
+	var _setup = __webpack_require__(22);
 
 	// Export Constants
 	var SWITCH_LANGUAGE = exports.SWITCH_LANGUAGE = 'SWITCH_LANGUAGE';
@@ -946,7 +924,7 @@
 	}
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -964,25 +942,25 @@
 	exports.getLatestSnapshotForPlace = getLatestSnapshotForPlace;
 	exports.deleteSnapshot = deleteSnapshot;
 
-	var _snapshot = __webpack_require__(33);
+	var _snapshot = __webpack_require__(34);
 
 	var _snapshot2 = _interopRequireDefault(_snapshot);
 
-	var _place = __webpack_require__(17);
+	var _place = __webpack_require__(18);
 
 	var _place2 = _interopRequireDefault(_place);
 
-	var _cuid = __webpack_require__(19);
+	var _cuid = __webpack_require__(20);
 
 	var _cuid2 = _interopRequireDefault(_cuid);
 
-	var _fs = __webpack_require__(35);
+	var _fs = __webpack_require__(12);
 
 	var _fs2 = _interopRequireDefault(_fs);
 
 	var _s = __webpack_require__(71);
 
-	var _place3 = __webpack_require__(32);
+	var _place3 = __webpack_require__(33);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1023,6 +1001,7 @@
 	function getSnapshotsRaw(_ref) {
 	  var placeCuid = _ref.placeCuid;
 	  var limit = _ref.limit;
+	  var sort = _ref.sort;
 
 	  return new Promise(function (resolve, reject) {
 
@@ -1030,16 +1009,19 @@
 	      placeCuid: placeCuid
 	    };
 
-	    if (limit) {
-	      if (limit === 'lastThreeDays') {
-	        var dateGreaterThen = new Date();
-	        dateGreaterThen.setDate(dateGreaterThen.getDate() - 3);
+	    var q = _snapshot2.default.find(query);
 
-	        query.dateAdded = { $gt: dateGreaterThen };
-	      }
+	    if (sort) {
+	      q = q.sort(sort);
+	    } else {
+	      q = q.sort({ dateAdded: -1 });
 	    }
 
-	    _snapshot2.default.find(query).sort('dateAdded').exec(function (err, snapshots) {
+	    if (typeof limit === 'number') {
+	      q = q.limit(limit);
+	    }
+
+	    q.exec(function (err, snapshots) {
 
 	      if (err) {
 	        return reject(err);
@@ -1047,7 +1029,7 @@
 
 	      resolve(snapshots.map(function (item) {
 	        return normalizeSnapshot(item);
-	      }));
+	      }).reverse());
 	    });
 	  });
 	}
@@ -1315,21 +1297,6 @@
 	}
 
 	/**
-	 * Get a single snapshot
-	 * @param req
-	 * @param res
-	 * @returns void
-	 */
-	//export function getSnapshot (req, res) {
-	//  Snapshot.findOne({ cuid: req.params.cuid }).exec((err, snapshot) => {
-	//    if (err) {
-	//      res.status(500).send(err);
-	//    }
-	//    res.json({ snapshot });
-	//  });
-	//}
-
-	/**
 	 * Delete a snapshot
 	 * @param req
 	 * @param res
@@ -1348,7 +1315,7 @@
 	}
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1358,7 +1325,7 @@
 	  value: true
 	});
 
-	var _mongoose = __webpack_require__(12);
+	var _mongoose = __webpack_require__(13);
 
 	var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -1375,7 +1342,7 @@
 	exports.default = _mongoose2.default.model('SnapshotPlace', placeSchema);
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1443,19 +1410,19 @@
 	}
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = require("cuid");
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = require("webpack");
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1542,7 +1509,7 @@
 	localizationData.en.messages = flattenMessages(localizationData.en.messages);
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1634,7 +1601,7 @@
 	};
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1728,7 +1695,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(AdminPage);
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1856,7 +1823,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(PlacesListPage);
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1867,7 +1834,7 @@
 	});
 	exports.getSelectedMainNavigation = exports.getShowAddSnapshot = undefined;
 
-	var _AppActions = __webpack_require__(14);
+	var _AppActions = __webpack_require__(15);
 
 	// Initial State
 	var initialState = {
@@ -1920,7 +1887,7 @@
 	exports.default = AppReducer;
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1954,7 +1921,7 @@
 	}, void 0, _jsx(_reduxDevtoolsLogMonitor2.default, {})));
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1995,7 +1962,7 @@
 
 	var _Header2 = _interopRequireDefault(_Header);
 
-	var _AppActions = __webpack_require__(14);
+	var _AppActions = __webpack_require__(15);
 
 	var _PlaceActions = __webpack_require__(6);
 
@@ -2005,9 +1972,9 @@
 
 	var _SnapshotReducer = __webpack_require__(10);
 
-	var _s = __webpack_require__(13);
+	var _s = __webpack_require__(14);
 
-	var _App = __webpack_require__(22);
+	var _App = __webpack_require__(23);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -2128,8 +2095,6 @@
 		return {
 			selectedPlace: (0, _PlaceReducer.getSelectedPlace)(state),
 			snapshots: (0, _SnapshotReducer.getSnapshots)(state),
-			minDate: (0, _SnapshotReducer.getMinDate)(state),
-			maxDate: (0, _SnapshotReducer.getMaxDate)(state),
 			placeLoading: (0, _PlaceReducer.getSelectedPlaceLoading)(state)
 		};
 	}
@@ -2137,7 +2102,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(PlacePage);
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2176,7 +2141,7 @@
 
 	var _PlacePreviewList2 = _interopRequireDefault(_PlacePreviewList);
 
-	var _App = __webpack_require__(22);
+	var _App = __webpack_require__(23);
 
 	var _App2 = _interopRequireDefault(_App);
 
@@ -2244,7 +2209,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(SelectPlacePage);
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2273,7 +2238,7 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _IntlActions = __webpack_require__(15);
+	var _IntlActions = __webpack_require__(16);
 
 	var _SettingsPage = {
 			"flag-list": "SettingsPage__flag-list__3mmhh",
@@ -2365,7 +2330,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(SettingsPage);
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2490,7 +2455,7 @@
 	exports.default = Icon;
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2554,7 +2519,7 @@
 	}
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2571,13 +2536,13 @@
 	exports.getSelectedPlaceData = getSelectedPlaceData;
 	exports.deletePlace = deletePlace;
 
-	var _place = __webpack_require__(17);
+	var _place = __webpack_require__(18);
 
 	var _place2 = _interopRequireDefault(_place);
 
-	var _snapshot = __webpack_require__(16);
+	var _snapshot = __webpack_require__(17);
 
-	var _cuid = __webpack_require__(19);
+	var _cuid = __webpack_require__(20);
 
 	var _cuid2 = _interopRequireDefault(_cuid);
 
@@ -2724,7 +2689,7 @@
 
 	    (0, _snapshot.getSnapshotsRaw)({
 	      placeCuid: place.cuid,
-	      limit: 'lastThreeDays'
+	      limit: 50
 	    }).then(function (snapshots) {
 	      return res.json({ place: place, snapshots: snapshots });
 	    }).catch(function (err) {
@@ -2757,7 +2722,7 @@
 	}
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2767,7 +2732,7 @@
 	  value: true
 	});
 
-	var _mongoose = __webpack_require__(12);
+	var _mongoose = __webpack_require__(13);
 
 	var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -2787,7 +2752,7 @@
 	exports.default = _mongoose2.default.model('Snapshot', snapshotSchema);
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2812,12 +2777,6 @@
 
 	  return place.name + "/" + date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + snapshot.cuid + ".jpg";
 	}
-
-/***/ },
-/* 35 */
-/***/ function(module, exports) {
-
-	module.exports = require("fs");
 
 /***/ },
 /* 36 */
@@ -2909,11 +2868,11 @@
 	 */
 	if (process.env.NODE_ENV !== 'production') {
 	  // Require async routes only in development for react-hot-reloader to work.
-	  __webpack_require__(27);
 	  __webpack_require__(28);
 	  __webpack_require__(29);
-	  __webpack_require__(23);
+	  __webpack_require__(30);
 	  __webpack_require__(24);
+	  __webpack_require__(25);
 	}
 
 	// react-router setup with code-splitting
@@ -2924,35 +2883,35 @@
 	}, void 0, _jsx(_reactRouter.IndexRoute, {
 	  getComponent: function getComponent(nextState, cb) {
 	    Promise.resolve().catch(function(err) { __webpack_require__.oe(err); }).then((function (require) {
-	      cb(null, __webpack_require__(28).default);
+	      cb(null, __webpack_require__(29).default);
 	    }).bind(null, __webpack_require__));
 	  }
 	}), _jsx(_reactRouter.Route, {
 	  path: '/admin',
 	  getComponent: function getComponent(nextState, cb) {
 	    Promise.resolve().catch(function(err) { __webpack_require__.oe(err); }).then((function (require) {
-	      cb(null, __webpack_require__(23).default);
+	      cb(null, __webpack_require__(24).default);
 	    }).bind(null, __webpack_require__));
 	  }
 	}), _jsx(_reactRouter.Route, {
 	  path: '/admin/places',
 	  getComponent: function getComponent(nextState, cb) {
 	    Promise.resolve().catch(function(err) { __webpack_require__.oe(err); }).then((function (require) {
-	      cb(null, __webpack_require__(24).default);
+	      cb(null, __webpack_require__(25).default);
 	    }).bind(null, __webpack_require__));
 	  }
 	}), _jsx(_reactRouter.Route, {
 	  path: '/:placeName',
 	  getComponent: function getComponent(nextState, cb) {
 	    Promise.resolve().catch(function(err) { __webpack_require__.oe(err); }).then((function (require) {
-	      cb(null, __webpack_require__(27).default);
+	      cb(null, __webpack_require__(28).default);
 	    }).bind(null, __webpack_require__));
 	  }
 	}), _jsx(_reactRouter.Route, {
 	  path: '/:placeName/settings',
 	  getComponent: function getComponent(nextState, cb) {
 	    Promise.resolve().catch(function(err) { __webpack_require__.oe(err); }).then((function (require) {
-	      cb(null, __webpack_require__(29).default);
+	      cb(null, __webpack_require__(30).default);
 	    }).bind(null, __webpack_require__));
 	  }
 	}));
@@ -2975,7 +2934,7 @@
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _DevTools = __webpack_require__(26);
+	var _DevTools = __webpack_require__(27);
 
 	var _DevTools2 = _interopRequireDefault(_DevTools);
 
@@ -3113,21 +3072,21 @@
 	  }
 	};
 
-	var _cuid = __webpack_require__(19);
+	var _cuid = __webpack_require__(20);
 
 	var _cuid2 = _interopRequireDefault(_cuid);
 
-	var _snapshot = __webpack_require__(33);
+	var _snapshot = __webpack_require__(34);
 
 	var _snapshot2 = _interopRequireDefault(_snapshot);
 
-	var _place = __webpack_require__(17);
+	var _place = __webpack_require__(18);
 
 	var _place2 = _interopRequireDefault(_place);
 
-	var _snapshot3 = __webpack_require__(16);
+	var _snapshot3 = __webpack_require__(17);
 
-	var _fs = __webpack_require__(35);
+	var _fs = __webpack_require__(12);
 
 	var _fs2 = _interopRequireDefault(_fs);
 
@@ -3146,7 +3105,7 @@
 
 	var _express = __webpack_require__(11);
 
-	var _place = __webpack_require__(32);
+	var _place = __webpack_require__(33);
 
 	var PlaceController = _interopRequireWildcard(_place);
 
@@ -3187,7 +3146,7 @@
 
 	var _express = __webpack_require__(11);
 
-	var _snapshot = __webpack_require__(16);
+	var _snapshot = __webpack_require__(17);
 
 	var SnapshotController = _interopRequireWildcard(_snapshot);
 
@@ -3211,7 +3170,7 @@
 	router.route('/snapshots/legacy').post(SnapshotController.addSnapshotLegacy);
 
 	// Delete a snapshot by cuid
-	router.route('/snapshots/:cuid').delete(SnapshotController.deleteSnapshot);
+	//router.route('/snapshots/:cuid').delete(SnapshotController.deleteSnapshot);
 
 	exports.default = router;
 
@@ -3249,7 +3208,7 @@
 	"use strict";
 	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
 
-	var webpack = __webpack_require__(20);
+	var webpack = __webpack_require__(21);
 	var cssnext = __webpack_require__(81);
 	var postcssFocus = __webpack_require__(82);
 	var postcssReporter = __webpack_require__(83);
@@ -3832,7 +3791,7 @@
 
 	var _reactHelmet2 = _interopRequireDefault(_reactHelmet);
 
-	var _DevTools = __webpack_require__(26);
+	var _DevTools = __webpack_require__(27);
 
 	var _DevTools2 = _interopRequireDefault(_DevTools);
 
@@ -3840,7 +3799,7 @@
 
 	var _Header2 = _interopRequireDefault(_Header);
 
-	var _IntlActions = __webpack_require__(15);
+	var _IntlActions = __webpack_require__(16);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4004,9 +3963,9 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _setup = __webpack_require__(21);
+	var _setup = __webpack_require__(22);
 
-	var _IntlActions = __webpack_require__(15);
+	var _IntlActions = __webpack_require__(16);
 
 	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
@@ -4060,7 +4019,7 @@
 
 	var _reactRouter = __webpack_require__(3);
 
-	var _s = __webpack_require__(13);
+	var _s = __webpack_require__(14);
 
 	var _PlacePreviewList = {
 	  "place-preview-list": "PlacePreviewList__place-preview-list__9hO9x",
@@ -4166,8 +4125,6 @@
 	  "range-slider": "RangeSlider__range-slider__3J3uT",
 	  "range-slider--hide": "RangeSlider__range-slider--hide__2zA8x",
 	  "range-slider__values": "RangeSlider__range-slider__values__2k-vX",
-	  "range-slider__values__from": "RangeSlider__range-slider__values__from__3rl17",
-	  "range-slider__values__to": "RangeSlider__range-slider__values__to__3LtXr",
 	  "range-slider__outer": "RangeSlider__range-slider__outer__Pedtd",
 	  "range-slider__inner": "RangeSlider__range-slider__inner__2nO9Q",
 	  "range-slider__line": "RangeSlider__range-slider__line__3CnRc",
@@ -4176,7 +4133,7 @@
 
 	var _RangeSlider2 = _interopRequireDefault(_RangeSlider);
 
-	var _date = __webpack_require__(18);
+	var _date = __webpack_require__(19);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4363,7 +4320,7 @@
 
 	var _reactRedux = __webpack_require__(1);
 
-	var _Icon = __webpack_require__(30);
+	var _Icon = __webpack_require__(31);
 
 	var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -4375,7 +4332,7 @@
 
 	var _SnapshotGraph2 = _interopRequireDefault(_SnapshotGraph);
 
-	var _date = __webpack_require__(18);
+	var _date = __webpack_require__(19);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4589,7 +4546,7 @@
 
 	var _SnapshotActions = __webpack_require__(9);
 
-	var _s = __webpack_require__(13);
+	var _s = __webpack_require__(14);
 
 	var _RangeSlider = __webpack_require__(64);
 
@@ -4614,7 +4571,7 @@
 
 	var _PointerHandler2 = _interopRequireDefault(_PointerHandler);
 
-	var _date = __webpack_require__(18);
+	var _date = __webpack_require__(19);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4986,7 +4943,7 @@
 
 	var _reactRedux = __webpack_require__(1);
 
-	var _Icon = __webpack_require__(30);
+	var _Icon = __webpack_require__(31);
 
 	var _Icon2 = _interopRequireDefault(_Icon);
 
@@ -5000,9 +4957,9 @@
 
 	var _SnapshotActions = __webpack_require__(9);
 
-	var _AppActions = __webpack_require__(14);
+	var _AppActions = __webpack_require__(15);
 
-	var _AppReducer = __webpack_require__(25);
+	var _AppReducer = __webpack_require__(26);
 
 	var _SnapshotReducer = __webpack_require__(10);
 
@@ -5140,7 +5097,7 @@
 
 	var _redux = __webpack_require__(37);
 
-	var _AppReducer = __webpack_require__(25);
+	var _AppReducer = __webpack_require__(26);
 
 	var _AppReducer2 = _interopRequireDefault(_AppReducer);
 
@@ -5191,7 +5148,7 @@
 
 	var _config2 = _interopRequireDefault(_config);
 
-	var _s = __webpack_require__(34);
+	var _s = __webpack_require__(35);
 
 	var _isWebp = __webpack_require__(78);
 
@@ -5288,6 +5245,10 @@
 	// Webpack Requirements
 
 
+	var _fs = __webpack_require__(12);
+
+	var _fs2 = _interopRequireDefault(_fs);
+
 	var _express = __webpack_require__(11);
 
 	var _express2 = _interopRequireDefault(_express);
@@ -5300,7 +5261,7 @@
 
 	var _compression2 = _interopRequireDefault(_compression);
 
-	var _mongoose = __webpack_require__(12);
+	var _mongoose = __webpack_require__(13);
 
 	var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -5316,7 +5277,7 @@
 
 	var _IntlWrapper2 = _interopRequireDefault(_IntlWrapper);
 
-	var _webpack = __webpack_require__(20);
+	var _webpack = __webpack_require__(21);
 
 	var _webpack2 = _interopRequireDefault(_webpack);
 
@@ -5421,13 +5382,31 @@
 
 	// Render Initial HTML
 	var renderFullPage = function renderFullPage(html, initialState) {
-	  var head = _reactHelmet2.default.rewind();
+	  return new Promise(function (resolve, reject) {
+	    var head = _reactHelmet2.default.rewind();
 
-	  // Import Manifests
-	  var assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
-	  var chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
+	    // Import Manifests
+	    var assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
+	    var chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
 
-	  return '\n    <!doctype html>\n    <html>\n      <head>\n        ' + head.base.toString() + '\n        ' + head.title.toString() + '\n        ' + head.meta.toString() + '\n        ' + head.link.toString() + '\n        ' + head.script.toString() + '\n\n        <script>window.__APP_CONFIG__ = ' + JSON.stringify(APP_CONFIG) + '</script>\n\n        ' + (process.env.NODE_ENV === 'production' ? '<link rel=\'stylesheet\' href=\'' + assetsManifest['/app.css'] + '\' />' : '') + '\n\n        <link rel="preconnect" href="' + _config2.default.imageUrlBase + '">\n\n        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">\n        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">\n        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">\n        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">\n        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">\n        <meta name="msapplication-TileColor" content="#00628b">\n        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">\n        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">\n        <meta name="theme-color" content="#ffffff">\n        <meta name="apple-mobile-web-app-capable" content="yes" />\n      </head>\n      <body>\n        <div id="root">' + (process.env.NODE_ENV === 'production' ? html : '<div>' + html + '</div>') + '</div>\n        <script>\n          window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + ';\n          window.__NODE_ENV = \'' + process.env.NODE_ENV + '\';\n          ' + (process.env.NODE_ENV === 'production' ? '//<![CDATA[\n          window.webpackManifest = ' + JSON.stringify(chunkManifest) + ';\n          //]]>' : '') + '\n        </script>\n        <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js') + '\'></script>\n        <script async defer src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js') + '\'></script>\n        <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>\n      </body>\n    </html>\n  ';
+	    if (process.env.NODE_ENV === 'production') {
+	      _fs2.default.readFile(_path2.default.resolve(__dirname, '../dist' + assetsManifest['/app.css']), 'utf-8', function (err, content) {
+	        if (err) {
+	          reject(err);
+	        } else {
+	          resolveWithResponse({ appCSS: content });
+	        }
+	      });
+	    } else {
+	      resolveWithResponse();
+	    }
+
+	    function resolveWithResponse(_ref) {
+	      var appCSS = _ref.appCSS;
+
+	      resolve('\n        <!doctype html>\n        <html>\n          <head>\n            ' + head.base.toString() + '\n            ' + head.title.toString() + '\n            ' + head.meta.toString() + '\n            ' + head.link.toString() + '\n            ' + head.script.toString() + '\n\n            <script>window.__APP_CONFIG__ = ' + JSON.stringify(APP_CONFIG) + '</script>\n\n            ' + (process.env.NODE_ENV === 'production' ? '<style>' + appCSS + '</style>' : '') + '\n\n            <link rel="preconnect" href="' + _config2.default.imageUrlBase + '">\n\n            <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">\n            <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">\n            <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">\n            <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">\n            <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">\n            <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">\n            <meta name="msapplication-TileColor" content="#00628b">\n            <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">\n            <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">\n            <meta name="theme-color" content="#ffffff">\n            <meta name="apple-mobile-web-app-capable" content="yes" />\n          </head>\n          <body>\n            <div id="root">' + (process.env.NODE_ENV === 'production' ? html : '<div>' + html + '</div>') + '</div>\n            <script>\n              window.__INITIAL_STATE__ = ' + JSON.stringify(initialState) + ';\n              window.__NODE_ENV = \'' + process.env.NODE_ENV + '\';\n              ' + (process.env.NODE_ENV === 'production' ? '//<![CDATA[\n              window.webpackManifest = ' + JSON.stringify(chunkManifest) + ';\n              //]]>' : '') + '\n            </script>\n            <script src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js') + '\'></script>\n            <script async defer src=\'' + (process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js') + '\'></script>\n            <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>\n          </body>\n        </html>\n      ');
+	    }
+	  });
 	};
 
 	var renderError = function renderError(err) {
@@ -5473,7 +5452,9 @@
 	      }, void 0, _jsx(_IntlWrapper2.default, {}, void 0, _react2.default.createElement(_reactRouter.RouterContext, renderProps))));
 	      var finalState = store.getState();
 
-	      res.set('Content-Type', 'text/html').status(200).end(renderFullPage(initialView, finalState));
+	      renderFullPage(initialView, finalState).then(function (page) {
+	        res.set('Content-Type', 'text/html').status(200).end(page);
+	      });
 	    }).catch(function (error) {
 	      return next(error);
 	    });

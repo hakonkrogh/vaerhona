@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 import Express from 'express';
 import helmet from 'helmet';
 //import session = from 'express-session';
@@ -72,56 +74,72 @@ app.use('/api', places);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
-  const head = Helmet.rewind();
+  return new Promise((resolve, reject) => {
+    const head = Helmet.rewind();
 
-  // Import Manifests
-  const assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
-  const chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
+    // Import Manifests
+    const assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
+    const chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
 
-  return `
-    <!doctype html>
-    <html>
-      <head>
-        ${head.base.toString()}
-        ${head.title.toString()}
-        ${head.meta.toString()}
-        ${head.link.toString()}
-        ${head.script.toString()}
+    if (process.env.NODE_ENV === 'production') {
+      fs.readFile(path.resolve(__dirname, '../dist' + assetsManifest['/app.css']), 'utf-8', (err, content) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolveWithResponse({ appCSS: content });
+        }
+      });
+    } else {
+      resolveWithResponse();
+    }
 
-        <script>window.__APP_CONFIG__ = ${JSON.stringify(APP_CONFIG)}</script>
+    function resolveWithResponse ({ appCSS }) {
+      resolve(`
+        <!doctype html>
+        <html>
+          <head>
+            ${head.base.toString()}
+            ${head.title.toString()}
+            ${head.meta.toString()}
+            ${head.link.toString()}
+            ${head.script.toString()}
 
-        ${process.env.NODE_ENV === 'production' ? `<link rel='stylesheet' href='${assetsManifest['/app.css']}' />` : ''}
+            <script>window.__APP_CONFIG__ = ${JSON.stringify(APP_CONFIG)}</script>
 
-        <link rel="preconnect" href="${serverConfig.imageUrlBase}">
+            ${process.env.NODE_ENV === 'production' ? `<style>${appCSS}</style>` : ''}
 
-        <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">
-        <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">
-        <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">
-        <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">
-        <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">
-        <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">
-        <meta name="msapplication-TileColor" content="#00628b">
-        <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">
-        <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">
-        <meta name="theme-color" content="#ffffff">
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-      </head>
-      <body>
-        <div id="root">${process.env.NODE_ENV === 'production' ? html : `<div>${html}</div>`}</div>
-        <script>
-          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
-          window.__NODE_ENV = '${process.env.NODE_ENV}';
-          ${process.env.NODE_ENV === 'production' ?
-          `//<![CDATA[
-          window.webpackManifest = ${JSON.stringify(chunkManifest)};
-          //]]>` : ''}
-        </script>
-        <script src='${process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js'}'></script>
-        <script async defer src='${process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js'}'></script>
-        <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>
-      </body>
-    </html>
-  `;
+            <link rel="preconnect" href="${serverConfig.imageUrlBase}">
+
+            <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=5A5637bzNY">
+            <link rel="icon" type="image/png" href="/static/favicons/favicon-32x32.png?v=5A5637bzNY" sizes="32x32">
+            <link rel="icon" type="image/png" href="/static/favicons/favicon-16x16.png?v=5A5637bzNY" sizes="16x16">
+            <link rel="manifest" href="/static/favicons/manifest.json?v=5A5637bzNY">
+            <link rel="mask-icon" href="/static/favicons/safari-pinned-tab.svg?v=5A5637bzNY" color="#00628b">
+            <link rel="shortcut icon" href="/static/favicons/favicon.ico?v=5A5637bzNY">
+            <meta name="msapplication-TileColor" content="#00628b">
+            <meta name="msapplication-TileImage" content="/static/favicons/mstile-144x144.png?v=5A5637bzNY">
+            <meta name="msapplication-config" content="/static/favicons/browserconfig.xml?v=5A5637bzNY">
+            <meta name="theme-color" content="#ffffff">
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+          </head>
+          <body>
+            <div id="root">${process.env.NODE_ENV === 'production' ? html : `<div>${html}</div>`}</div>
+            <script>
+              window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+              window.__NODE_ENV = '${process.env.NODE_ENV}';
+              ${process.env.NODE_ENV === 'production' ?
+              `//<![CDATA[
+              window.webpackManifest = ${JSON.stringify(chunkManifest)};
+              //]]>` : ''}
+            </script>
+            <script src='${process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js'}'></script>
+            <script async defer src='${process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js'}'></script>
+            <script async defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js" integrity="sha256-fQOizuxGMT1DCcF0rU6EK8zQM6TwsSWGTHjL5UpxLlU=" crossorigin="anonymous"></script>
+          </body>
+        </html>
+      `);
+    }
+  });
 };
 
 const renderError = err => {
@@ -173,10 +191,13 @@ app.use((req, res, next) => {
         );
         const finalState = store.getState();
 
-        res
+        renderFullPage(initialView, finalState)
+        .then(page => {
+          res
           .set('Content-Type', 'text/html')
           .status(200)
-          .end(renderFullPage(initialView, finalState));
+          .end(page);
+        })
       })
       .catch((error) => next(error));
   });

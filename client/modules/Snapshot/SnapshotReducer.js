@@ -12,18 +12,11 @@ import {
   ADD_SELECTED_PLACE
 } from './../Place/PlaceActions';
 
-// The dates we select from initially. The three last days
-let minDate = new Date();
-minDate.setDate(minDate.getDate() - 3);
-let maxDate = new Date();
-
 // Initial State
 const getInitialState = () => {
   return {
     data: [],
-    selected: false,
-    minDate,
-    maxDate
+    selected: false
   };
 };
 
@@ -32,9 +25,7 @@ const SnapshotReducer = (state = getInitialState(), action) => {
     case ADD_SNAPSHOT: {
       return {
         data: [action.snapshot, ...state.data],
-        selected: action.snapshot,
-        minDate: state.minDate,
-        maxDate: action.snapshot.dateAdded
+        selected: action.snapshot
       };
     }
 
@@ -42,17 +33,13 @@ const SnapshotReducer = (state = getInitialState(), action) => {
       if (action.snapshots && action.snapshots.length) {
         return {
           data: action.snapshots,
-          selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected,
-          minDate: state.minDate,
-          maxDate: state.maxDate
+          selected: !state.selected && action.snapshots ? action.snapshots[action.snapshots.length - 1] : state.selected
         };
       }
 
       return {
         data: getInitialState().data,
-        selected: getInitialState().data,
-        minDate: state.minDate,
-        maxDate: state.maxDate
+        selected: getInitialState().data
       };
     }
 
@@ -72,9 +59,7 @@ const SnapshotReducer = (state = getInitialState(), action) => {
 
       return {
         data: newListOfSnapshots,
-        selected,
-        minDate: newListOfSnapshots[newListOfSnapshots.length - 1].dateAdded,
-        maxDate: newListOfSnapshots[0].dateAdded
+        selected
       };
     }
 
@@ -92,9 +77,7 @@ const SnapshotReducer = (state = getInitialState(), action) => {
 
       return {
         data: state.data,
-        selected: state.data[selectedIndex1 - 1],
-        minDate: state.minDate,
-        maxDate: state.maxDate
+        selected: state.data[selectedIndex1 - 1]
       };
     }
 
@@ -112,9 +95,7 @@ const SnapshotReducer = (state = getInitialState(), action) => {
 
       return {
         data: state.data,
-        selected: state.data[selectedIndex + 1],
-        minDate: state.minDate,
-        maxDate: state.maxDate
+        selected: state.data[selectedIndex + 1]
       };
     }
 
@@ -126,9 +107,7 @@ const SnapshotReducer = (state = getInitialState(), action) => {
       
       return {
         data: state.data,
-        selected: state.data[action.index] || state.selected,
-        minDate: state.minDate,
-        maxDate: state.maxDate
+        selected: state.data[action.index] || state.selected
       };
     }
     
@@ -141,9 +120,7 @@ const SnapshotReducer = (state = getInitialState(), action) => {
       
       return {
         data: action.snapshots,
-        selected: action.snapshots[action.snapshots.length - 1],
-        minDate: state.minDate,
-        maxDate: state.maxDate
+        selected: action.snapshots[action.snapshots.length - 1]
       };
     }
 
@@ -159,10 +136,6 @@ export const getSnapshots = state => state.snapshots.data;
 
 // Get selected snapshot
 export const getSelectedSnapshot = state => state.snapshots.selected;
-
-// Get min/max date
-export const getMinDate = state => state.snapshots.minDate;
-export const getMaxDate = state => state.snapshots.maxDate;
 
 // Get snapshot by cuid
 export const getSnapshot = (state, cuid) => state.snapshots.data.filter(snapshot => snapshot.cuid === cuid)[0];
