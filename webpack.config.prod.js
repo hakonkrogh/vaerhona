@@ -39,8 +39,8 @@ module.exports = {
       {
         test: /\.css$/,
         exclude: /node_modules/,
-        //loader: ExtractTextPlugin.extract('style-loader', 'css-loader?localIdentName=[hash:base64]&modules&importLoaders=1!postcss-loader'),
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?localIdentName=[name]&modules&importLoaders=1!postcss-loader'),
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?localIdentName=[hash:base64]&modules&importLoaders=1!postcss-loader'),
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?localIdentName=[name]__[local]&modules&importLoaders=1!postcss-loader'),
       }, {
         test: /\.css$/,
         include: /node_modules/,
