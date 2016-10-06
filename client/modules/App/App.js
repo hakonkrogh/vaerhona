@@ -32,7 +32,7 @@ export class App extends Component {
 
   render () {
 
-    let containerClassName = styles.container;
+    let containerClassName = styles['container'];
     if (typeof process !== 'undefined') {
       if (process.env.NODE_ENV === 'development') {
         containerClassName = styles['container--development'];

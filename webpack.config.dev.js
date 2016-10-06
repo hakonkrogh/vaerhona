@@ -38,7 +38,8 @@ module.exports = {
       {
         test: /\.css$/,
         exclude: /node_modules/,
-        loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
+        //loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
+        loader: 'style-loader!css-loader?localIdentName=[name]__[local]&modules&importLoaders=1&sourceMap!postcss-loader',
       }, {
         test: /\.css$/,
         include: /node_modules/,

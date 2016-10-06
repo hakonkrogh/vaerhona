@@ -90,7 +90,7 @@ const renderFullPage = (html, initialState) => {
         }
       });
     } else {
-      resolveWithResponse();
+      resolveWithResponse({});
     }
 
     function resolveWithResponse ({ appCSS }) {

@@ -116,7 +116,7 @@
 	var _react2 = _interopRequireDefault(_react);
 
 	var _Header = {
-	  "header__content": "Header__header__content__2m0LM"
+	  "header__content": "Header__header__content"
 	};
 
 	var _Header2 = _interopRequireDefault(_Header);
@@ -1633,7 +1633,7 @@
 	var _Header2 = _interopRequireDefault(_Header);
 
 	var _AdminPage = {
-	  "list": "AdminPage__list__3rfeJ"
+	  "list": "AdminPage__list"
 	};
 
 	var _AdminPage2 = _interopRequireDefault(_AdminPage);
@@ -1731,7 +1731,7 @@
 	var _PlaceActions = __webpack_require__(6);
 
 	var _PlacesListPage = {
-	  "outer": "PlacesListPage__outer__1dbgg"
+	  "outer": "PlacesListPage__outer"
 	};
 
 	var _PlacesListPage2 = _interopRequireDefault(_PlacesListPage);
@@ -1979,9 +1979,9 @@
 	var _App2 = _interopRequireDefault(_App);
 
 	var _PlacePage = {
-		"header-icon": "PlacePage__header-icon__JRnuR",
-		"header-title": "PlacePage__header-title__3zF-X",
-		"content-centered": "PlacePage__content-centered__16fwK"
+		"header-icon": "PlacePage__header-icon",
+		"header-title": "PlacePage__header-title",
+		"content-centered": "PlacePage__content-centered"
 	};
 
 	var _PlacePage2 = _interopRequireDefault(_PlacePage);
@@ -2241,8 +2241,8 @@
 	var _IntlActions = __webpack_require__(16);
 
 	var _SettingsPage = {
-			"flag-list": "SettingsPage__flag-list__3mmhh",
-			"flag-list__item": "SettingsPage__flag-list__item__1McKt"
+			"flag-list": "SettingsPage__flag-list",
+			"flag-list__item": "SettingsPage__flag-list__item"
 	};
 
 	var _SettingsPage2 = _interopRequireDefault(_SettingsPage);
@@ -2349,9 +2349,9 @@
 	var _react2 = _interopRequireDefault(_react);
 
 	var _Icon = {
-	  "container": "Icon__container__2LcEb",
-	  "container--selected": "Icon__container--selected__2pkPZ",
-	  "label": "Icon__label__HIzRX"
+	  "container": "Icon__container",
+	  "container--selected": "Icon__container--selected",
+	  "label": "Icon__label"
 	};
 
 	var _Icon2 = _interopRequireDefault(_Icon);
@@ -3236,7 +3236,8 @@
 	    loaders: [{
 	      test: /\.css$/,
 	      exclude: /node_modules/,
-	      loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader'
+	      //loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
+	      loader: 'style-loader!css-loader?localIdentName=[name]__[local]&modules&importLoaders=1&sourceMap!postcss-loader'
 	    }, {
 	      test: /\.css$/,
 	      include: /node_modules/,
@@ -3781,8 +3782,8 @@
 	var _reactRedux = __webpack_require__(1);
 
 	var _App = {
-	  "container": "App__container__4uEyK",
-	  "container--development": "App__container--development__fCUjd"
+	  "container": "App__container",
+	  "container--development": "App__container--development"
 	};
 
 	var _App2 = _interopRequireDefault(_App);
@@ -3850,7 +3851,7 @@
 	    key: 'render',
 	    value: function render() {
 
-	      var containerClassName = _App2.default.container;
+	      var containerClassName = _App2.default['container'];
 	      if (typeof process !== 'undefined') {
 	        if (process.env.NODE_ENV === 'development') {
 	          containerClassName = _App2.default['container--development'];
@@ -3914,7 +3915,7 @@
 	var _react2 = _interopRequireDefault(_react);
 
 	var _FullHeightWrapper = {
-	  "container": "FullHeightWrapper__container__2F5Zy"
+	  "container": "FullHeightWrapper__container"
 	};
 
 	var _FullHeightWrapper2 = _interopRequireDefault(_FullHeightWrapper);
@@ -4022,9 +4023,9 @@
 	var _s = __webpack_require__(14);
 
 	var _PlacePreviewList = {
-	  "place-preview-list": "PlacePreviewList__place-preview-list__9hO9x",
-	  "place-preview-list__item": "PlacePreviewList__place-preview-list__item__1noI7",
-	  "place-preview-list__image": "PlacePreviewList__place-preview-list__image__26rwo"
+	  "place-preview-list": "PlacePreviewList__place-preview-list",
+	  "place-preview-list__item": "PlacePreviewList__place-preview-list__item",
+	  "place-preview-list__image": "PlacePreviewList__place-preview-list__image"
 	};
 
 	var _PlacePreviewList2 = _interopRequireDefault(_PlacePreviewList);
@@ -4122,13 +4123,13 @@
 	var _hammerjs2 = _interopRequireDefault(_hammerjs);
 
 	var _RangeSlider = {
-	  "range-slider": "RangeSlider__range-slider__3J3uT",
-	  "range-slider--hide": "RangeSlider__range-slider--hide__2zA8x",
-	  "range-slider__values": "RangeSlider__range-slider__values__2k-vX",
-	  "range-slider__outer": "RangeSlider__range-slider__outer__Pedtd",
-	  "range-slider__inner": "RangeSlider__range-slider__inner__2nO9Q",
-	  "range-slider__line": "RangeSlider__range-slider__line__3CnRc",
-	  "range-slider__indicator": "RangeSlider__range-slider__indicator__2vYVz"
+	  "range-slider": "RangeSlider__range-slider",
+	  "range-slider--hide": "RangeSlider__range-slider--hide",
+	  "range-slider__values": "RangeSlider__range-slider__values",
+	  "range-slider__outer": "RangeSlider__range-slider__outer",
+	  "range-slider__inner": "RangeSlider__range-slider__inner",
+	  "range-slider__line": "RangeSlider__range-slider__line",
+	  "range-slider__indicator": "RangeSlider__range-slider__indicator"
 	};
 
 	var _RangeSlider2 = _interopRequireDefault(_RangeSlider);
@@ -4325,9 +4326,9 @@
 	var _Icon2 = _interopRequireDefault(_Icon);
 
 	var _SnapshotGraph = {
-	  "outer": "SnapshotGraph__outer__3_pap",
-	  "inner": "SnapshotGraph__inner__398Cy",
-	  "prop-chooser": "SnapshotGraph__prop-chooser__3P5dg"
+	  "outer": "SnapshotGraph__outer",
+	  "inner": "SnapshotGraph__inner",
+	  "prop-chooser": "SnapshotGraph__prop-chooser"
 	};
 
 	var _SnapshotGraph2 = _interopRequireDefault(_SnapshotGraph);
@@ -4553,12 +4554,12 @@
 	var _RangeSlider2 = _interopRequireDefault(_RangeSlider);
 
 	var _SnapshotImage = {
-	  "snapshot-image": "SnapshotImage__snapshot-image__3TFCr",
-	  "snapshot-image__inner": "SnapshotImage__snapshot-image__inner__DqJX5",
-	  "snapshot-image__date-time": "SnapshotImage__snapshot-image__date-time__2MSoP",
-	  "snapshot-image__timeago": "SnapshotImage__snapshot-image__timeago__2bLq6",
-	  "snapshot-image__values": "SnapshotImage__snapshot-image__values__15vLD",
-	  "snapshot-image__img": "SnapshotImage__snapshot-image__img__3jyIH"
+	  "snapshot-image": "SnapshotImage__snapshot-image",
+	  "snapshot-image__inner": "SnapshotImage__snapshot-image__inner",
+	  "snapshot-image__date-time": "SnapshotImage__snapshot-image__date-time",
+	  "snapshot-image__timeago": "SnapshotImage__snapshot-image__timeago",
+	  "snapshot-image__values": "SnapshotImage__snapshot-image__values",
+	  "snapshot-image__img": "SnapshotImage__snapshot-image__img"
 	};
 
 	var _SnapshotImage2 = _interopRequireDefault(_SnapshotImage);
@@ -4964,9 +4965,9 @@
 	var _SnapshotReducer = __webpack_require__(10);
 
 	var _SnapshotsNavigator = {
-	  "outer": "SnapshotsNavigator__outer__2Tsiu",
-	  "inner": "SnapshotsNavigator__inner__1vzhk",
-	  "icon-menu": "SnapshotsNavigator__icon-menu__qkv9T"
+	  "outer": "SnapshotsNavigator__outer",
+	  "inner": "SnapshotsNavigator__inner",
+	  "icon-menu": "SnapshotsNavigator__icon-menu"
 	};
 
 	var _SnapshotsNavigator2 = _interopRequireDefault(_SnapshotsNavigator);
@@ -5398,7 +5399,7 @@
 	        }
 	      });
 	    } else {
-	      resolveWithResponse();
+	      resolveWithResponse({});
 	    }
 
 	    function resolveWithResponse(_ref) {
