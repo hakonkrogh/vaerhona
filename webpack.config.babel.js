@@ -2,6 +2,12 @@ var cssnext = require('postcss-cssnext');
 var postcssFocus = require('postcss-focus');
 var postcssReporter = require('postcss-reporter');
 
+var cssModulesIdentName = '[name]__[local]__[hash:base64:5]';
+if (process.env.NODE_ENV === 'production') {
+  cssModulesIdentName = '[hash:base64]';
+}
+
+
 module.exports = {
   output: {
     publicPath: '/',
@@ -20,7 +26,7 @@ module.exports = {
         test: /\.css$/,
         exclude: /node_modules/,
         //loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
-        loader: 'style-loader!css-loader?localIdentName=[name]__[local]&modules&importLoaders=1&sourceMap!postcss-loader',
+        loader: 'style-loader!css-loader?localIdentName=' + cssModulesIdentName + '&modules&importLoaders=1&sourceMap!postcss-loader',
       },
       {
         test: /\.jpe?g$|\.gif$|\.png$|\.svg$/i,

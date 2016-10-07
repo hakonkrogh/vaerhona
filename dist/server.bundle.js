@@ -116,7 +116,7 @@
 	var _react2 = _interopRequireDefault(_react);
 
 	var _Header = {
-	  "header__content": "Header__header__content"
+	  "header__content": "_2m0LMK5_p5UYOOc1AurAG8"
 	};
 
 	var _Header2 = _interopRequireDefault(_Header);
@@ -1633,7 +1633,7 @@
 	var _Header2 = _interopRequireDefault(_Header);
 
 	var _AdminPage = {
-	  "list": "AdminPage__list"
+	  "list": "_3rfeJ8Y4NE1xPKH7-1pAsp"
 	};
 
 	var _AdminPage2 = _interopRequireDefault(_AdminPage);
@@ -1731,7 +1731,7 @@
 	var _PlaceActions = __webpack_require__(6);
 
 	var _PlacesListPage = {
-	  "outer": "PlacesListPage__outer"
+	  "outer": "_1dbggGY4rYSUwhA-AgjoES"
 	};
 
 	var _PlacesListPage2 = _interopRequireDefault(_PlacesListPage);
@@ -1979,9 +1979,9 @@
 	var _App2 = _interopRequireDefault(_App);
 
 	var _PlacePage = {
-		"header-icon": "PlacePage__header-icon",
-		"header-title": "PlacePage__header-title",
-		"content-centered": "PlacePage__content-centered"
+		"header-icon": "JRnuRFa2JKNl1OdVhGd4K",
+		"header-title": "_3zF-XF34dtJzm9xeOVJzjk",
+		"content-centered": "_16fwK-LVAC1kvH0kKNF5YR"
 	};
 
 	var _PlacePage2 = _interopRequireDefault(_PlacePage);
@@ -2241,8 +2241,8 @@
 	var _IntlActions = __webpack_require__(16);
 
 	var _SettingsPage = {
-			"flag-list": "SettingsPage__flag-list",
-			"flag-list__item": "SettingsPage__flag-list__item"
+			"flag-list": "_3mmhhVVdff3R7t8ox5piNT",
+			"flag-list__item": "_1McKtg6-j_z7piyJA6aj8w"
 	};
 
 	var _SettingsPage2 = _interopRequireDefault(_SettingsPage);
@@ -2349,9 +2349,9 @@
 	var _react2 = _interopRequireDefault(_react);
 
 	var _Icon = {
-	  "container": "Icon__container",
-	  "container--selected": "Icon__container--selected",
-	  "label": "Icon__label"
+	  "container": "_2LcEbWkyrmPcIE28HlR1cS",
+	  "container--selected": "_2pkPZya_bACbnEV9HOVseq",
+	  "label": "HIzRX3OIXoRk9ceGhrQmf"
 	};
 
 	var _Icon2 = _interopRequireDefault(_Icon);
@@ -3236,8 +3236,7 @@
 	    loaders: [{
 	      test: /\.css$/,
 	      exclude: /node_modules/,
-	      //loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
-	      loader: 'style-loader!css-loader?localIdentName=[name]__[local]&modules&importLoaders=1&sourceMap!postcss-loader'
+	      loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader'
 	    }, {
 	      test: /\.css$/,
 	      include: /node_modules/,
@@ -3782,8 +3781,8 @@
 	var _reactRedux = __webpack_require__(1);
 
 	var _App = {
-	  "container": "App__container",
-	  "container--development": "App__container--development"
+	  "container": "_4uEyKcd5WHob5qPzotT7",
+	  "container--development": "fCUjdF2jEv-ztVbxUcTP7"
 	};
 
 	var _App2 = _interopRequireDefault(_App);
@@ -3915,7 +3914,7 @@
 	var _react2 = _interopRequireDefault(_react);
 
 	var _FullHeightWrapper = {
-	  "container": "FullHeightWrapper__container"
+	  "container": "_2F5ZyACQMjdVKFtjxWqore"
 	};
 
 	var _FullHeightWrapper2 = _interopRequireDefault(_FullHeightWrapper);
@@ -4023,9 +4022,9 @@
 	var _s = __webpack_require__(14);
 
 	var _PlacePreviewList = {
-	  "place-preview-list": "PlacePreviewList__place-preview-list",
-	  "place-preview-list__item": "PlacePreviewList__place-preview-list__item",
-	  "place-preview-list__image": "PlacePreviewList__place-preview-list__image"
+	  "place-preview-list": "_9hO9xcglPs0U63JeasS3d",
+	  "place-preview-list__item": "_1noI7WvbMWAzXrrt60kZgU",
+	  "place-preview-list__image": "_26rwopcClJ_8C_wgVSyzTd"
 	};
 
 	var _PlacePreviewList2 = _interopRequireDefault(_PlacePreviewList);
@@ -4123,13 +4122,13 @@
 	var _hammerjs2 = _interopRequireDefault(_hammerjs);
 
 	var _RangeSlider = {
-	  "range-slider": "RangeSlider__range-slider",
-	  "range-slider--hide": "RangeSlider__range-slider--hide",
-	  "range-slider__values": "RangeSlider__range-slider__values",
-	  "range-slider__outer": "RangeSlider__range-slider__outer",
-	  "range-slider__inner": "RangeSlider__range-slider__inner",
-	  "range-slider__line": "RangeSlider__range-slider__line",
-	  "range-slider__indicator": "RangeSlider__range-slider__indicator"
+	  "range-slider": "_3J3uTqMCs6rXvpbO-CJt33",
+	  "range-slider--hide": "_2zA8xEt6v_o1_uKRGD0Jv7",
+	  "range-slider__values": "_2k-vXfh5fde_V55P9FI-vt",
+	  "range-slider__outer": "PedtdmFW1XSY5ugjY4zB4",
+	  "range-slider__inner": "_2nO9QN8kbiQonTiwXKzJGc",
+	  "range-slider__line": "_3CnRc1EVmymdHYbK46Jaza",
+	  "range-slider__indicator": "_2vYVze_1MqNEIyshQ8i9j_"
 	};
 
 	var _RangeSlider2 = _interopRequireDefault(_RangeSlider);
@@ -4326,9 +4325,9 @@
 	var _Icon2 = _interopRequireDefault(_Icon);
 
 	var _SnapshotGraph = {
-	  "outer": "SnapshotGraph__outer",
-	  "inner": "SnapshotGraph__inner",
-	  "prop-chooser": "SnapshotGraph__prop-chooser"
+	  "outer": "_3_papzT6GLGuxkGac1vM3w",
+	  "inner": "_398CyzhvzEh5R5RF7XifTq",
+	  "prop-chooser": "_3P5dgZPwDrbeQmYjaBDwAI"
 	};
 
 	var _SnapshotGraph2 = _interopRequireDefault(_SnapshotGraph);
@@ -4554,12 +4553,12 @@
 	var _RangeSlider2 = _interopRequireDefault(_RangeSlider);
 
 	var _SnapshotImage = {
-	  "snapshot-image": "SnapshotImage__snapshot-image",
-	  "snapshot-image__inner": "SnapshotImage__snapshot-image__inner",
-	  "snapshot-image__date-time": "SnapshotImage__snapshot-image__date-time",
-	  "snapshot-image__timeago": "SnapshotImage__snapshot-image__timeago",
-	  "snapshot-image__values": "SnapshotImage__snapshot-image__values",
-	  "snapshot-image__img": "SnapshotImage__snapshot-image__img"
+	  "snapshot-image": "_3TFCrM0DB1jkhViH5orORh",
+	  "snapshot-image__inner": "DqJX5TO9qHXHcmbTY4GMK",
+	  "snapshot-image__date-time": "_2MSoPk9CqFid9ui7eumgQO",
+	  "snapshot-image__timeago": "_2bLq66BVe9N_oT7H60lsgh",
+	  "snapshot-image__values": "_15vLDeNlaM1ZCnevJqFaPt",
+	  "snapshot-image__img": "_3jyIHYixc1GDxTy-e9C2mG"
 	};
 
 	var _SnapshotImage2 = _interopRequireDefault(_SnapshotImage);
@@ -4965,9 +4964,9 @@
 	var _SnapshotReducer = __webpack_require__(10);
 
 	var _SnapshotsNavigator = {
-	  "outer": "SnapshotsNavigator__outer",
-	  "inner": "SnapshotsNavigator__inner",
-	  "icon-menu": "SnapshotsNavigator__icon-menu"
+	  "outer": "_2Tsiu2VpRJy_h0ypAf21Yk",
+	  "inner": "_1vzhkrW5eGiiuTxD5Piavv",
+	  "icon-menu": "qkv9Tp44C78C2tjLMjrYl"
 	};
 
 	var _SnapshotsNavigator2 = _interopRequireDefault(_SnapshotsNavigator);
