@@ -46,7 +46,7 @@ export default function () {
           return console.log('Error: dummy image contents not found');
         }
 
-        console.log(`Adding ${snapshotsToAdd} dummy snapshots to {place.name} ...`);
+        console.log(`Adding ${snapshotsToAdd} dummy snapshots to ${place.name} ...`);
 
         const snapshots = [];
       
@@ -79,9 +79,9 @@ export default function () {
         }
         
         Promise.all(snapshots).then(addedSnapshots => {
-          console.log(`Successfully added ${addedSnapshots.length} dummy snapshots to {place.name}`);
+          console.log(`Successfully added ${addedSnapshots.length} dummy snapshots to ${place.name}`);
         }, error => {
-          console.log(`Failed to add ${snapshotsToAdd} dummy snapshots to {place.name}:`, error);
+          console.log(`Failed to add ${snapshotsToAdd} dummy snapshots to ${place.name}:`, error);
         });
       });
     });

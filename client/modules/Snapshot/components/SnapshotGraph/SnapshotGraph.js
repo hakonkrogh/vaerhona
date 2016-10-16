@@ -1,8 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+
+//import Plotly from 'plotly.js';
+
 //import c3 from 'c3';
 //import 'c3/c3.css';
 
+//import { Line } from 'react-chartjs-2';
 //import ChartJS from 'chart.js';
 
 import Icon from '../Icon/Icon';
@@ -116,7 +120,10 @@ class SnapshotGraph extends Component {
   }
 
   render () {
-    let innerStyle = {};
+    let innerStyle = {
+      width: '600px',
+      height: '600px'
+    };
 
     if (typeof location !== 'undefined' && location.host.includes('localhost')) {
       innerStyle.maxWidth = '600px';
@@ -125,7 +132,7 @@ class SnapshotGraph extends Component {
     return (
       <div className={styles['outer']}>
         <div className={styles['inner']} style={innerStyle} ref='inner'>
-          <canvas ref='canvas'></canvas>
+          {/*<canvas ref='canvas'></canvas>*/}
         </div>
         <div className={styles['prop-chooser']}>
           {

@@ -6,7 +6,8 @@ import {
   DELETE_PLACE,
   UNSELECT_PLACE,
   CHANGE_MAIN_NAVIGATION,
-  TOGGLE_LOADING_SELECTED_PLACE
+  TOGGLE_LOADING_SELECTED_PLACE,
+  PLACE_NOT_FOUND
 } from './PlaceActions';
 
 // Initial State
@@ -14,6 +15,7 @@ const initialState = {
   data: [],
   frontpagePlaces: [],
   selected: false,
+  selectedNotFound: false,
   loadingSelected: false
 };
 
@@ -25,6 +27,7 @@ const PlaceReducer = (state = initialState, action) => {
         data: state.data,
         frontpagePlaces: state.frontpagePlaces,
         selected: action.place,
+        selectedNotFound: initialState.selectedNotFound,
         loadingSelected: action.loading
       };
     }
@@ -34,6 +37,7 @@ const PlaceReducer = (state = initialState, action) => {
         data: [action.place, ...state.data],
         frontpagePlaces: state.frontpagePlaces,
         selected: action.place,
+        selectedNotFound: state.selectedNotFound,
         loadingSelected: state.loadingSelected
       };
     }
@@ -57,6 +61,7 @@ const PlaceReducer = (state = initialState, action) => {
         data,
         frontpagePlaces: state.frontpagePlaces,
         selected: action.place,
+        selectedNotFound: state.selectedNotFound,
         loadingSelected: false
       };
     }
@@ -66,6 +71,7 @@ const PlaceReducer = (state = initialState, action) => {
         data: [...state.data, ...action.places],
         frontpagePlaces: state.frontpagePlaces,
         selected: state.selected,
+        selectedNotFound: state.selectedNotFound,
         loadingSelected: state.loadingSelected
       };
     }
@@ -82,6 +88,7 @@ const PlaceReducer = (state = initialState, action) => {
         data: state.data.filter(place => place.cuid !== action.cuid),
         frontpagePlaces: state.frontpagePlaces,
         selected,
+        selectedNotFound: state.selectedNotFound,
         loadingSelected: state.loadingSelected
       };
     }
@@ -91,6 +98,7 @@ const PlaceReducer = (state = initialState, action) => {
         data: state.data,
         frontpagePlaces: state.frontpagePlaces,
         selected: initialState.selected,
+        selectedNotFound: initialState.selectedNotFound,
         loadingSelected: state.loadingSelected
       }
     }
@@ -100,11 +108,18 @@ const PlaceReducer = (state = initialState, action) => {
         data: state.data,
         frontpagePlaces: action.places,
         selected: state.selected,
+        selectedNotFound: state.selectedNotFound,
         loadingSelected: state.loadingSelected
       }
     }
 
-    default:
+    case PLACE_NOT_FOUND : {
+      state.selectedNotFound = false;
+      state.loadingSelected = false;
+      return state;
+    }
+
+    default :
       return state;
   }
 };
@@ -122,6 +137,9 @@ export const getSelectedPlace = state => state.places.selected;
 
 // Get selected place loading state
 export const getSelectedPlaceLoading = state => state.places.loadingSelected;
+
+// Get selected place not found state
+export const getSelectedPlaceNotFound = state => state.places.selectedNotFound;
 
 // Get place by cuid
 export const getPlace = (state, cuid) => state.places.data.filter(place => place.cuid === cuid)[0];

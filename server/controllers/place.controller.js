@@ -144,6 +144,10 @@ export function getSelectedPlaceData (req, res) {
       return res.status(500).send(err);
     }
 
+    if (!place) {
+      return res.json({ placeNotFound: true });
+    }
+
     getSnapshotsRaw({
       placeCuid: place.cuid,
       limit: 50

@@ -10,7 +10,7 @@ import Header from '../../../App/components/Header/Header';
 
 import { setSelectedPlace } from '../../../App/AppActions';
 import { fetchNewSelectedPlace } from '../../../Place/PlaceActions';
-import { getSelectedPlace, getSelectedPlaceLoading } from '../../../Place/PlaceReducer';
+import { getSelectedPlace, getSelectedPlaceLoading, getSelectedPlaceNotFound } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
 import { getAbsolutePathForImage } from '../../../../aws/s3';
@@ -28,43 +28,41 @@ export class PlacePage extends Component {
 
 	componentWillMount () {
     this.setState({ mounted: true });
-  }
 
-	componentDidMount () {
-
-		// Client side stuff
+    // Client side stuff
 		if (typeof document !== 'undefined') {
-
+			console.log('will mount', this.state, this.props);
 			// We need to get data if we navigate to here client side
-			if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
-				if (this.state && !this.state.gotDataClientSide) {
-					this.setState({ gotDataClientSide: true });
+			if (!this.props.placeNotFound) {
+				if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
+					if (!this.state || !this.state.gotDataClientSide) {
+						this.setState({ gotDataClientSide: true });
 
-					need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+						need.forEach(fn => this.props.dispatch(fn(this.props.params)));
+					}
 				}
 			}
 		}
-	}
+  }
 
 	render () {
 
 		let appIcon = (<AppIcon className={styles['header-icon']} />);
 
-		// Waiting for place...
-		if (this.props.placeLoading) {
+		// No valid place was found
+		if (this.props.placeNotFound) {
 			return (
 				<FullHeightWrapper>
-					<Helmet title="Loading..." />
+					<Helmet title="Not a valid place" />
 					<Header>
 						{appIcon}
-						<div className={styles['header-title']}>{this.props.params.placeName}</div>
 					</Header>
-					<div className={styles['content-centered']}>Loading...</div>
+					<div className={styles['content-centered']}>The place {this.props.params.placeName} was not found</div>
 				</FullHeightWrapper>
 			);
 		}
 
-		// We have a place, and it's got a name :)
+		// Display place
 		if (this.props.selectedPlace && this.props.selectedPlace.name) {
 			const settingsLink = `/${this.props.selectedPlace.name}/settings`;
 			const firstImageLink = getAbsolutePathForImage({ place: this.props.selectedPlace, snapshot: this.props.snapshots[0] });
@@ -84,15 +82,15 @@ export class PlacePage extends Component {
 				</FullHeightWrapper>
 			);
 		}
-
-		// Apparently no valid place was found
+		
 		return (
 			<FullHeightWrapper>
-				<Helmet title="Not a valid place" />
+				<Helmet title="Loading..." />
 				<Header>
 					{appIcon}
+					<div className={styles['header-title']}>{this.props.params.placeName}</div>
 				</Header>
-				<div className={styles['content-centered']}>The place {this.props.params.placeName} not found</div>
+				<div className={styles['content-centered']}>Loading...</div>
 			</FullHeightWrapper>
 		);
 	}
@@ -107,14 +105,14 @@ PlacePage.propTypes = {
   })),
   selectedPlace: PropTypes.oneOfType([
   	PropTypes.bool,
-  	PropTypes.object
+  	PropTypes.object,
   ]),
   dispatch: PropTypes.func.isRequired,
-  placeLoading: PropTypes.bool
+  placeLoading: PropTypes.bool,
 };
 
 PlacePage.contextTypes = {
-  router: React.PropTypes.object
+  router: React.PropTypes.object,
 };
 
 // Server side data requirements
@@ -124,7 +122,8 @@ function mapStateToProps (state) {
 	return {
 		selectedPlace: getSelectedPlace(state),
 		snapshots: getSnapshots(state),
-		placeLoading: getSelectedPlaceLoading(state)
+		placeLoading: getSelectedPlaceLoading(state),
+		placeNotFound: getSelectedPlaceNotFound(state),
 	};
 }
 

@@ -3,6 +3,7 @@ import callApi from '../../util/apiCaller';
 // Export Constants
 export const ADD_PLACE = 'ADD_PLACE';
 export const ADD_SELECTED_PLACE = 'ADD_SELECTED_PLACE';
+export const PLACE_NOT_FOUND = 'PLACE_NOT_FOUND';
 export const ADD_PLACES = 'ADD_PLACES';
 export const ADD_FRONTPAGE_PLACES = 'ADD_FRONTPAGE_PLACES';
 export const DELETE_PLACE = 'DELETE_PLACE';
@@ -94,11 +95,25 @@ export function fetchNewSelectedPlace (name) {
     dispatch(toggleSelectedLoading(true));
 
     return callApi(`placesselected/${name}`).then(res => {
+
+      if (res.placeNotFound) {
+        return dispatch(placeNotFound({
+          name
+        }));
+      }
+
       return dispatch(addSelectedPlace({
         place: res.place,
         snapshots: res.snapshots
       }))
     });
+  };
+}
+
+export function placeNotFound (name) {
+  return {
+    type: PLACE_NOT_FOUND,
+    name
   };
 }
 
