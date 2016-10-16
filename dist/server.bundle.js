@@ -167,7 +167,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.TOGGLE_LOADING_SELECTED_PLACE = exports.UNSELECT_PLACE = exports.DELETE_PLACE = exports.ADD_FRONTPAGE_PLACES = exports.ADD_PLACES = exports.ADD_SELECTED_PLACE = exports.ADD_PLACE = undefined;
+	exports.TOGGLE_LOADING_SELECTED_PLACE = exports.UNSELECT_PLACE = exports.DELETE_PLACE = exports.ADD_FRONTPAGE_PLACES = exports.ADD_PLACES = exports.PLACE_NOT_FOUND = exports.ADD_SELECTED_PLACE = exports.ADD_PLACE = undefined;
 	exports.addPlace = addPlace;
 	exports.addSelectedPlace = addSelectedPlace;
 	exports.toggleSelectedLoading = toggleSelectedLoading;
@@ -179,6 +179,7 @@
 	exports.fetchFrontpagePlaces = fetchFrontpagePlaces;
 	exports.fetchPlace = fetchPlace;
 	exports.fetchNewSelectedPlace = fetchNewSelectedPlace;
+	exports.placeNotFound = placeNotFound;
 	exports.deletePlace = deletePlace;
 	exports.deletePlaceRequest = deletePlaceRequest;
 
@@ -191,6 +192,7 @@
 	// Export Constants
 	var ADD_PLACE = exports.ADD_PLACE = 'ADD_PLACE';
 	var ADD_SELECTED_PLACE = exports.ADD_SELECTED_PLACE = 'ADD_SELECTED_PLACE';
+	var PLACE_NOT_FOUND = exports.PLACE_NOT_FOUND = 'PLACE_NOT_FOUND';
 	var ADD_PLACES = exports.ADD_PLACES = 'ADD_PLACES';
 	var ADD_FRONTPAGE_PLACES = exports.ADD_FRONTPAGE_PLACES = 'ADD_FRONTPAGE_PLACES';
 	var DELETE_PLACE = exports.DELETE_PLACE = 'DELETE_PLACE';
@@ -287,11 +289,25 @@
 	    dispatch(toggleSelectedLoading(true));
 
 	    return (0, _apiCaller2.default)('placesselected/' + name).then(function (res) {
+
+	      if (res.placeNotFound) {
+	        return dispatch(placeNotFound({
+	          name: name
+	        }));
+	      }
+
 	      return dispatch(addSelectedPlace({
 	        place: res.place,
 	        snapshots: res.snapshots
 	      }));
 	    });
+	  };
+	}
+
+	function placeNotFound(name) {
+	  return {
+	    type: PLACE_NOT_FOUND,
+	    name: name
 	  };
 	}
 
@@ -320,7 +336,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getSelectedMainNavigation = exports.getPlace = exports.getSelectedPlaceLoading = exports.getSelectedPlace = exports.getFrontpagePlaces = exports.getPlaces = undefined;
+	exports.getSelectedMainNavigation = exports.getPlace = exports.getSelectedPlaceNotFound = exports.getSelectedPlaceLoading = exports.getSelectedPlace = exports.getFrontpagePlaces = exports.getPlaces = undefined;
 
 	var _PlaceActions = __webpack_require__(6);
 
@@ -331,6 +347,7 @@
 	  data: [],
 	  frontpagePlaces: [],
 	  selected: false,
+	  selectedNotFound: false,
 	  loadingSelected: false
 	};
 
@@ -346,6 +363,7 @@
 	          data: state.data,
 	          frontpagePlaces: state.frontpagePlaces,
 	          selected: action.place,
+	          selectedNotFound: initialState.selectedNotFound,
 	          loadingSelected: action.loading
 	        };
 	      }
@@ -356,6 +374,7 @@
 	          data: [action.place].concat(_toConsumableArray(state.data)),
 	          frontpagePlaces: state.frontpagePlaces,
 	          selected: action.place,
+	          selectedNotFound: state.selectedNotFound,
 	          loadingSelected: state.loadingSelected
 	        };
 	      }
@@ -401,6 +420,7 @@
 	          data: data,
 	          frontpagePlaces: state.frontpagePlaces,
 	          selected: action.place,
+	          selectedNotFound: state.selectedNotFound,
 	          loadingSelected: false
 	        };
 	      }
@@ -411,6 +431,7 @@
 	          data: [].concat(_toConsumableArray(state.data), _toConsumableArray(action.places)),
 	          frontpagePlaces: state.frontpagePlaces,
 	          selected: state.selected,
+	          selectedNotFound: state.selectedNotFound,
 	          loadingSelected: state.loadingSelected
 	        };
 	      }
@@ -430,6 +451,7 @@
 	          }),
 	          frontpagePlaces: state.frontpagePlaces,
 	          selected: selected,
+	          selectedNotFound: state.selectedNotFound,
 	          loadingSelected: state.loadingSelected
 	        };
 	      }
@@ -440,6 +462,7 @@
 	          data: state.data,
 	          frontpagePlaces: state.frontpagePlaces,
 	          selected: initialState.selected,
+	          selectedNotFound: initialState.selectedNotFound,
 	          loadingSelected: state.loadingSelected
 	        };
 	      }
@@ -450,8 +473,16 @@
 	          data: state.data,
 	          frontpagePlaces: action.places,
 	          selected: state.selected,
+	          selectedNotFound: state.selectedNotFound,
 	          loadingSelected: state.loadingSelected
 	        };
+	      }
+
+	    case _PlaceActions.PLACE_NOT_FOUND:
+	      {
+	        state.selectedNotFound = false;
+	        state.loadingSelected = false;
+	        return state;
 	      }
 
 	    default:
@@ -479,6 +510,11 @@
 	// Get selected place loading state
 	var getSelectedPlaceLoading = exports.getSelectedPlaceLoading = function getSelectedPlaceLoading(state) {
 	  return state.places.loadingSelected;
+	};
+
+	// Get selected place not found state
+	var getSelectedPlaceNotFound = exports.getSelectedPlaceNotFound = function getSelectedPlaceNotFound(state) {
+	  return state.places.selectedNotFound;
 	};
 
 	// Get place by cuid
@@ -2000,11 +2036,11 @@
 	}];
 
 	var _ref = _jsx(_reactHelmet2.default, {
-		title: 'Loading...'
+		title: 'Not a valid place'
 	});
 
 	var _ref2 = _jsx(_reactHelmet2.default, {
-		title: 'Not a valid place'
+		title: 'Loading...'
 	});
 
 	var PlacePage = exports.PlacePage = function (_Component) {
@@ -2019,24 +2055,23 @@
 		_createClass(PlacePage, [{
 			key: 'componentWillMount',
 			value: function componentWillMount() {
-				this.setState({ mounted: true });
-			}
-		}, {
-			key: 'componentDidMount',
-			value: function componentDidMount() {
 				var _this2 = this;
+
+				this.setState({ mounted: true });
 
 				// Client side stuff
 				if (typeof document !== 'undefined') {
-
+					console.log('will mount', this.state, this.props);
 					// We need to get data if we navigate to here client side
-					if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
-						if (this.state && !this.state.gotDataClientSide) {
-							this.setState({ gotDataClientSide: true });
+					if (!this.props.placeNotFound) {
+						if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
+							if (!this.state || !this.state.gotDataClientSide) {
+								this.setState({ gotDataClientSide: true });
 
-							need.forEach(function (fn) {
-								return _this2.props.dispatch(fn(_this2.props.params));
-							});
+								need.forEach(function (fn) {
+									return _this2.props.dispatch(fn(_this2.props.params));
+								});
+							}
 						}
 					}
 				}
@@ -2049,16 +2084,14 @@
 					className: _PlacePage2.default['header-icon']
 				});
 
-				// Waiting for place...
-				if (this.props.placeLoading) {
-					return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref, _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
-						className: _PlacePage2.default['header-title']
-					}, void 0, this.props.params.placeName)), _jsx('div', {
+				// No valid place was found
+				if (this.props.placeNotFound) {
+					return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref, _jsx(_Header2.default, {}, void 0, appIcon), _jsx('div', {
 						className: _PlacePage2.default['content-centered']
-					}, void 0, 'Loading...'));
+					}, void 0, 'The place ', this.props.params.placeName, ' was not found'));
 				}
 
-				// We have a place, and it's got a name :)
+				// Display place
 				if (this.props.selectedPlace && this.props.selectedPlace.name) {
 					var settingsLink = '/' + this.props.selectedPlace.name + '/settings';
 					var firstImageLink = (0, _s.getAbsolutePathForImage)({ place: this.props.selectedPlace, snapshot: this.props.snapshots[0] });
@@ -2074,10 +2107,11 @@
 					}));
 				}
 
-				// Apparently no valid place was found
-				return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref2, _jsx(_Header2.default, {}, void 0, appIcon), _jsx('div', {
+				return _jsx(_FullHeightWrapper2.default, {}, void 0, _ref2, _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
+					className: _PlacePage2.default['header-title']
+				}, void 0, this.props.params.placeName)), _jsx('div', {
 					className: _PlacePage2.default['content-centered']
-				}, void 0, 'The place ', this.props.params.placeName, ' not found'));
+				}, void 0, 'Loading...'));
 			}
 		}]);
 
@@ -2095,7 +2129,8 @@
 		return {
 			selectedPlace: (0, _PlaceReducer.getSelectedPlace)(state),
 			snapshots: (0, _SnapshotReducer.getSnapshots)(state),
-			placeLoading: (0, _PlaceReducer.getSelectedPlaceLoading)(state)
+			placeLoading: (0, _PlaceReducer.getSelectedPlaceLoading)(state),
+			placeNotFound: (0, _PlaceReducer.getSelectedPlaceNotFound)(state)
 		};
 	}
 
@@ -2687,6 +2722,10 @@
 	      return res.status(500).send(err);
 	    }
 
+	    if (!place) {
+	      return res.json({ placeNotFound: true });
+	    }
+
 	    (0, _snapshot.getSnapshotsRaw)({
 	      placeCuid: place.cuid,
 	      limit: 50
@@ -3025,7 +3064,7 @@
 	          return console.log('Error: dummy image contents not found');
 	        }
 
-	        console.log('Adding ' + snapshotsToAdd + ' dummy snapshots to {place.name} ...');
+	        console.log('Adding ' + snapshotsToAdd + ' dummy snapshots to ' + place.name + ' ...');
 
 	        var snapshots = [];
 
@@ -3058,9 +3097,9 @@
 	        }
 
 	        Promise.all(snapshots).then(function (addedSnapshots) {
-	          console.log('Successfully added ' + addedSnapshots.length + ' dummy snapshots to {place.name}');
+	          console.log('Successfully added ' + addedSnapshots.length + ' dummy snapshots to ' + place.name);
 	        }, function (error) {
-	          console.log('Failed to add ' + snapshotsToAdd + ' dummy snapshots to {place.name}:', error);
+	          console.log('Failed to add ' + snapshotsToAdd + ' dummy snapshots to ' + place.name + ':', error);
 	        });
 	      });
 	    });
@@ -4341,9 +4380,13 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	//import Plotly from 'plotly.js';
+
 	//import c3 from 'c3';
 	//import 'c3/c3.css';
 
+	//import { Line } from 'react-chartjs-2';
 	//import ChartJS from 'chart.js';
 
 	var snapshotProperties = [{
@@ -4465,7 +4508,10 @@
 	    value: function render() {
 	      var _this3 = this;
 
-	      var innerStyle = {};
+	      var innerStyle = {
+	        width: '600px',
+	        height: '600px'
+	      };
 
 	      if (typeof location !== 'undefined' && location.host.includes('localhost')) {
 	        innerStyle.maxWidth = '600px';
@@ -4473,11 +4519,7 @@
 
 	      return _jsx('div', {
 	        className: _SnapshotGraph2.default['outer']
-	      }, void 0, _react2.default.createElement(
-	        'div',
-	        { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' },
-	        _react2.default.createElement('canvas', { ref: 'canvas' })
-	      ), _jsx('div', {
+	      }, void 0, _react2.default.createElement('div', { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' }), _jsx('div', {
 	        className: _SnapshotGraph2.default['prop-chooser']
 	      }, void 0, snapshotProperties.map(function (prop) {
 	        return _jsx(_Icon2.default, {
