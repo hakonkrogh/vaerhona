@@ -352,7 +352,7 @@
 	};
 
 	var PlaceReducer = function PlaceReducer() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
 	  var action = arguments[1];
 
 	  switch (action.type) {
@@ -679,7 +679,7 @@
 	};
 
 	var SnapshotReducer = function SnapshotReducer() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? getInitialState() : arguments[0];
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getInitialState();
 	  var action = arguments[1];
 
 	  switch (action.type) {
@@ -1236,7 +1236,7 @@
 	 * @returns Promise
 	 */
 	function addSnapshotRaw() {
-	  var snapshot = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  var snapshot = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	  return new Promise(function (resolve, reject) {
 
@@ -1388,7 +1388,7 @@
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	exports.prettyDate = prettyDate;
 	exports.prettyDateTime = prettyDateTime;
@@ -1517,8 +1517,8 @@
 	// use this to allow nested messages, taken from docs:
 	// https://github.com/yahoo/react-intl/wiki/Upgrade-Guide#flatten-messages-object
 	function flattenMessages() {
-	  var nestedMessages = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-	  var prefix = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+	  var nestedMessages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 	  return Object.keys(nestedMessages).reduce(function (messages, key) {
 	    var value = nestedMessages[key];
@@ -1880,7 +1880,7 @@
 
 
 	var AppReducer = function AppReducer() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
 	  var action = arguments[1];
 
 	  switch (action.type) {
@@ -2055,13 +2055,16 @@
 		_createClass(PlacePage, [{
 			key: 'componentWillMount',
 			value: function componentWillMount() {
-				var _this2 = this;
-
 				this.setState({ mounted: true });
+			}
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var _this2 = this;
 
 				// Client side stuff
 				if (typeof document !== 'undefined') {
-					console.log('will mount', this.state, this.props);
+
 					// We need to get data if we navigate to here client side
 					if (!this.props.placeNotFound) {
 						if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
@@ -2193,7 +2196,7 @@
 	}];
 
 	var _ref = _jsx(_reactHelmet2.default, {
-	  title: 'Velg værhøne'
+	  title: 'Velg v\xE6rh\xF8ne'
 	});
 
 	var _ref2 = _jsx(_Header2.default, {}, void 0, _jsx(_App2.default, {
@@ -2519,7 +2522,7 @@
 	var API_URL = exports.API_URL = typeof window === 'undefined' || process.env.NODE_ENV === 'test' ? process.env.BASE_URL || 'http://localhost:' + (process.env.PORT || _config2.default.port) + '/api' : '/api';
 
 	function callApi(endpoint) {
-	  var method = arguments.length <= 1 || arguments[1] === undefined ? 'get' : arguments[1];
+	  var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'get';
 	  var body = arguments[2];
 	  var queryParameters = arguments[3];
 
@@ -2987,7 +2990,7 @@
 	 * Main store function
 	 */
 	function configureStore() {
-	  var initialState = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  var initialState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	  // Middleware and store enhancers
 	  var enhancers = [(0, _redux.applyMiddleware)(_reduxThunk2.default)];
@@ -3263,7 +3266,7 @@
 	  output: {
 	    path: __dirname,
 	    filename: 'app.js',
-	    publicPath: 'http://10.0.0.8:8000/'
+	    publicPath: 'http://localhost:8000/'
 	  },
 
 	  resolve: {
@@ -3903,8 +3906,8 @@
 	      return _jsx('div', {}, void 0, this.state.isMounted && !window.devToolsExtension && window.location.host.includes('localhost') && process.env.NODE_ENV === 'development' && _ref, _jsx('div', {
 	        className: containerClassName
 	      }, void 0, _jsx(_reactHelmet2.default, {
-	        title: 'Værhøna',
-	        titleTemplate: '%s - Værhøna',
+	        title: 'V\xE6rh\xF8na',
+	        titleTemplate: '%s - V\xE6rh\xF8na',
 	        meta: [{ charset: 'utf-8' }, {
 	          'http-equiv': 'X-UA-Compatible',
 	          content: 'IE=edge'
@@ -4016,7 +4019,7 @@
 	}, _setup.localizationData[initLocale] || {});
 
 	var IntlReducer = function IntlReducer() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
 	  var action = arguments[1];
 
 	  switch (action.type) {
@@ -4293,7 +4296,7 @@
 	  }, {
 	    key: 'getIndicatorPercentage',
 	    value: function getIndicatorPercentage() {
-	      var index = arguments.length <= 0 || arguments[0] === undefined ? this.getSelectedIndex() : arguments[0];
+	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.getSelectedIndex();
 
 	      return index / (this.props.values.length - 1) * 100;
 	    }
@@ -4453,19 +4456,26 @@
 	      // Client side only
 	      if (typeof document !== 'undefined') {
 
+	        var labels = this.getColumnDates();
+	        var data = this.getColumnData();
+
+	        if (!data.length || !labels.length) {
+	          return;
+	        }
+
 	        if (this.myLineChart) {
-	          this.myLineChart.data.labels = this.getColumnDates();
+	          this.myLineChart.data.labels = labels;
 	          this.myLineChart.data.datasets[0].label = this.state.selectedProperty.label;
-	          this.myLineChart.data.datasets[0].data = this.getColumnData();
+	          this.myLineChart.data.datasets[0].data = data;
 	          this.myLineChart.update();
 	        } else {
 	          this.myLineChart = new Chart(this.refs.canvas, {
 	            type: 'line',
 	            data: {
-	              labels: this.getColumnDates(),
+	              labels: labels,
 	              datasets: [{
 	                label: this.state.selectedProperty.label,
-	                data: this.getColumnData(),
+	                data: data,
 	                fill: false,
 	                borderColor: 'rgba(72, 120, 220, .5)'
 	              }]
@@ -4519,7 +4529,11 @@
 
 	      return _jsx('div', {
 	        className: _SnapshotGraph2.default['outer']
-	      }, void 0, _react2.default.createElement('div', { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' }), _jsx('div', {
+	      }, void 0, _react2.default.createElement(
+	        'div',
+	        { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' },
+	        _react2.default.createElement('canvas', { ref: 'canvas' })
+	      ), _jsx('div', {
 	        className: _SnapshotGraph2.default['prop-chooser']
 	      }, void 0, snapshotProperties.map(function (prop) {
 	        return _jsx(_Icon2.default, {
@@ -4754,7 +4768,7 @@
 	        formatter: timeAgoFormatter
 	      })), _jsx('div', {
 	        className: _SnapshotImage2.default['snapshot-image__values']
-	      }, void 0, _jsx('span', {}, void 0, this.props.selectedSnapshot.temperature, '℃'), _jsx('span', {}, void 0, this.props.selectedSnapshot.humidity, '%'), _jsx('span', {}, void 0, this.props.selectedSnapshot.pressure, 'hPa')), _react2.default.createElement('div', { className: _SnapshotImage2.default['snapshot-image__img'],
+	      }, void 0, _jsx('span', {}, void 0, this.props.selectedSnapshot.temperature, '\u2103'), _jsx('span', {}, void 0, this.props.selectedSnapshot.humidity, '%'), _jsx('span', {}, void 0, this.props.selectedSnapshot.pressure, 'hPa')), _react2.default.createElement('div', { className: _SnapshotImage2.default['snapshot-image__img'],
 	        style: imageStyle,
 	        ref: 'image'
 	      })), _jsx(_RangeSlider2.default, {
@@ -5506,7 +5520,7 @@
 	// start app
 	app.listen(_config2.default.port, function (error) {
 	  if (!error) {
-	    console.log('Værhøna is running on port: ' + _config2.default.port + '!'); // eslint-disable-line
+	    console.log('V\xE6rh\xF8na is running on port: ' + _config2.default.port + '!'); // eslint-disable-line
 	  }
 	});
 

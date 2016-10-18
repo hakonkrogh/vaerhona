@@ -66,22 +66,29 @@ class SnapshotGraph extends Component {
 
     // Client side only
     if (typeof document !== 'undefined') {
+
+      const labels = this.getColumnDates();
+      const data = this.getColumnData();
+
+      if (!data.length || !labels.length) {
+        return;
+      }
       
       if (this.myLineChart) {
-        this.myLineChart.data.labels = this.getColumnDates();
+        this.myLineChart.data.labels = labels;
         this.myLineChart.data.datasets[0].label = this.state.selectedProperty.label;
-        this.myLineChart.data.datasets[0].data = this.getColumnData();
+        this.myLineChart.data.datasets[0].data = data;
         this.myLineChart.update();
       }
       else {
         this.myLineChart = new Chart(this.refs.canvas, {
             type: 'line',
             data: {
-              labels: this.getColumnDates(),
+              labels,
               datasets: [
                 {
                   label: this.state.selectedProperty.label,
-                  data: this.getColumnData(),
+                  data,
                   fill: false,
                   borderColor: 'rgba(72, 120, 220, .5)'
                 }
@@ -132,7 +139,7 @@ class SnapshotGraph extends Component {
     return (
       <div className={styles['outer']}>
         <div className={styles['inner']} style={innerStyle} ref='inner'>
-          {/*<canvas ref='canvas'></canvas>*/}
+          <canvas ref='canvas'></canvas>
         </div>
         <div className={styles['prop-chooser']}>
           {

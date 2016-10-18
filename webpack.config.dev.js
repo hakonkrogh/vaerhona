@@ -22,7 +22,7 @@ module.exports = {
   output: {
     path: __dirname,
     filename: 'app.js',
-    publicPath: 'http://10.0.0.8:8000/',
+    publicPath: 'http://localhost:8000/',
   },
 
   resolve: {

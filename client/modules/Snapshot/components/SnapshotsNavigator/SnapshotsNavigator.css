@@ -17,6 +17,7 @@
   height: 40px;
   box-sizing: border-box;
   border-top: 1px solid #ccc;
+  flex-shrink: 0;
 }
 
 .icon-menu svg path {

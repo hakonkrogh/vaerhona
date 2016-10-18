@@ -28,10 +28,13 @@ export class PlacePage extends Component {
 
 	componentWillMount () {
     this.setState({ mounted: true });
+  }
+
+  componentDidMount () {
 
     // Client side stuff
 		if (typeof document !== 'undefined') {
-			console.log('will mount', this.state, this.props);
+			
 			// We need to get data if we navigate to here client side
 			if (!this.props.placeNotFound) {
 				if ((!this.props.snapshots || this.props.snapshots.length === 0) && this.props.params) {
