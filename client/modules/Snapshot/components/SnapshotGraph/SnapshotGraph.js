@@ -139,7 +139,7 @@ class SnapshotGraph extends Component {
     return (
       <div className={styles['outer']}>
         <div className={styles['inner']} style={innerStyle} ref='inner'>
-          <canvas ref='canvas'></canvas>
+          <canvas ref='canvas' className={styles['canvas']}></canvas>
         </div>
         <div className={styles['prop-chooser']}>
           {
