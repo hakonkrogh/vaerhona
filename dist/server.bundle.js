@@ -4369,6 +4369,7 @@
 	var _SnapshotGraph = {
 	  "outer": "_3_papzT6GLGuxkGac1vM3w",
 	  "inner": "_398CyzhvzEh5R5RF7XifTq",
+	  "canvas": "_1z2mhWL9nDNVsKRGun1rm2",
 	  "prop-chooser": "_3P5dgZPwDrbeQmYjaBDwAI"
 	};
 
@@ -4532,7 +4533,7 @@
 	      }, void 0, _react2.default.createElement(
 	        'div',
 	        { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' },
-	        _react2.default.createElement('canvas', { ref: 'canvas' })
+	        _react2.default.createElement('canvas', { ref: 'canvas', className: _SnapshotGraph2.default['canvas'] })
 	      ), _jsx('div', {
 	        className: _SnapshotGraph2.default['prop-chooser']
 	      }, void 0, snapshotProperties.map(function (prop) {
