@@ -64,7 +64,7 @@ class SnapshotGraph extends Component {
 
   loadChart () {
 
-    // Client side only
+    // Client side only for now. Waiting for a universal graph framework
     if (typeof document !== 'undefined') {
 
       const labels = this.getColumnDates();
@@ -110,16 +110,6 @@ class SnapshotGraph extends Component {
     }
   }
 
-  setTooltip () {
-    //tooltip: {
-    //  format: {
-    //    title: x => this.props.snapshots[x].dateAdded,
-    //    name: () => '',
-    //    value: (name, ratio, id, index) => (Math.round(data[index] * 10) / 10)
-    //  }
-    //}
-  }
-
   changeSelectedProperty (newProperty) {
     this.setState({
       selectedProperty: newProperty
@@ -127,21 +117,12 @@ class SnapshotGraph extends Component {
   }
 
   render () {
-    let innerStyle = {
-      width: '600px',
-      height: '600px'
-    };
-
-    if (typeof location !== 'undefined' && location.host.includes('localhost')) {
-      innerStyle.maxWidth = '600px';
-    }
-
     return (
-      <div className={styles['outer']}>
-        <div className={styles['inner']} style={innerStyle} ref='inner'>
-          <canvas ref='canvas' className={styles['canvas']}></canvas>
+      <div className={styles['snapshot-graph']}>
+        <div className={styles['snapshot-graph__inner']} ref='inner'>
+          <canvas ref='canvas' className={styles['snapshot-graph__canvas']}></canvas>
         </div>
-        <div className={styles['prop-chooser']}>
+        <div className={styles['snapshot-graph__prop-chooser']}>
           {
             snapshotProperties.map(prop => (
               <Icon

@@ -1,10 +1,10 @@
-.outer {
+.snapshot-graph {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.inner {
+.snapshot-graph__inner {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -18,12 +18,12 @@
   width: auto !important;
 }
 
-.canvas {
+.snapshot-graph__canvas {
   width: 100% !important;
   height: 100% !important;
 }
 
-.prop-chooser {
+.snapshot-graph__prop-chooser {
   padding: 0 20px;
   height: 60px;
   display: flex;
