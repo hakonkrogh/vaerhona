@@ -4231,50 +4231,53 @@
 	      // Ensure that we can not select other elements on the page while dragging
 	      event.preventDefault();
 
-	      // Store dimensions for range
-	      if (event.isFirst) {
-	        var computedStyle = getComputedStyle(this.refs.outer, null);
-	        this._tmpDimensions = {
-	          width: this.refs.inner.clientWidth,
-	          paddingLeft: parseInt(computedStyle.getPropertyValue("padding-left"), 10),
-	          paddingRight: parseInt(computedStyle.getPropertyValue("padding-right"), 10)
-	        };
-	      }
+	      if (event.pointers.length === 1) {
 
-	      if (event.isFinal) {
-	        delete this._tmpDimensions;
-	      } else {
-	        (function () {
-	          var adj = _this3._tmpDimensions.paddingLeft;
+	        // Store dimensions for range
+	        if (event.isFirst) {
+	          var computedStyle = getComputedStyle(this.refs.outer, null);
+	          this._tmpDimensions = {
+	            width: this.refs.inner.clientWidth,
+	            paddingLeft: parseInt(computedStyle.getPropertyValue("padding-left"), 10),
+	            paddingRight: parseInt(computedStyle.getPropertyValue("padding-right"), 10)
+	          };
+	        }
 
-	          var pct = (event.center.x - adj) / _this3._tmpDimensions.width * 100;
+	        if (event.isFinal) {
+	          delete this._tmpDimensions;
+	        } else {
+	          (function () {
+	            var adj = _this3._tmpDimensions.paddingLeft;
 
-	          if (pct > 100) {
-	            pct = 100;
-	          } else if (pct < 0) {
-	            pct = 0;
-	          }
+	            var pct = (event.center.x - adj) / _this3._tmpDimensions.width * 100;
 
-	          // Determine the closest index for this percentage
-	          var closestIndex = void 0;
-	          var closestPct = -1;
-	          for (var i = 0; i < _this3.props.values.length; i++) {
-	            var indexPct = i === 0 ? 0 : i / (_this3.props.values.length - 1) * 100;
-	            var indexDistance = Math.abs(indexPct - pct);
-
-	            if (closestPct === -1 || indexDistance < closestPct) {
-	              closestIndex = i;
-	              closestPct = indexDistance;
+	            if (pct > 100) {
+	              pct = 100;
+	            } else if (pct < 0) {
+	              pct = 0;
 	            }
-	          }
 
-	          if (_this3.props.onChange) {
-	            clearTimeout(_this3._onChangeTimeout);
-	            _this3._onChangeTimeout = setTimeout(function () {
-	              return _this3.props.onChange({ index: closestIndex });
-	            }, 5);
-	          }
-	        })();
+	            // Determine the closest index for this percentage
+	            var closestIndex = void 0;
+	            var closestPct = -1;
+	            for (var i = 0; i < _this3.props.values.length; i++) {
+	              var indexPct = i === 0 ? 0 : i / (_this3.props.values.length - 1) * 100;
+	              var indexDistance = Math.abs(indexPct - pct);
+
+	              if (closestPct === -1 || indexDistance < closestPct) {
+	                closestIndex = i;
+	                closestPct = indexDistance;
+	              }
+	            }
+
+	            if (_this3.props.onChange) {
+	              clearTimeout(_this3._onChangeTimeout);
+	              _this3._onChangeTimeout = setTimeout(function () {
+	                return _this3.props.onChange({ index: closestIndex });
+	              }, 5);
+	            }
+	          })();
+	        }
 	      }
 	    }
 	  }, {
@@ -4367,10 +4370,10 @@
 	var _Icon2 = _interopRequireDefault(_Icon);
 
 	var _SnapshotGraph = {
-	  "outer": "_3_papzT6GLGuxkGac1vM3w",
-	  "inner": "_398CyzhvzEh5R5RF7XifTq",
-	  "canvas": "_1z2mhWL9nDNVsKRGun1rm2",
-	  "prop-chooser": "_3P5dgZPwDrbeQmYjaBDwAI"
+	  "snapshot-graph": "lu1ZY0wTAVLUUdofkUhUh",
+	  "snapshot-graph__inner": "_2AKPW-Duu11W2ITwKuDLK-",
+	  "snapshot-graph__canvas": "_2D9Cm7toUEEiqeF_ymq06R",
+	  "snapshot-graph__prop-chooser": "zWxCnnhmsqm1xYO52KT7R"
 	};
 
 	var _SnapshotGraph2 = _interopRequireDefault(_SnapshotGraph);
@@ -4454,7 +4457,7 @@
 	    key: 'loadChart',
 	    value: function loadChart() {
 
-	      // Client side only
+	      // Client side only for now. Waiting for a universal graph framework
 	      if (typeof document !== 'undefined') {
 
 	        var labels = this.getColumnDates();
@@ -4497,17 +4500,6 @@
 	      }
 	    }
 	  }, {
-	    key: 'setTooltip',
-	    value: function setTooltip() {
-	      //tooltip: {
-	      //  format: {
-	      //    title: x => this.props.snapshots[x].dateAdded,
-	      //    name: () => '',
-	      //    value: (name, ratio, id, index) => (Math.round(data[index] * 10) / 10)
-	      //  }
-	      //}
-	    }
-	  }, {
 	    key: 'changeSelectedProperty',
 	    value: function changeSelectedProperty(newProperty) {
 	      this.setState({
@@ -4519,23 +4511,14 @@
 	    value: function render() {
 	      var _this3 = this;
 
-	      var innerStyle = {
-	        width: '600px',
-	        height: '600px'
-	      };
-
-	      if (typeof location !== 'undefined' && location.host.includes('localhost')) {
-	        innerStyle.maxWidth = '600px';
-	      }
-
 	      return _jsx('div', {
-	        className: _SnapshotGraph2.default['outer']
+	        className: _SnapshotGraph2.default['snapshot-graph']
 	      }, void 0, _react2.default.createElement(
 	        'div',
-	        { className: _SnapshotGraph2.default['inner'], style: innerStyle, ref: 'inner' },
-	        _react2.default.createElement('canvas', { ref: 'canvas', className: _SnapshotGraph2.default['canvas'] })
+	        { className: _SnapshotGraph2.default['snapshot-graph__inner'], ref: 'inner' },
+	        _react2.default.createElement('canvas', { ref: 'canvas', className: _SnapshotGraph2.default['snapshot-graph__canvas'] })
 	      ), _jsx('div', {
-	        className: _SnapshotGraph2.default['prop-chooser']
+	        className: _SnapshotGraph2.default['snapshot-graph__prop-chooser']
 	      }, void 0, snapshotProperties.map(function (prop) {
 	        return _jsx(_Icon2.default, {
 	          selected: _this3.state.selectedProperty.type === prop.type,
