@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 10px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.container--selected {
+  cursor: default;
+}
+
+.label {
+  margin-top: 5px;
+  font-size: 75%;
+  transition: color 150ms;
+}

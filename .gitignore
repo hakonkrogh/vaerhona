@@ -1,17 +1,12 @@
-# Logs
-logs
-*.log
-
-# Dependency directory
-# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
-node_modules
-
-# Sass cache
-.sass-cache
-
-# Release
-dist
-secret.json
-
-# System files
 .DS_Store
+node_modules/
+npm-debug.log
+.idea/
+dump.rdb
+.vscode/
+public/*
+coverage/
+.nyc_output/
+aws.config.development.json
+aws.config.production.json
+yarn.lock

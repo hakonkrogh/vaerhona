@@ -1,0 +1,9 @@
+.header__content {
+  height: 50px;
+  border-bottom: 1px solid #aaa;
+  box-sizing: border-box;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

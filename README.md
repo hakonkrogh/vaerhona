@@ -1,3 +1,5 @@
-# [Værhøna](http://www.værhøna.no)
+# Værhøna
 
-Simple app to display weather info and images
+App for receving and display weather data
+
+- [Website](http://værhøna.no)

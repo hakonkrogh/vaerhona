@@ -1,0 +1,29 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides: vaerhona
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Værhøna
+# Description: This file starts and stops Værhøna
+# 
+### END INIT INFO
+
+APP_DIR=/var/www/html/vaerhona
+
+case "$1" in
+ start)
+   PORT=8002 NODE_ENV=production AWS_PROFILE=production MONGO_URL=mongodb://localhost:27017/vaerhona forever start --sourceDir=$APP_DIR -w --watchDirectory $APP_DIR/dist --silent --uid "vaerhona" --append index.js
+   ;;
+ stop)
+   forever stop vaerhona
+   ;;
+ restart)
+   PORT=8002 NODE_ENV=production AWS_PROFILE=production MONGO_URL=mongodb://localhost:27017/vaerhona forever restart --sourceDir=$APP_DIR -w --watchDirectory $APP_DIR/dist --silent --uid "vaerhona" --append index.js
+   ;;
+ *)
+   echo "Usage: vaerhona {start|stop|restart}" >&2
+   exit 3
+   ;;
+esac
