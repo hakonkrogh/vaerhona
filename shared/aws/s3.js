@@ -4,9 +4,9 @@
  * @param snapshot
  * @returns string
 */
-export function getRelativePathForImage ({ place, snapshot }) {
+export function getRelativePathForImage ({ place, placeName, snapshot }) {
 	
   let date = new Date(snapshot.dateAdded);
 
-	return `${place.name}/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}.jpg`;
+	return `${placeName || place.name}/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}.jpg`;
 }

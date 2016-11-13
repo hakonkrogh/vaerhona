@@ -5,6 +5,8 @@ import isWebp from 'is-webp';
 
 AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
+const s3 = new AWS.S3();
+
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
  * @param snapshot
@@ -65,5 +67,38 @@ function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
         resolve(data);
       }
     });
+  });
+}
+
+/**
+ * Get a image
+ * @param snapshot
+ * @param place
+ * @returns promise
+ */
+export function getImage ({ placeName, snapshot }) {
+  return new Promise((resolve, reject) => {
+    s3.getObject({
+      Bucket: config.aws.s3BucketName,
+      Key: getRelativePathForImage({ placeName, snapshot })
+    }, function (err, data) {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(data);
+      }
+    });
+    /*s3.getObject({
+      Bucket: 'vaerhona',
+      Key: 'veggli/2016/11/civeyo3b500wo26pahs3bs70q.jpg'
+    }, function (err, data) {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(data);
+      }
+    });*/
   });
 }

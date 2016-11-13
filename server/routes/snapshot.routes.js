@@ -20,4 +20,7 @@ router.route('/snapshots/legacy').post(SnapshotController.addSnapshotLegacy);
 // Delete a snapshot by cuid
 //router.route('/snapshots/:cuid').delete(SnapshotController.deleteSnapshot);
 
+// Get a snapshot image
+router.route('/snapshots/image/:placeName/:cuid').get(SnapshotController.getSnapshotImage);
+
 export default router;

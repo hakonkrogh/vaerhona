@@ -15,10 +15,10 @@ export function getAbsolutePathForImage ({ place, snapshot }) {
 
   let imageUrlBase;
 
-  let NODE_ENV = typeof process !== 'undefined' ? process.env.NODE_ENV : __NODE_ENV;
-  if (NODE_ENV === 'development') {
-    return `/static/images/snapshot/dummy.jpg`;
-  }
+  // let NODE_ENV = typeof process !== 'undefined' ? process.env.NODE_ENV : __NODE_ENV;
+  // if (NODE_ENV === 'development') {
+  //   return `/static/images/snapshot/dummy.jpg`;
+  // }
 
   // Client side config
   if (typeof __APP_CONFIG__ !== 'undefined') {
@@ -29,5 +29,6 @@ export function getAbsolutePathForImage ({ place, snapshot }) {
     imageUrlBase = config.imageUrlBase;
   }
 
-  return `${imageUrlBase}/${getRelativePathForImage({ place, snapshot })}`;
+  //return `${imageUrlBase}/${getRelativePathForImage({ place, snapshot })}`;
+  return `/api/snapshots/image/${place.name}/${snapshot.cuid}`;
 }

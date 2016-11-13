@@ -2,7 +2,7 @@ import Snapshot from '../models/snapshot';
 import Place from '../models/place';
 import cuid from 'cuid';
 import fs from 'fs';
-import { saveImageFromSnapshot } from '../aws/s3';
+import { saveImageFromSnapshot, getImage } from '../aws/s3';
 import { addPlaceRaw } from './place.controller';
 
 /**
@@ -345,5 +345,42 @@ export function deleteSnapshot (req, res) {
     snapshot.remove(() => {
       res.status(200).end();
     });
+  });
+}
+
+/**
+ * Get a snapshot image
+ * @param req
+ * @param res
+ * @returns void
+ */
+export function getSnapshotImage (req, res) {
+  
+  if (!req.params.placeName || !req.params.cuid) {
+    res.status(422).send('Error: Missing required parameters');
+  }
+
+  Snapshot.findOne({ cuid: req.params.cuid }).exec((err, snapshot) => {
+    
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    if (!snapshot) {
+      return res.status(404).send('Snapshot not found');
+    }
+
+    getImage({
+      placeName: req.params.placeName,
+      snapshot
+    })
+    .then((image) => {
+      res.contentType('jpeg');
+      res.end(image.Body, 'binary');
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
+    
   });
 }

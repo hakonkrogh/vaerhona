@@ -18,9 +18,9 @@ export default function () {
         if (!error) {
           console.log(`Successfully added ${places.length} dummy place(s)`);
 
-          addSnapshots({ place: places[0], snapshotsToAdd: 60 });
-          addSnapshots({ place: places[1], snapshotsToAdd: 200 });
-          addSnapshots({ place: places[2], snapshotsToAdd: 1000 });
+          addSnapshots({ place: places[0], snapshotsToAdd: 5 });
+          addSnapshots({ place: places[1], snapshotsToAdd: 1 });
+          addSnapshots({ place: places[2], snapshotsToAdd: 1 });
         }
         else {
           console.log(`Failed to add 1 dummy place:`, error);
@@ -59,7 +59,7 @@ export default function () {
         date.setHours(date.getHours() - snapshotsToAdd);
 
         // Skip uploading to AWS S3 for dummy data
-        image = null;
+        // image = null;
 
         for (let i = 0; i < snapshotsToAdd; i++) {
           temperature += (Math.round(Math.random() * 10) / 10) * (Math.random() > .5 ? -1 : 1);
