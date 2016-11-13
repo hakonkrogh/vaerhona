@@ -880,10 +880,10 @@
 
 	  var imageUrlBase = void 0;
 
-	  var NODE_ENV = typeof process !== 'undefined' ? process.env.NODE_ENV : __NODE_ENV;
-	  if (NODE_ENV === 'development') {
-	    return '/static/images/snapshot/dummy.jpg';
-	  }
+	  // let NODE_ENV = typeof process !== 'undefined' ? process.env.NODE_ENV : __NODE_ENV;
+	  // if (NODE_ENV === 'development') {
+	  //   return `/static/images/snapshot/dummy.jpg`;
+	  // }
 
 	  // Client side config
 	  if (typeof __APP_CONFIG__ !== 'undefined') {
@@ -894,7 +894,8 @@
 	      imageUrlBase = _config2.default.imageUrlBase;
 	    }
 
-	  return imageUrlBase + '/' + (0, _s.getRelativePathForImage)({ place: place, snapshot: snapshot });
+	  //return `${imageUrlBase}/${getRelativePathForImage({ place, snapshot })}`;
+	  return '/api/snapshots/image/' + place.name + '/' + snapshot.cuid;
 	}
 
 /***/ },
@@ -977,6 +978,7 @@
 	exports.addSnapshotRaw = addSnapshotRaw;
 	exports.getLatestSnapshotForPlace = getLatestSnapshotForPlace;
 	exports.deleteSnapshot = deleteSnapshot;
+	exports.getSnapshotImage = getSnapshotImage;
 
 	var _snapshot = __webpack_require__(34);
 
@@ -1346,6 +1348,40 @@
 
 	    snapshot.remove(function () {
 	      res.status(200).end();
+	    });
+	  });
+	}
+
+	/**
+	 * Get a snapshot image
+	 * @param req
+	 * @param res
+	 * @returns void
+	 */
+	function getSnapshotImage(req, res) {
+
+	  if (!req.params.placeName || !req.params.cuid) {
+	    res.status(422).send('Error: Missing required parameters');
+	  }
+
+	  _snapshot2.default.findOne({ cuid: req.params.cuid }).exec(function (err, snapshot) {
+
+	    if (err) {
+	      return res.status(500).send(err);
+	    }
+
+	    if (!snapshot) {
+	      return res.status(404).send('Snapshot not found');
+	    }
+
+	    (0, _s.getImage)({
+	      placeName: req.params.placeName,
+	      snapshot: snapshot
+	    }).then(function (image) {
+	      res.contentType('jpeg');
+	      res.end(image.Body, 'binary');
+	    }).catch(function (err) {
+	      res.status(500).send(err);
 	    });
 	  });
 	}
@@ -2812,12 +2848,13 @@
 	*/
 	function getRelativePathForImage(_ref) {
 	  var place = _ref.place;
+	  var placeName = _ref.placeName;
 	  var snapshot = _ref.snapshot;
 
 
 	  var date = new Date(snapshot.dateAdded);
 
-	  return place.name + "/" + date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + snapshot.cuid + ".jpg";
+	  return (placeName || place.name) + "/" + date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + snapshot.cuid + ".jpg";
 	}
 
 /***/ },
@@ -3036,9 +3073,9 @@
 	          if (!error) {
 	            console.log('Successfully added ' + places.length + ' dummy place(s)');
 
-	            addSnapshots({ place: places[0], snapshotsToAdd: 60 });
-	            addSnapshots({ place: places[1], snapshotsToAdd: 200 });
-	            addSnapshots({ place: places[2], snapshotsToAdd: 1000 });
+	            addSnapshots({ place: places[0], snapshotsToAdd: 5 });
+	            addSnapshots({ place: places[1], snapshotsToAdd: 1 });
+	            addSnapshots({ place: places[2], snapshotsToAdd: 1 });
 	          } else {
 	            console.log('Failed to add 1 dummy place:', error);
 	          }
@@ -3080,7 +3117,7 @@
 	        date.setHours(date.getHours() - snapshotsToAdd);
 
 	        // Skip uploading to AWS S3 for dummy data
-	        image = null;
+	        // image = null;
 
 	        for (var i = 0; i < snapshotsToAdd; i++) {
 	          temperature += Math.round(Math.random() * 10) / 10 * (Math.random() > .5 ? -1 : 1);
@@ -3213,6 +3250,9 @@
 
 	// Delete a snapshot by cuid
 	//router.route('/snapshots/:cuid').delete(SnapshotController.deleteSnapshot);
+
+	// Get a snapshot image
+	router.route('/snapshots/image/:placeName/:cuid').get(SnapshotController.getSnapshotImage);
 
 	exports.default = router;
 
@@ -5179,6 +5219,7 @@
 	  value: true
 	});
 	exports.saveImageFromSnapshot = saveImageFromSnapshot;
+	exports.getImage = getImage;
 
 	var _awsSdk = __webpack_require__(74);
 
@@ -5197,6 +5238,8 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	_awsSdk2.default.config.loadFromPath('../__config/vaerhona/aws.config.json');
+
+	var s3 = new _awsSdk2.default.S3();
 
 	/**
 	 * Takes a base64 image string and stores the required images to a S3 bucket
@@ -5264,6 +5307,41 @@
 	        resolve(data);
 	      }
 	    });
+	  });
+	}
+
+	/**
+	 * Get a image
+	 * @param snapshot
+	 * @param place
+	 * @returns promise
+	 */
+	function getImage(_ref3) {
+	  var placeName = _ref3.placeName;
+	  var snapshot = _ref3.snapshot;
+
+	  return new Promise(function (resolve, reject) {
+	    s3.getObject({
+	      Bucket: _config2.default.aws.s3BucketName,
+	      Key: (0, _s.getRelativePathForImage)({ placeName: placeName, snapshot: snapshot })
+	    }, function (err, data) {
+	      if (err) {
+	        reject(err);
+	      } else {
+	        resolve(data);
+	      }
+	    });
+	    /*s3.getObject({
+	      Bucket: 'vaerhona',
+	      Key: 'veggli/2016/11/civeyo3b500wo26pahs3bs70q.jpg'
+	    }, function (err, data) {
+	      if (err) {
+	        reject(err);
+	      }
+	      else {
+	        resolve(data);
+	      }
+	    });*/
 	  });
 	}
 
