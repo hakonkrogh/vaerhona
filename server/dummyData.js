@@ -6,8 +6,17 @@ import fs from 'fs';
 
 export default function () {
 
+  addSnapshots({
+    place: {
+      name: 'test',
+      cuid: 'civh2uduk00000fvtqxvx7r67'
+    },
+    snapshotsToAdd: 1
+  });
+
   Place.count().exec((err, count) => {
-    if (count === 0) {
+
+    /*if (count === 0) {
       const places = [
         new Place({ cuid: cuid(), name: 'test' , isPublic: true }),
         new Place({ cuid: cuid(), name: 'test2', isPublic: true }),
@@ -26,64 +35,57 @@ export default function () {
           console.log(`Failed to add 1 dummy place:`, error);
         }
       });
-    }
+    }*/
   });
   
   function addSnapshots ({ place, snapshotsToAdd }) {
-    Snapshot.count().exec((err, count) => {
+    fs.readFile('./static/images/snapshot/dummy.jpg.base64', 'utf8', (err, image) => {
       
-      if (count > 2) {
-        return;
+      if (err) {
+        return console.log(err);
       }
 
-      fs.readFile('./static/images/snapshot/dummy.jpg.base64', 'utf8', (err, image) => {
-        
-        if (err) {
-          return console.log(err);
-        }
+      if (!image) {
+        return console.log('Error: dummy image contents not found');
+      }
 
-        if (!image) {
-          return console.log('Error: dummy image contents not found');
-        }
+      console.log(`Adding ${snapshotsToAdd} dummy snapshots to ${place.name} ...`);
 
-        console.log(`Adding ${snapshotsToAdd} dummy snapshots to ${place.name} ...`);
-
-        const snapshots = [];
+      const snapshots = [];
+    
+      // Set standard start values
+      let temperature = Math.round(getRandomArbitrary(0, 30) * 10) / 10;
+      let humidity = Math.round(getRandomArbitrary(50, 100) * 10) / 10;
+      let pressure = Math.round(getRandomArbitrary(850, 1100));
       
-        // Set standard start values
-        let temperature = Math.round(getRandomArbitrary(0, 30) * 10) / 10;
-        let humidity = Math.round(getRandomArbitrary(50, 100) * 10) / 10;
-        let pressure = Math.round(getRandomArbitrary(850, 1100));
+      let date = new Date();
+      date.setHours(date.getHours() - snapshotsToAdd);
+
+      // Skip uploading to AWS S3 for dummy data
+      // image = null;
+
+      for (let i = 0; i < snapshotsToAdd; i++) {
+        temperature += (Math.round(Math.random() * 10) / 10) * (Math.random() > .5 ? -1 : 1);
+        humidity += (Math.round(getRandomArbitrary(0, 2))) * (Math.random() > .5 ? -1 : 1);
+        pressure += (Math.round(getRandomArbitrary(0, 2))) * (Math.random() > .5 ? -1 : 1);
         
-        let date = new Date();
-        date.setHours(date.getHours() - snapshotsToAdd);
+        date.setHours(date.getHours() + 1);
 
-        // Skip uploading to AWS S3 for dummy data
-        // image = null;
-
-        for (let i = 0; i < snapshotsToAdd; i++) {
-          temperature += (Math.round(Math.random() * 10) / 10) * (Math.random() > .5 ? -1 : 1);
-          humidity += (Math.round(getRandomArbitrary(0, 2))) * (Math.random() > .5 ? -1 : 1);
-          pressure += (Math.round(getRandomArbitrary(0, 2))) * (Math.random() > .5 ? -1 : 1);
-          
-          date.setHours(date.getHours() + 1);
-
-          snapshots.push(addSnapshotRaw({
-            placeCuid: place.cuid,
-            image,
-            temperature,
-            humidity,
-            pressure,
-            dateAdded: date.getTime()
-          }));
-        }
-        
-        Promise.all(snapshots).then(addedSnapshots => {
-          console.log(`Successfully added ${addedSnapshots.length} dummy snapshots to ${place.name}`);
-        }, error => {
-          console.log(`Failed to add ${snapshotsToAdd} dummy snapshots to ${place.name}:`, error);
-        });
-      });
+        snapshots.push(addSnapshotRaw({
+          placeCuid: place.cuid,
+          image,
+          temperature,
+          humidity,
+          pressure,
+          dateAdded: date.getTime()
+        }));
+      }
+      
+      Promise.all(snapshots).then((addedSnapshots) => {
+        console.log(`Successfully added ${addedSnapshots.length} dummy snapshots to ${place.name}`);
+      }).catch((error) => {
+        console.log(`Failed to add ${snapshotsToAdd} dummy snapshots to ${place.name}:`, error);
+      })
     });
   }
 

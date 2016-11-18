@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import config from '../config';
 import { getRelativePathForImage } from '../../shared/aws/s3';
-import isWebp from 'is-webp';
+import imageSize from 'image-size';
 
 AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
@@ -51,15 +51,22 @@ export function saveImageFromSnapshot ({ snapshot, place }) {
  * @returns Promise
  */
 function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
+
+  // Compose metadata
+  const { width, height, type } = imageSize(imageBuffer);
+  const Metadata = {
+    width: width.toString(),
+    height: height.toString(),
+    type
+  };
+
   return new Promise((resolve, reject) => {
-    new AWS.S3({
-      params: {
-        Bucket: config.aws.s3BucketName,
-        Key: getRelativePathForImage({ place, snapshot, fileType })
-      }
-    }).upload({
-      Body: imageBuffer
-    }).send(function (err, data) {
+    s3.upload({
+      Bucket: config.aws.s3BucketName,
+      Key: getRelativePathForImage({ place, snapshot, fileType }),
+      Body: imageBuffer,
+      Metadata
+    }, {}, (err, data) => {
       if (err) {
         reject(err);
       }
