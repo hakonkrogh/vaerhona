@@ -6,13 +6,13 @@ import fs from 'fs';
 
 export default function () {
 
-  addSnapshots({
-    place: {
-      name: 'test',
-      cuid: 'civh2uduk00000fvtqxvx7r67'
-    },
-    snapshotsToAdd: 1
-  });
+  // addSnapshots({
+  //   place: {
+  //     name: 'test',
+  //     cuid: 'civh2uduk00000fvtqxvx7r67'
+  //   },
+  //   snapshotsToAdd: 1
+  // });
 
   Place.count().exec((err, count) => {
 

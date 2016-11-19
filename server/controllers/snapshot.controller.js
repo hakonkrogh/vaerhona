@@ -1,9 +1,15 @@
+import CWebp from 'cwebp';
+import imageSize from 'image-size';
+
 import Snapshot from '../models/snapshot';
 import Place from '../models/place';
 import cuid from 'cuid';
 import fs from 'fs';
 import { saveImageFromSnapshot, getImage } from '../aws/s3';
 import { addPlaceRaw } from './place.controller';
+
+const cwebp = CWebp.CWebp;
+const dwebp = CWebp.DWebp;
 
 /**
  * Get all snapshots
@@ -213,12 +219,14 @@ export function addSnapshotLegacy (req, res) {
       image: req.body.image
     };
 
-    addSnapshotRaw(snapshot).then(() => {
+    addSnapshotRaw(snapshot)
+    .then(() => {
       res.json({
         success: true,
         message: ''
       });
-    }).catch(({ status, message }) => {
+    })
+    .catch(({ status, message }) => {
       res.json({
         success: false,
         message,
@@ -273,6 +281,7 @@ export function addSnapshotRaw (snapshot = {}) {
           }).then(() => {
             resolve({ snapshot: saved });
           }).catch(error => {
+            console.log(error);
             reject({
               code: 500,
               message: 'Error while storing image to AWS S3 bucket',
@@ -375,8 +384,39 @@ export function getSnapshotImage (req, res) {
       snapshot
     })
     .then((image) => {
-      res.contentType('jpeg');
-      res.end(image.Body, 'binary');
+
+      let { width, height, type } = image.Metadata;
+
+      // Serve PNG to poor browser that don't understand webp
+      const accept = req.get('Accept');
+      if (type === 'webp' && accept.indexOf('image/webp') === -1) {
+
+        const decoder = new dwebp(image.Body);
+        decoder.scale(width / 3, height / 3);
+        decoder.toBuffer((err, buffer) => {
+
+          if (err) {
+            return res.status(500).send(err);
+          }
+
+          type = 'png';
+          image.Body = buffer;
+          
+          end();
+        });
+      
+      } else {
+        end();
+      }
+
+      function end () {
+        res.set({
+          'Content-Type': !type || type === 'jpg' ? 'image/jpeg' : 'image/' + type,
+          'Cache-Control': 'public, max-age=31557600',
+          'ETag': snapshot.cuid
+        });
+        res.end(image.Body, 'binary');
+      }
     })
     .catch(err => {
       res.status(500).send(err);

@@ -13,7 +13,7 @@ import { fetchNewSelectedPlace } from '../../../Place/PlaceActions';
 import { getSelectedPlace, getSelectedPlaceLoading, getSelectedPlaceNotFound } from '../../../Place/PlaceReducer';
 import { fetchSnapshots } from '../../../Snapshot/SnapshotActions';
 import { getSnapshots } from '../../../Snapshot/SnapshotReducer';
-import { getAbsolutePathForImage } from '../../../../aws/s3';
+import { getAbsolutePathForImage } from '../../../../shared/image';
 
 import AppIcon from '../../../../components/Icons/App';
 

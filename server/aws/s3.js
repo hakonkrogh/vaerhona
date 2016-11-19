@@ -1,11 +1,15 @@
+import CWebp from 'cwebp';
 import AWS from 'aws-sdk';
-import config from '../config';
-import { getRelativePathForImage } from '../../shared/aws/s3';
 import imageSize from 'image-size';
+
+import config from '../config';
 
 AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
 const s3 = new AWS.S3();
+
+const cwebp = CWebp.CWebp;
+const dwebp = CWebp.DWebp;
 
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
@@ -14,32 +18,17 @@ const s3 = new AWS.S3();
  * @returns Promise
  */
 export function saveImageFromSnapshot ({ snapshot, place }) {
-  return new Promise ((resolve, reject) => {
-
-    if (!snapshot.image) {
-      return reject({
-        message: 'snapshot.image is undefined',
-        snapshot
-      });
-    }
-
-    // Create buffer
-    let imageBuffer = new Buffer.from(snapshot.image, 'base64');
-
-    if (isWebp(imageBuffer)) {
-      // Convert
-      console.log('todo: convert to webp');
-    }
-
-    let jpgHandler = uploadSingleImage({ place, snapshot, imageBuffer, fileType: 'jpg' });
-
-    Promise.all([jpgHandler]).then(success => {
-      resolve(success);
-    }, error => {
-      reject(err);
+  if (!snapshot.image) {
+    return Promise.reject({
+      message: 'snapshot.image is undefined',
+      snapshot
     });
-    
-  });
+  }
+
+  // Create buffer
+  let imageBuffer = new Buffer.from(snapshot.image, 'base64');
+
+  return uploadSingleImage({ place, snapshot, imageBuffer });
 }
 
 /**
@@ -52,28 +41,51 @@ export function saveImageFromSnapshot ({ snapshot, place }) {
  */
 function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
 
-  // Compose metadata
-  const { width, height, type } = imageSize(imageBuffer);
-  const Metadata = {
-    width: width.toString(),
-    height: height.toString(),
-    type
-  };
-
   return new Promise((resolve, reject) => {
-    s3.upload({
-      Bucket: config.aws.s3BucketName,
-      Key: getRelativePathForImage({ place, snapshot, fileType }),
-      Body: imageBuffer,
-      Metadata
-    }, {}, (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(data);
-      }
-    });
+  
+    let { width, height, type } = imageSize(imageBuffer);
+
+    // Convert buffer to webp
+    if (type !== 'webp') {
+
+      type = 'webp';
+      const encoder = new cwebp(imageBuffer);
+
+      encoder.toBuffer((err, buffer) => {
+
+        if (err) {
+          return reject(err);
+        }
+
+        imageBuffer = buffer;
+        
+        upload();
+      });
+    } else {
+      upload();
+    }
+
+    const Metadata = {
+      width: width.toString(),
+      height: height.toString(),
+      type
+    };
+
+    function upload () {
+      s3.upload({
+        Bucket: config.aws.s3BucketName,
+        Key: getRelativePathForImage({ place, snapshot, fileType }),
+        Body: imageBuffer,
+        Metadata
+      }, {}, (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        else {
+          resolve(data);
+        }
+      });
+    }
   });
 }
 
@@ -85,27 +97,61 @@ function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
  */
 export function getImage ({ placeName, snapshot }) {
   return new Promise((resolve, reject) => {
-    s3.getObject({
-      Bucket: config.aws.s3BucketName,
-      Key: getRelativePathForImage({ placeName, snapshot })
-    }, function (err, data) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(data);
-      }
-    });
-    /*s3.getObject({
-      Bucket: 'vaerhona',
-      Key: 'veggli/2016/11/civeyo3b500wo26pahs3bs70q.jpg'
-    }, function (err, data) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(data);
-      }
-    });*/
+    
+    getImageFromS3({ legacyExtension: false })
+      .then((status) => {
+        if (!status.success) {
+          return getImageFromS3({ legacyExtension: true })
+        }
+        return status;
+      })
+      .then((status) => {
+        if (status.success) {
+          resolve(status.data);
+        } else {
+          reject(status);
+        }
+      });
   });
+
+  function getImageFromS3 ({ legacyExtension }) {
+    return new Promise((resolve, reject) => {
+      s3.getObject({
+        Bucket: config.aws.s3BucketName,
+        Key: getRelativePathForImage({ placeName, snapshot, legacyExtension })
+      }, function (err, data) {
+        if (err) {
+          resolve({
+            success: false
+          });
+        }
+        else {
+          resolve({
+            success: true,
+            data
+          });
+        }
+      });
+    });
+  }
+}
+
+/**
+ * Returns the relative path for an image for a snapshot (ex: /test/1/30/cuid.jpg)
+ * @param place
+ * @param placeName
+ * @param snapshot
+ * @param legacyExtension
+ * @returns string
+*/
+function getRelativePathForImage ({ place, placeName, snapshot, legacyExtension }) {
+  
+  const date = new Date(snapshot.dateAdded);
+  const path = `${placeName || place.name}/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}`;
+
+  if (legacyExtension) {
+    return path + '.jpg';
+  }
+
+  return path;
 }

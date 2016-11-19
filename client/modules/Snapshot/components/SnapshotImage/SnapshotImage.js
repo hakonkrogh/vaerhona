@@ -10,7 +10,7 @@ import TaNo from 'react-timeago/lib/language-strings/no'
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
 import { getSelectedSnapshot, getSnapshots } from '../../SnapshotReducer';
 import { showPrevSnapshot, showNextSnapshot, showSnapshotFromIndex } from '../../SnapshotActions';
-import { getAbsolutePathForImage } from '../../../../aws/s3';
+import { getAbsolutePathForImage } from '../../../../shared/image';
 
 import RangeSlider from '../RangeSlider/RangeSlider';
 

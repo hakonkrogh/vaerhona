@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { Link } from 'react-router';
 
-import { getAbsolutePathForImage } from '../../../../aws/s3';
+import { getAbsolutePathForImage } from '../../../../shared/image';
 
 import styles from './PlacePreviewList.css';
 

@@ -1507,11 +1507,11 @@
 
 	var _reactIntl = __webpack_require__(8);
 
-	var _intl = __webpack_require__(75);
+	var _intl = __webpack_require__(76);
 
 	var _intl2 = _interopRequireDefault(_intl);
 
-	__webpack_require__(77);
+	__webpack_require__(78);
 
 	var _no = __webpack_require__(86);
 
@@ -1521,7 +1521,7 @@
 
 	var _no4 = _interopRequireDefault(_no3);
 
-	__webpack_require__(76);
+	__webpack_require__(77);
 
 	var _en = __webpack_require__(85);
 
@@ -3064,83 +3064,86 @@
 
 	exports.default = function () {
 
+	  addSnapshots({
+	    place: {
+	      name: 'test',
+	      cuid: 'civh2uduk00000fvtqxvx7r67'
+	    },
+	    snapshotsToAdd: 1
+	  });
+
 	  _place2.default.count().exec(function (err, count) {
-	    if (count === 0) {
-	      (function () {
-	        var places = [new _place2.default({ cuid: (0, _cuid2.default)(), name: 'test', isPublic: true }), new _place2.default({ cuid: (0, _cuid2.default)(), name: 'test2', isPublic: true }), new _place2.default({ cuid: (0, _cuid2.default)(), name: 'test3', isPublic: true })];
 
-	        _place2.default.create(places, function (error) {
-	          if (!error) {
-	            console.log('Successfully added ' + places.length + ' dummy place(s)');
-
-	            addSnapshots({ place: places[0], snapshotsToAdd: 5 });
-	            addSnapshots({ place: places[1], snapshotsToAdd: 1 });
-	            addSnapshots({ place: places[2], snapshotsToAdd: 1 });
-	          } else {
-	            console.log('Failed to add 1 dummy place:', error);
-	          }
-	        });
-	      })();
-	    }
+	    /*if (count === 0) {
+	      const places = [
+	        new Place({ cuid: cuid(), name: 'test' , isPublic: true }),
+	        new Place({ cuid: cuid(), name: 'test2', isPublic: true }),
+	        new Place({ cuid: cuid(), name: 'test3', isPublic: true })
+	      ];
+	       Place.create(places, error => {
+	        if (!error) {
+	          console.log(`Successfully added ${places.length} dummy place(s)`);
+	           addSnapshots({ place: places[0], snapshotsToAdd: 5 });
+	          addSnapshots({ place: places[1], snapshotsToAdd: 1 });
+	          addSnapshots({ place: places[2], snapshotsToAdd: 1 });
+	        }
+	        else {
+	          console.log(`Failed to add 1 dummy place:`, error);
+	        }
+	      });
+	    }*/
 	  });
 
 	  function addSnapshots(_ref) {
 	    var place = _ref.place;
 	    var snapshotsToAdd = _ref.snapshotsToAdd;
 
-	    _snapshot2.default.count().exec(function (err, count) {
+	    _fs2.default.readFile('./static/images/snapshot/dummy.jpg.base64', 'utf8', function (err, image) {
 
-	      if (count > 2) {
-	        return;
+	      if (err) {
+	        return console.log(err);
 	      }
 
-	      _fs2.default.readFile('./static/images/snapshot/dummy.jpg.base64', 'utf8', function (err, image) {
+	      if (!image) {
+	        return console.log('Error: dummy image contents not found');
+	      }
 
-	        if (err) {
-	          return console.log(err);
-	        }
+	      console.log('Adding ' + snapshotsToAdd + ' dummy snapshots to ' + place.name + ' ...');
 
-	        if (!image) {
-	          return console.log('Error: dummy image contents not found');
-	        }
+	      var snapshots = [];
 
-	        console.log('Adding ' + snapshotsToAdd + ' dummy snapshots to ' + place.name + ' ...');
+	      // Set standard start values
+	      var temperature = Math.round(getRandomArbitrary(0, 30) * 10) / 10;
+	      var humidity = Math.round(getRandomArbitrary(50, 100) * 10) / 10;
+	      var pressure = Math.round(getRandomArbitrary(850, 1100));
 
-	        var snapshots = [];
+	      var date = new Date();
+	      date.setHours(date.getHours() - snapshotsToAdd);
 
-	        // Set standard start values
-	        var temperature = Math.round(getRandomArbitrary(0, 30) * 10) / 10;
-	        var humidity = Math.round(getRandomArbitrary(50, 100) * 10) / 10;
-	        var pressure = Math.round(getRandomArbitrary(850, 1100));
+	      // Skip uploading to AWS S3 for dummy data
+	      // image = null;
 
-	        var date = new Date();
-	        date.setHours(date.getHours() - snapshotsToAdd);
+	      for (var i = 0; i < snapshotsToAdd; i++) {
+	        temperature += Math.round(Math.random() * 10) / 10 * (Math.random() > .5 ? -1 : 1);
+	        humidity += Math.round(getRandomArbitrary(0, 2)) * (Math.random() > .5 ? -1 : 1);
+	        pressure += Math.round(getRandomArbitrary(0, 2)) * (Math.random() > .5 ? -1 : 1);
 
-	        // Skip uploading to AWS S3 for dummy data
-	        // image = null;
+	        date.setHours(date.getHours() + 1);
 
-	        for (var i = 0; i < snapshotsToAdd; i++) {
-	          temperature += Math.round(Math.random() * 10) / 10 * (Math.random() > .5 ? -1 : 1);
-	          humidity += Math.round(getRandomArbitrary(0, 2)) * (Math.random() > .5 ? -1 : 1);
-	          pressure += Math.round(getRandomArbitrary(0, 2)) * (Math.random() > .5 ? -1 : 1);
+	        snapshots.push((0, _snapshot3.addSnapshotRaw)({
+	          placeCuid: place.cuid,
+	          image: image,
+	          temperature: temperature,
+	          humidity: humidity,
+	          pressure: pressure,
+	          dateAdded: date.getTime()
+	        }));
+	      }
 
-	          date.setHours(date.getHours() + 1);
-
-	          snapshots.push((0, _snapshot3.addSnapshotRaw)({
-	            placeCuid: place.cuid,
-	            image: image,
-	            temperature: temperature,
-	            humidity: humidity,
-	            pressure: pressure,
-	            dateAdded: date.getTime()
-	          }));
-	        }
-
-	        Promise.all(snapshots).then(function (addedSnapshots) {
-	          console.log('Successfully added ' + addedSnapshots.length + ' dummy snapshots to ' + place.name);
-	        }, function (error) {
-	          console.log('Failed to add ' + snapshotsToAdd + ' dummy snapshots to ' + place.name + ':', error);
-	        });
+	      Promise.all(snapshots).then(function (addedSnapshots) {
+	        console.log('Successfully added ' + addedSnapshots.length + ' dummy snapshots to ' + place.name);
+	      }).catch(function (error) {
+	        console.log('Failed to add ' + snapshotsToAdd + ' dummy snapshots to ' + place.name + ':', error);
 	      });
 	    });
 	  }
@@ -5231,9 +5234,9 @@
 
 	var _s = __webpack_require__(35);
 
-	var _isWebp = __webpack_require__(78);
+	var _imageSize2 = __webpack_require__(75);
 
-	var _isWebp2 = _interopRequireDefault(_isWebp);
+	var _imageSize3 = _interopRequireDefault(_imageSize2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5263,7 +5266,7 @@
 	    // Create buffer
 	    var imageBuffer = new Buffer.from(snapshot.image, 'base64');
 
-	    if ((0, _isWebp2.default)(imageBuffer)) {
+	    if (isWebp(imageBuffer)) {
 	      // Convert
 	      console.log('todo: convert to webp');
 	    }
@@ -5292,15 +5295,26 @@
 	  var imageBuffer = _ref2.imageBuffer;
 	  var fileType = _ref2.fileType;
 
+	  // Compose metadata
+	  var _imageSize = (0, _imageSize3.default)(imageBuffer);
+
+	  var width = _imageSize.width;
+	  var height = _imageSize.height;
+	  var type = _imageSize.type;
+
+	  var Metadata = {
+	    width: width.toString(),
+	    height: height.toString(),
+	    type: type
+	  };
+
 	  return new Promise(function (resolve, reject) {
-	    new _awsSdk2.default.S3({
-	      params: {
-	        Bucket: _config2.default.aws.s3BucketName,
-	        Key: (0, _s.getRelativePathForImage)({ place: place, snapshot: snapshot, fileType: fileType })
-	      }
-	    }).upload({
-	      Body: imageBuffer
-	    }).send(function (err, data) {
+	    s3.upload({
+	      Bucket: _config2.default.aws.s3BucketName,
+	      Key: (0, _s.getRelativePathForImage)({ place: place, snapshot: snapshot, fileType: fileType }),
+	      Body: imageBuffer,
+	      Metadata: Metadata
+	    }, {}, function (err, data) {
 	      if (err) {
 	        reject(err);
 	      } else {
@@ -5630,25 +5644,25 @@
 /* 75 */
 /***/ function(module, exports) {
 
-	module.exports = require("intl");
+	module.exports = require("image-size");
 
 /***/ },
 /* 76 */
 /***/ function(module, exports) {
 
-	module.exports = require("intl/locale-data/jsonp/en");
+	module.exports = require("intl");
 
 /***/ },
 /* 77 */
 /***/ function(module, exports) {
 
-	module.exports = require("intl/locale-data/jsonp/nb-NO");
+	module.exports = require("intl/locale-data/jsonp/en");
 
 /***/ },
 /* 78 */
 /***/ function(module, exports) {
 
-	module.exports = require("is-webp");
+	module.exports = require("intl/locale-data/jsonp/nb-NO");
 
 /***/ },
 /* 79 */
