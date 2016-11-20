@@ -390,9 +390,12 @@ export function getSnapshotImage (req, res) {
       // Serve PNG to poor browser that don't understand webp
       const accept = req.get('Accept');
       if (type === 'webp' && accept.indexOf('image/webp') === -1) {
-
+        
         const decoder = new dwebp(image.Body);
+        
+        // Resize to not take up too much kb
         decoder.scale(width / 3, height / 3);
+        
         decoder.toBuffer((err, buffer) => {
 
           if (err) {
@@ -418,7 +421,7 @@ export function getSnapshotImage (req, res) {
         res.end(image.Body, 'binary');
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send(err);
     });
     

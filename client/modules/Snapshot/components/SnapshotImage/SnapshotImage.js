@@ -8,7 +8,7 @@ import TaEn from 'react-timeago/lib/language-strings/en'
 import TaNo from 'react-timeago/lib/language-strings/no'
 
 import { getSelectedPlace } from '../../../Place/PlaceReducer';
-import { getSelectedSnapshot, getSnapshots } from '../../SnapshotReducer';
+import { getSelectedSnapshot, getSnapshots, getAdjecentsSnapshots } from '../../SnapshotReducer';
 import { showPrevSnapshot, showNextSnapshot, showSnapshotFromIndex } from '../../SnapshotActions';
 import { getAbsolutePathForImage } from '../../../../shared/image';
 
@@ -18,10 +18,18 @@ import styles from './SnapshotImage.css';
 
 import KeyHandler from './helpers/KeyHandler';
 import PointerHandler from './helpers/PointerHandler';
+import PreloadSnapshotImages from './helpers/PreloadSnapshotImages';
 
 import { prettyDateTime } from '../../../../../shared/date';
 
 class SnapshotImage extends Component {
+
+  componentDidUpdate () {
+    PreloadSnapshotImages({
+      place: this.props.place,
+      snapshots: this.props.adjecentSnapshots
+    });
+  }
 
   componentDidMount () {
     if (typeof document !== 'undefined') {
@@ -37,6 +45,10 @@ class SnapshotImage extends Component {
         onSwipe: this.onImageSwipe.bind(this)
       });
       
+      PreloadSnapshotImages({
+        place: this.props.place,
+        snapshots: this.props.adjecentSnapshots
+      });
     }
   }
 
@@ -170,6 +182,7 @@ function mapStateToProps (state) {
   return {
   	selectedPlace: getSelectedPlace(state),
   	selectedSnapshot: getSelectedSnapshot(state),
+    adjecentSnapshots: getAdjecentsSnapshots(state),
     snapshots: getSnapshots(state),
     intl: state.intl
   };

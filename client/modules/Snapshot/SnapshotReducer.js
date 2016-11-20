@@ -137,6 +137,27 @@ export const getSnapshots = state => state.snapshots.data;
 // Get selected snapshot
 export const getSelectedSnapshot = state => state.snapshots.selected;
 
+// Get adjecent snapshots to the selected snapshot
+export const getAdjecentsSnapshots = (state) => {
+
+  if (!state.snapshots.selected) {
+    return [];
+  }
+
+  const indexSelected = state.snapshots.data.findIndex(snapshot => snapshot.cuid === state.snapshots.selected.cuid);
+
+  if (indexSelected === -1) {
+    return [];
+  }
+
+  return [
+    state.snapshots.data[indexSelected - 2],
+    state.snapshots.data[indexSelected - 1],
+    state.snapshots.data[indexSelected + 1],
+    state.snapshots.data[indexSelected + 2]
+  ];
+}
+
 // Get snapshot by cuid
 export const getSnapshot = (state, cuid) => state.snapshots.data.filter(snapshot => snapshot.cuid === cuid)[0];
 

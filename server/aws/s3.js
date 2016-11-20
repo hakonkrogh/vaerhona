@@ -2,6 +2,9 @@ import CWebp from 'cwebp';
 import AWS from 'aws-sdk';
 import imageSize from 'image-size';
 
+import ImageCache from '../core/ImageCache';
+const imageCache = new ImageCache();
+
 import config from '../config';
 
 AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
@@ -9,7 +12,6 @@ AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 const s3 = new AWS.S3();
 
 const cwebp = CWebp.CWebp;
-const dwebp = CWebp.DWebp;
 
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
@@ -46,7 +48,7 @@ function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
     let { width, height, type } = imageSize(imageBuffer);
 
     // Convert buffer to webp
-    if (type !== 'webp') {
+    if (type !== 'webp' && false) {
 
       type = 'webp';
       const encoder = new cwebp(imageBuffer);
@@ -96,40 +98,55 @@ function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
  * @returns promise
  */
 export function getImage ({ placeName, snapshot }) {
+  
+  let src = getRelativePathForImage({ placeName, snapshot });
+
+  // Just serve from cache
+  if (imageCache.includes({ src })) {
+    return Promise.resolve(imageCache.get({ src }));
+  }
+
   return new Promise((resolve, reject) => {
+
+    /**
+    * Determine if legacy extension should be checked first. All images up
+    * til 2016-11-20 was stored with this, so we will use the snapshot
+    * dateAdded to determine what to check for first
+    **/
+    let legacyExtension = false;
+    if (new Date(snapshot.dateAdded) < new Date(2016, 10, 20)) {
+      legacyExtension = true;
+    }
     
-    getImageFromS3({ legacyExtension: false })
-      .then((status) => {
-        if (!status.success) {
-          return getImageFromS3({ legacyExtension: true })
-        }
-        return status;
-      })
-      .then((status) => {
-        if (status.success) {
-          resolve(status.data);
-        } else {
-          reject(status);
-        }
+    getImageFromS3({ legacyExtension })
+      .then(endAndCache)
+      .catch(() => {
+
+        getImageFromS3({ legacyExtension: !legacyExtension })
+          .then(endAndCache)
+          .catch(reject);
       });
+
+    function endAndCache (image) {
+      imageCache.add({
+        src,
+        image
+      });
+      resolve(image);
+    }
   });
 
-  function getImageFromS3 ({ legacyExtension }) {
+  function getImageFromS3 ({ legacyExtension }) {
     return new Promise((resolve, reject) => {
       s3.getObject({
         Bucket: config.aws.s3BucketName,
         Key: getRelativePathForImage({ placeName, snapshot, legacyExtension })
       }, function (err, data) {
         if (err) {
-          resolve({
-            success: false
-          });
+          reject(err);
         }
         else {
-          resolve({
-            success: true,
-            data
-          });
+          resolve(data);
         }
       });
     });
@@ -147,10 +164,10 @@ export function getImage ({ placeName, snapshot }) {
 function getRelativePathForImage ({ place, placeName, snapshot, legacyExtension }) {
   
   const date = new Date(snapshot.dateAdded);
-  const path = `${placeName || place.name}/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}`;
+  let path = `${placeName || place.name}/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}`;
 
   if (legacyExtension) {
-    return path + '.jpg';
+    path += '.jpg';
   }
 
   return path;

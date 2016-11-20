@@ -9,14 +9,13 @@ export default function () {
   // addSnapshots({
   //   place: {
   //     name: 'test',
-  //     cuid: 'civh2uduk00000fvtqxvx7r67'
+  //     cuid: 'civqfl0810000vjvt87rxqq1q'
   //   },
   //   snapshotsToAdd: 1
   // });
 
   Place.count().exec((err, count) => {
-
-    /*if (count === 0) {
+    if (count === 0) {
       const places = [
         new Place({ cuid: cuid(), name: 'test' , isPublic: true }),
         new Place({ cuid: cuid(), name: 'test2', isPublic: true }),
@@ -35,7 +34,7 @@ export default function () {
           console.log(`Failed to add 1 dummy place:`, error);
         }
       });
-    }*/
+    }
   });
   
   function addSnapshots ({ place, snapshotsToAdd }) {
