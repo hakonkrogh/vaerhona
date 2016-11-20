@@ -5380,7 +5380,7 @@
 
 	    // Convert buffer to webp
 
-	    if (type !== 'webp' && false) {
+	    if (type !== 'webp') {
 
 	      type = 'webp';
 	      var encoder = new cwebp(imageBuffer);

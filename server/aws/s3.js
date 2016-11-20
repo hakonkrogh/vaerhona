@@ -38,17 +38,16 @@ export function saveImageFromSnapshot ({ snapshot, place }) {
  * @param snapshot
  * @param place
  * @param imageBuffer
- * @param fileType
  * @returns Promise
  */
-function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
+function uploadSingleImage ({ place, snapshot, imageBuffer }) {
 
   return new Promise((resolve, reject) => {
   
     let { width, height, type } = imageSize(imageBuffer);
 
     // Convert buffer to webp
-    if (type !== 'webp' && false) {
+    if (type !== 'webp') {
 
       type = 'webp';
       const encoder = new cwebp(imageBuffer);
@@ -76,7 +75,7 @@ function uploadSingleImage ({ place, snapshot, imageBuffer, fileType }) {
     function upload () {
       s3.upload({
         Bucket: config.aws.s3BucketName,
-        Key: getRelativePathForImage({ place, snapshot, fileType }),
+        Key: getRelativePathForImage({ place, snapshot }),
         Body: imageBuffer,
         Metadata
       }, {}, (err, data) => {
