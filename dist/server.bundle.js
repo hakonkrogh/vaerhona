@@ -5361,14 +5361,12 @@
 	 * @param snapshot
 	 * @param place
 	 * @param imageBuffer
-	 * @param fileType
 	 * @returns Promise
 	 */
 	function uploadSingleImage(_ref2) {
 	  var place = _ref2.place;
 	  var snapshot = _ref2.snapshot;
 	  var imageBuffer = _ref2.imageBuffer;
-	  var fileType = _ref2.fileType;
 
 
 	  return new Promise(function (resolve, reject) {
@@ -5408,7 +5406,7 @@
 	    function upload() {
 	      s3.upload({
 	        Bucket: _config2.default.aws.s3BucketName,
-	        Key: getRelativePathForImage({ place: place, snapshot: snapshot, fileType: fileType }),
+	        Key: getRelativePathForImage({ place: place, snapshot: snapshot }),
 	        Body: imageBuffer,
 	        Metadata: Metadata
 	      }, {}, function (err, data) {
