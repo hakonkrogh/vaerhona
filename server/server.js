@@ -66,8 +66,10 @@ app.use(compression());
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 
-app.use(Express.static(path.resolve(__dirname, '../dist')));
-app.use('/static', Express.static(path.resolve(__dirname, '../static')));
+const maxAge = 60 * 60 * 24 * 365 * 1000;
+
+app.use(Express.static(path.resolve(__dirname, '../dist'), { maxAge }));
+app.use('/static', Express.static(path.resolve(__dirname, '../static'), { maxAge }));
 
 app.use('/api', snapshots);
 app.use('/api', places);

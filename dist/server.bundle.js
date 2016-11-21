@@ -5823,8 +5823,10 @@
 	app.use(_bodyParser2.default.json({ limit: '20mb' }));
 	app.use(_bodyParser2.default.urlencoded({ limit: '20mb', extended: false }));
 
-	app.use(_express2.default.static(_path2.default.resolve(__dirname, '../dist')));
-	app.use('/static', _express2.default.static(_path2.default.resolve(__dirname, '../static')));
+	var maxAge = 60 * 60 * 24 * 365 * 1000;
+
+	app.use(_express2.default.static(_path2.default.resolve(__dirname, '../dist'), { maxAge: maxAge }));
+	app.use('/static', _express2.default.static(_path2.default.resolve(__dirname, '../static'), { maxAge: maxAge }));
 
 	app.use('/api', _snapshot2.default);
 	app.use('/api', _place2.default);
