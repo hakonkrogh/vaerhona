@@ -4,7 +4,7 @@ require('babel-register')({
     [
       "babel-plugin-webpack-loaders",
       {
-        "config": "./webpack.config.babel.js",
+        "config": "../webpack.config.babel.js",
         "verbose": false
       }
     ]
@@ -12,4 +12,4 @@ require('babel-register')({
 });
 require('babel-polyfill');
 
-require('./test-run.js');
+require('./run-cwebp.js');
