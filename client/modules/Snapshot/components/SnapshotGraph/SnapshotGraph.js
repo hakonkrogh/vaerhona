@@ -59,7 +59,7 @@ class SnapshotGraph extends Component {
   }
 
   componentDidUpdate () {
-    this.loadChart();
+    setTimeout(this.loadChart.bind(this), 100);
   }
 
   loadChart () {
