@@ -1,4 +1,3 @@
-import CWebp from 'cwebp';
 import imageSize from 'image-size';
 
 import Snapshot from '../models/snapshot';
@@ -7,9 +6,7 @@ import cuid from 'cuid';
 import fs from 'fs';
 import { saveImageFromSnapshot, getImage } from '../aws/s3';
 import { addPlaceRaw } from './place.controller';
-
-const cwebp = CWebp.CWebp;
-const dwebp = CWebp.DWebp;
+import { dwebp } from '../core/webp';
 
 /**
  * Get all snapshots
@@ -390,24 +387,16 @@ export function getSnapshotImage (req, res) {
       // Serve PNG to poor browser that don't understand webp
       const accept = req.get('Accept');
       if (type === 'webp' && accept.indexOf('image/webp') === -1) {
-        
-        const decoder = new dwebp(image.Body);
-        
-        // Resize to not take up too much kb
-        decoder.scale(width / 3, height / 3);
-        
-        decoder.toBuffer((err, buffer) => {
-
-          if (err) {
-            return res.status(500).send(err);
-          }
-
-          type = 'png';
-          image.Body = buffer;
-          
-          end();
-        });
-      
+        dwebp
+          .toBuffer({ buffer: image.Body })
+          .then((buffer) => {
+            type = 'png';
+            image.Body = buffer;
+            end();
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
       } else {
         end();
       }

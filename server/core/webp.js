@@ -4,8 +4,6 @@ import cuid from 'cuid';
 import childProcess from 'child_process';
 import imageSize from 'image-size';
 
-function puts (error, stdout, stderr) { util.puts(stdout) }
-
 export const cwebp = {};
 export const dwebp = {};
 
@@ -32,13 +30,13 @@ cwebp.toBuffer = ({ buffer }) => {
           return reject(error);
         }
 
-        fs.readFile(`${path}.webp`, 'utf8', (error, image) => {
+        fs.readFile(`${path}.webp`, (error, buffer) => {
 
           if (error) {
             return reject(error);
           }
 
-          resolve(new Buffer.from(image));
+          resolve(buffer);
 
           // Cleanup
           fs.unlink(path);
@@ -67,8 +65,9 @@ dwebp.toBuffer = ({ buffer }) => {
         return reject(error);
       }
 
-      width /= 3;
-      height /= 3;
+      // PNG, reduce the file size
+      width /= 2;
+      height /= 2;
 
       childProcess.exec(`dwebp ${path} -o ${path}.png -scale ${width} ${height}`, (error) => {
         
@@ -76,17 +75,17 @@ dwebp.toBuffer = ({ buffer }) => {
           return reject(error);
         }
 
-        fs.readFile(`${path}.png`, 'utf8', (error, image) => {
+        fs.readFile(`${path}.png`, (error, buffer) => {
 
           if (error) {
             return reject(error);
           }
 
-          resolve(new Buffer.from(image));
+          resolve(buffer);
 
           // Cleanup
-          //fs.unlink(path);
-          //fs.unlink(path + '.png');
+          fs.unlink(path);
+          fs.unlink(path + '.png');
           
         });
       });

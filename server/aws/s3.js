@@ -1,7 +1,7 @@
-import CWebp from 'cwebp';
 import AWS from 'aws-sdk';
 import imageSize from 'image-size';
 
+import { cwebp } from '../core/webp';
 import ImageCache from '../core/ImageCache';
 const imageCache = new ImageCache();
 
@@ -10,8 +10,6 @@ import config from '../config';
 AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
 const s3 = new AWS.S3();
-
-const cwebp = CWebp.CWebp;
 
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
@@ -50,18 +48,14 @@ function uploadSingleImage ({ place, snapshot, imageBuffer }) {
     if (type !== 'webp') {
 
       type = 'webp';
-      const encoder = new cwebp(imageBuffer);
-
-      encoder.toBuffer((err, buffer) => {
-
-        if (err) {
-          return reject(err);
-        }
-
-        imageBuffer = buffer;
-        
-        upload();
-      });
+      
+      cwebp
+        .toBuffer({ buffer: imageBuffer })
+        .then((buffer) => {
+          imageBuffer = buffer;
+          upload();
+        })
+        .catch(reject);
     } else {
       upload();
     }
