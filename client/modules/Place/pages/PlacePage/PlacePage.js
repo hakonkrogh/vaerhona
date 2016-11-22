@@ -68,16 +68,17 @@ export class PlacePage extends Component {
 		// Display place
 		if (this.props.selectedPlace && this.props.selectedPlace.name) {
 			const settingsLink = `/${this.props.selectedPlace.name}/settings`;
-			const firstImageLink = getAbsolutePathForImage({
-        place: this.props.selectedPlace,
-        snapshot: this.props.snapshots[this.props.snapshots.length - 1]
-      });
+			
+      // Do not prefetch image, since it the correct request headers might not be sent (webp)
+      //const firstImageLink = getAbsolutePathForImage({
+      //  place: this.props.selectedPlace,
+      //  snapshot: this.props.snapshots[this.props.snapshots.length - 1]
+      //});
 
 			return (
 				<FullHeightWrapper>
 					<Helmet
 						title={this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)}
-						link={[{ 'rel': 'prefetch', 'href': firstImageLink }]}
 					/>
 					<Header>
 						{appIcon}

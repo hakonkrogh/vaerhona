@@ -2169,14 +2169,15 @@
 				// Display place
 				if (this.props.selectedPlace && this.props.selectedPlace.name) {
 					var settingsLink = '/' + this.props.selectedPlace.name + '/settings';
-					var firstImageLink = (0, _image.getAbsolutePathForImage)({
-						place: this.props.selectedPlace,
-						snapshot: this.props.snapshots[this.props.snapshots.length - 1]
-					});
+
+					// Do not prefetch image, since it the correct request headers might not be sent (webp)
+					//const firstImageLink = getAbsolutePathForImage({
+					//  place: this.props.selectedPlace,
+					//  snapshot: this.props.snapshots[this.props.snapshots.length - 1]
+					//});
 
 					return _jsx(_FullHeightWrapper2.default, {}, void 0, _jsx(_reactHelmet2.default, {
-						title: this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1),
-						link: [{ 'rel': 'prefetch', 'href': firstImageLink }]
+						title: this.props.selectedPlace.name[0].toUpperCase() + this.props.selectedPlace.name.substr(1)
 					}), _jsx(_Header2.default, {}, void 0, appIcon, _jsx('div', {
 						className: _PlacePage2.default['header-title']
 					}, void 0, this.props.selectedPlace.name)), _jsx(_SnapshotsNavigator2.default, {
