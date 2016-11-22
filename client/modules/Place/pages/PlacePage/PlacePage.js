@@ -68,7 +68,10 @@ export class PlacePage extends Component {
 		// Display place
 		if (this.props.selectedPlace && this.props.selectedPlace.name) {
 			const settingsLink = `/${this.props.selectedPlace.name}/settings`;
-			const firstImageLink = getAbsolutePathForImage({ place: this.props.selectedPlace, snapshot: this.props.snapshots[0] });
+			const firstImageLink = getAbsolutePathForImage({
+        place: this.props.selectedPlace,
+        snapshot: this.props.snapshots[this.props.snapshots.length - 1]
+      });
 
 			return (
 				<FullHeightWrapper>
