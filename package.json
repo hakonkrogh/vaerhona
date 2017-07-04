@@ -1,8 +1,6 @@
 {
-  "name": "Vaerhona",
-  "version": "2.0.0",
-  "description": "API and website for collecting and displaying data from compatible weather station",
   "scripts": {
+<<<<<<< master
     "test": "cross-env NODE_ENV=test PORT=8080 MONGO_DB=vaerhona-development node_modules/.bin/nyc node --harmony-proxies node_modules/.bin/ava",
     "watch:test": "npm run test -- --watch",
     "cover": "nyc npm run test",
@@ -16,146 +14,28 @@
     "clean": "rimraf dist",
     "slate": "rimraf node_modules && npm install",
     "lint": "eslint client server"
+=======
+    "dev": "cross-env APP_PORT=3000 NODE_ENV=development node server/index.js",
+    "build": "next build",
+    "start": "cross-env APP_PORT=3000 NODE_ENV=production node server/index.js"
+>>>>>>> Initial next setup with redux
   },
-  "pre-commit": [
-    "lint",
-    "test"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hakonhk/vaerhona.git"
-  },
-  "bugs": {
-    "url": "https://github.com/hakonhk/vaerhona/issues"
-  },
-  "homepage": "http://værhøna.no",
-  "author": "Håkon Krogh <hakonhk@gmail.com>",
-  "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.4.8",
-    "babel-core": "^6.9.1",
-    "base64-stream": "^0.1.3",
-    "body-parser": "^1.15.1",
-    "compression": "^1.6.2",
-    "cross-env": "^1.0.8",
-    "cuid": "^1.3.8",
-    "express": "^4.13.4",
-    "express-session": "^1.14.1",
-    "hammerjs": "git+https://github.com/hakonhk/hammer.js.git",
-    "helmet": "^2.1.3",
-    "image-size": "^0.5.0",
-    "intl": "^1.2.4",
-    "isomorphic-fetch": "^2.2.1",
-    "keycode": "^2.1.4",
-    "limax": "^1.3.0",
-    "mongoose": "^4.4.20",
-    "react": "^15.3.1",
-    "react-dom": "^15.1.0",
-    "react-helmet": "^3.1.0",
-    "react-intl": "^2.1.2",
-    "react-redux": "^4.4.5",
-    "react-router": "^2.4.1",
-    "react-timeago": "^3.1.3",
-    "redux": "^3.5.2",
-    "redux-thunk": "^2.1.0",
-    "sanitize-html": "^1.11.4",
-    "stream-buffers": "^3.0.0"
+    "babel-plugin-inline-react-svg": "^0.4.0",
+    "babel-plugin-styled-components": "^1.1.4",
+    "babel-preset-stage-0": "^6.24.1",
+    "express": "^4.14.0",
+    "isomorphic-unfetch": "^1.0.0",
+    "next": "latest",
+    "next-redux-wrapper": "^1.1.3",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.1",
+    "redux-thunk": "^2.2.0",
+    "styled-components": "^2.0.0-17"
   },
   "devDependencies": {
-    "ava": "^0.15.2",
-    "babel-eslint": "^6.0.4",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-webpack-loaders": "^0.7.0",
-    "babel-polyfill": "^6.9.1",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-es2015-native-modules": "^6.6.0",
-    "babel-preset-react": "^6.5.0",
-    "babel-preset-react-optimize": "^1.0.1",
-    "babel-preset-stage-0": "^6.5.0",
-    "babel-register": "^6.9.0",
-    "chai": "^3.5.0",
-    "chunk-manifest-webpack-plugin": "0.1.0",
-    "coveralls": "^2.11.9",
-    "css-loader": "^0.24.0",
-    "css-modules-require-hook": "^4.0.1",
-    "cssnano": "^3.7.0",
-    "enzyme": "^2.3.0",
-    "eslint": "^2.11.1",
-    "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-ava": "^2.4.0",
-    "eslint-plugin-import": "^1.8.1",
-    "eslint-plugin-jsx-a11y": "^1.3.0",
-    "eslint-plugin-react": "^5.1.1",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "file-loader": "^0.8.5",
-    "jsdom": "^9.2.1",
-    "json-loader": "^0.5.4",
-    "mock-css-modules": "^1.0.0",
-    "mockgoose": "^6.0.3",
-    "nock": "^8.0.0",
-    "nodemon": "^1.9.2",
-    "null-loader": "^0.1.1",
-    "nyc": "^6.4.4",
-    "postcss-cssnext": "^2.6.0",
-    "postcss-focus": "^1.0.0",
-    "postcss-loader": "^0.9.1",
-    "postcss-reporter": "^1.3.3",
-    "pre-commit": "^1.1.3",
-    "react-addons-test-utils": "^15.1.0",
-    "react-hot-loader": "^3.0.0-beta.2",
-    "redux-ava": "^2.0.0",
-    "redux-devtools": "^3.3.1",
-    "redux-devtools-dock-monitor": "^1.1.1",
-    "redux-devtools-log-monitor": "^1.0.11",
-    "rimraf": "^2.5.2",
-    "sinon": "^1.17.4",
-    "style-loader": "^0.13.1",
-    "supertest": "^1.2.0",
-    "url-loader": "^0.5.7",
-    "webpack": "2.1.0-beta.8",
-    "webpack-dev-middleware": "^1.6.1",
-    "webpack-dev-server": "^2.1.0-beta.0",
-    "webpack-externals-plugin": "^1.0.0",
-    "webpack-hot-middleware": "^2.10.0",
-    "webpack-manifest-plugin": "^1.0.1"
-  },
-  "engines": {
-    "node": ">=6"
-  },
-  "ava": {
-    "files": [
-      "client/**/*.spec.js",
-      "server/**/*.spec.js"
-    ],
-    "source": [
-      "client/**/*.js",
-      "server/**/*.js"
-    ],
-    "failFast": true,
-    "babel": "inherit",
-    "require": [
-      "./server/util/setup-test-env.js"
-    ]
-  },
-  "nyc": {
-    "include": [
-      "client/**/*.js",
-      "server/**/*.js"
-    ],
-    "exclude": [
-      "**/*.spec.js",
-      "client/reducers.js",
-      "client/store.js",
-      "client/routes.js",
-      "server/util/setup-test-env.js",
-      "server/util/test-helpers.js",
-      "server/config.js",
-      "server/dummyData.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text",
-      "html"
-    ]
+    "cross-env": "^5.0.0"
   }
 }

@@ -1,12 +1,16 @@
 .DS_Store
-node_modules/
-npm-debug.log
 .idea/
-dump.rdb
 .vscode/
+<<<<<<< master
 public/*
 coverage/
 .nyc_output/
 aws.config.development.json
 aws.config.production.json
 .next/
+=======
+.next
+.git
+node_modules
+npm-debug.log
+>>>>>>> Initial next setup with redux
