@@ -1,9 +1,10 @@
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 
-import AppReducer, { initialState } from './app/reducer';
+import app from './app/reducer';
+import place from './place/reducer';
 
-export default function initStore (_initialState = initialState) {
+export default function initStore (_initialState = {}) {
 
   const enhancers = [
     applyMiddleware(thunkMiddleware)
@@ -13,5 +14,8 @@ export default function initStore (_initialState = initialState) {
     enhancers.push(window.__REDUX_DEVTOOLS_EXTENSION__());
   }
 
-  return createStore(AppReducer, _initialState, compose(...enhancers));
+  return createStore(combineReducers({
+    app,
+    place
+  }), _initialState, compose(...enhancers));
 }

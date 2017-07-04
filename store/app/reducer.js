@@ -6,8 +6,8 @@ export const actionTypes = Object.freeze({
   APP_SET_TITLE: 'APP_SET_TITLE'
 });
 
-export const setAppTitle = (title) => dispatch => {
-  return dispatch({ type: actionTypes.APP_SET_TITLE, title });
+export const setAppTitle = (title) => {
+  return { type: actionTypes.APP_SET_TITLE, title };
 }
 
 export default function reducer (state = initialState, action) {

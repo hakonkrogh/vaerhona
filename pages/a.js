@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import withRedux from 'next-redux-wrapper';
 
-import initStore from '../store'
+import initStore from '../store';
 import { setAppTitle } from '../store/app/reducer';
 
 import Layout from '../modules/layout';
@@ -29,10 +29,4 @@ export class A extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setAppTitle: bindActionCreators(setAppTitle, dispatch)
-  };
-}
-
-export default withRedux(initStore, null, mapDispatchToProps)(A);
+export default withRedux(initStore)(A);

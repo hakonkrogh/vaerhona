@@ -15,4 +15,4 @@ export class Header extends Component {
   }
 }
 
-export default connect(state => state)(Header);
+export default connect(state => state.app)(Header);
