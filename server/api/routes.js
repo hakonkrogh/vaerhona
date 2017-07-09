@@ -29,7 +29,6 @@ router.route('/componentandmetadatafromroute').get((req, res) => {
                 break;
             default:
                 response = { match: false };
-                break;
         }
 
         res.json(response);

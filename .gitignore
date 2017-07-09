@@ -13,4 +13,9 @@ aws.config.production.json
 .git
 node_modules
 npm-debug.log
+<<<<<<< master
 >>>>>>> Initial next setup with redux
+=======
+
+server/config.secret.json
+>>>>>>> Server refactoring

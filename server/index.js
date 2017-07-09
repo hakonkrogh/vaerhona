@@ -1,12 +1,12 @@
 const express = require('express');
 const next = require('next');
-const apiRoutes = require('./routes');
+const apiRoutes = require('./api/routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const api = require('../api');
+const api = require('../shared/api');
 
 app.prepare()
 .then(() => {

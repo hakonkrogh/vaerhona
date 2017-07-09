@@ -6,7 +6,7 @@ import initStore from '../store';
 import { setAppTitle } from '../store/app/reducer';
 
 import Layout from '../modules/layout';
-import api from '../api';
+import api from '../shared/api';
 
 export class A extends Component {
   static async getInitialProps ({ store }) {

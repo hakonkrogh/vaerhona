@@ -1,7 +1,7 @@
 import cuid from 'cuid';
 import Snapshot from './models/snapshot';
 import Place from './models/place';
-import { addSnapshotRaw } from './controllers/snapshot.controller';
+import { addSnapshotRaw } from '../api/controllers/snapshot.controller';
 import fs from 'fs';
 
 export default function () {
