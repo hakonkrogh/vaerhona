@@ -49,7 +49,17 @@ const APP_CONFIG = {};
 APP_CONFIG.imageUrlBase = serverConfig.imageUrlBase;
 
 // MongoDB Connection
-mongoose.connect(serverConfig.mongoURL, error => {
+let mongoURL;
+try {
+  let mongoConfig = JSON.parse(fs.readFileSync('../__config/vaerhona/mongo.config.json', 'UTF-8'));
+  mongoURL = mongoConfig.url;
+} catch (e) {
+  console.log(e);
+  mongoURL = process.env.MONGO_URL;
+}
+mongoURL = mongoURL.replace('<DATABASE>', process.env.MONGO_DB || 'vaerhona');
+
+mongoose.connect(mongoURL, error => {
   if (error) {
     console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;

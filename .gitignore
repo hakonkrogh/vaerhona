@@ -9,3 +9,4 @@ coverage/
 .nyc_output/
 aws.config.development.json
 aws.config.production.json
+.next/

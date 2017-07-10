@@ -5,7 +5,8 @@ import { cwebp } from '../core/webp';
 import ImageCache from '../core/ImageCache';
 const imageCache = new ImageCache();
 
-import config from '../config';
+import serverConfig from '../config';
+let config = serverConfig.default || serverConfig;
 
 AWS.config.loadFromPath('../__config/vaerhona/aws.config.json');
 
@@ -113,7 +114,8 @@ export function getImage ({ placeName, snapshot }) {
     
     getImageFromS3({ legacyExtension })
       .then(endAndCache)
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
 
         getImageFromS3({ legacyExtension: !legacyExtension })
           .then(endAndCache)
