@@ -185,7 +185,7 @@ export function addSnapshotLegacy (req, res) {
   Object.freeze(OLD_PLACES);
 
   const oldPlace = OLD_PLACES.find(place => place.placeId == req.body.placeId);
-
+  console.log('Add snapshot legacy', req.body.placeId);
   if (!oldPlace) {
     return res.status(500).send('Error: place not found');
   }

@@ -1187,7 +1187,7 @@
 	  var oldPlace = OLD_PLACES.find(function (place) {
 	    return place.placeId == req.body.placeId;
 	  });
-	
+	  console.log('Add snapshot legacy', req.body.placeId);
 	  if (!oldPlace) {
 	    return res.status(500).send('Error: place not found');
 	  }
