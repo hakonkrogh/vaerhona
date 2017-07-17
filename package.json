@@ -9,7 +9,7 @@
     "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
     "start": "cross-env BABEL_DISABLE_CACHE=1 PORT=8000 NODE_ENV=development AWS_PROFILE=development MONGO_DB=vaerhona-development node --inspect index.js",
     "start:staging": "cross-env               PORT=8001 NODE_ENV=production  AWS_PROFILE=staging     MONGO_DB=vaerhona-staging node index.js",
-    "start:prod": "cross-env                  PORT=8002 NODE_ENV=production  AWS_PROFILE=production  MONGO_DB=vaerhona node index.js",
+    "start:prod": "cross-env                  PORT=8002 NODE_ENV=production  AWS_PROFILE=production  MONGO_DB=vaerhona node --inspect index.js",
     "bs": "npm run clean && npm run build && npm run build:server",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
     "build:server": "cross-env BABEL_DISABLE_CACHE=1 NODE_ENV=production webpack --config webpack.config.server.js",

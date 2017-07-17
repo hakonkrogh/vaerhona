@@ -240,8 +240,10 @@ export function addSnapshotLegacy (req, res) {
  */
 export function addSnapshotRaw (snapshot = {}) {
   return new Promise((resolve, reject) => {
+    console.log('Add snapshot!');
 
     if (!snapshot.placeCuid) {
+        console.log('Missing placeCuid');
         return reject({
           code: 403,
           message: 'Missing placeCuid'
@@ -251,12 +253,13 @@ export function addSnapshotRaw (snapshot = {}) {
     // Get place name
     Place.findOne({ cuid: snapshot.placeCuid }).exec((err, place) => {
       if (err) {
+        console.log('Could not find place name from placeCuid', snapshot.placeCuid);
         return reject({
           code: 500,
           message: 'Could not find place name from placeCuid'
         });
       }
-      
+
       const newSnapshot = new Snapshot(snapshot);
 
       newSnapshot.cuid = cuid();

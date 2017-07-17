@@ -1249,8 +1249,10 @@
 	  var snapshot = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
 	  return new Promise(function (resolve, reject) {
+	    console.log('Add snapshot!');
 	
 	    if (!snapshot.placeCuid) {
+	      console.log('Missing placeCuid');
 	      return reject({
 	        code: 403,
 	        message: 'Missing placeCuid'
@@ -1260,6 +1262,7 @@
 	    // Get place name
 	    _place2.default.findOne({ cuid: snapshot.placeCuid }).exec(function (err, place) {
 	      if (err) {
+	        console.log('Could not find place name from placeCuid', snapshot.placeCuid);
 	        return reject({
 	          code: 500,
 	          message: 'Could not find place name from placeCuid'
@@ -5529,6 +5532,7 @@
 	
 	
 	  var src = getRelativePathForImage({ placeName: placeName, snapshot: snapshot });
+	  console.log('get image', src);
 	
 	  // Just serve from cache
 	  if (imageCache.includes({ src: src })) {

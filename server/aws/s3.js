@@ -94,6 +94,7 @@ function uploadSingleImage ({ place, snapshot, imageBuffer }) {
 export function getImage ({ placeName, snapshot }) {
   
   let src = getRelativePathForImage({ placeName, snapshot });
+  console.log('get image', src);
 
   // Just serve from cache
   if (imageCache.includes({ src })) {
