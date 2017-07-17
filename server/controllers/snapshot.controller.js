@@ -259,6 +259,7 @@ export function addSnapshotRaw (snapshot = {}) {
           message: 'Could not find place name from placeCuid'
         });
       }
+      console.log('... adding snapshot for ', place.name);
 
       const newSnapshot = new Snapshot(snapshot);
 
