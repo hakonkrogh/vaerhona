@@ -1268,6 +1268,7 @@
 	          message: 'Could not find place name from placeCuid'
 	        });
 	      }
+	      console.log('... adding snapshot for ', place.name);
 	
 	      var newSnapshot = new _snapshot2.default(snapshot);
 	
