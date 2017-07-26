@@ -8,7 +8,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const api = require('../isomorphic/api');
-const apiRoutes = require('./server/api-routes');
+const apiRoutes = require('./api-routes');
 
 app.prepare()
 .then(() => {

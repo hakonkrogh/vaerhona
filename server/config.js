@@ -3,4 +3,4 @@ const config = {
   port: process.env.PORT || 3000
 };
 
-export default Object.freeze(config);
+module.exports = Object.freeze(config);

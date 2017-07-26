@@ -3,9 +3,9 @@ import { ServerStyleSheet } from 'styled-components';
 
 import serverConfig from '../server/config';
 
-// Define the app specific config
-const APP_CONFIG = {};
-APP_CONFIG.apiUri = serverConfig.apiUri;
+const appConfig = {
+  apiUri: serverConfig.apiUri
+};
 
 export default class MyDocument extends Document {
   render () {
@@ -23,7 +23,7 @@ export default class MyDocument extends Document {
           <div className='root'>
             {main}
           </div>
-          <script>window.__APP_CONFIG__ = ${JSON.stringify(APP_CONFIG)}</script>
+          <script dangerouslySetInnerHTML={{ __html : `window.__APP_CONFIG__ = ${JSON.stringify(appConfig)};` }}></script>
           <NextScript />
         </body>
       </html>
