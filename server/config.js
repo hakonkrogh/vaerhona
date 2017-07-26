@@ -20,12 +20,14 @@ try {
   }
 =======
 const config = {
-  api: {
-    uri: process.env.API_URI
-  },
+  apiUri: process.env.API_URI,
   port: process.env.PORT || 3000
+<<<<<<< master
 >>>>>>> Deleted uneeded files. Clean up
 }
 >>>>>>> Server refactoring
+=======
+};
+>>>>>>> Added server endpoints for snapshots and image
 
 export default Object.freeze(config);

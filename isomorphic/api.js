@@ -10,7 +10,7 @@ const api = {};
 // Determine the api path. Absolute for server, and relative for client
 let apiUri;
 if (typeof window !== 'undefined') {
-    apiUri = window.__APP_CONFIG__.apiUri;
+    apiUri = location.origin + '/api/';
 } else if (typeof process !== 'undefined' && process.env && process.env.APP_PORT) {
     apiUri = 'http://localhost:' + process.env.APP_PORT + '/api/';
 }
