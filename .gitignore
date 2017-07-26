@@ -1,25 +1,9 @@
 .DS_Store
 .idea/
 .vscode/
-<<<<<<< master
-public/*
-coverage/
-.nyc_output/
-aws.config.development.json
-aws.config.production.json
-.next/
-=======
 .next
 .git
 node_modules
 npm-debug.log
-<<<<<<< master
->>>>>>> Initial next setup with redux
-=======
 
-<<<<<<< master
-server/config.secret.json
->>>>>>> Server refactoring
-=======
 .env
->>>>>>> Deleted uneeded files. Clean up
