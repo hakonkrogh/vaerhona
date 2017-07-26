@@ -8,7 +8,7 @@ router.route('/util/componentandmetadatafromroute')
 
         url = decodeURIComponent(url);
 
-        url = url.replace('http://localhost:3000/', '/');
+        url = url.replace(/http(s?):\/\/[^\/]*/, '');
         if (url[0] !== '/') {
             url = '/' + url;
         }
