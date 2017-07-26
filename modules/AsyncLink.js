@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
 
-import { getRouteComponentAndMetadata } from '../shared/api';
+import { getRouteComponentAndMetadata } from '../isomorphic/api';
 
 export default class AsyncLink extends Component {
 

@@ -1,12 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const next = require('next');
-const apiRoutes = require('./api/routes');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const api = require('../shared/api');
+const apiRoutes = require('./server/api-routes');
 
 app.prepare()
 .then(() => {

@@ -1,10 +1,8 @@
-const { Router } = require('express');
-
+const Router = require('express').Router;
 const router = new Router();
 
-// Get component and metadata from route
-router.route('/componentandmetadatafromroute').get((req, res) => {
-    setTimeout(() => {
+router.route('/util/componentandmetadatafromroute')
+    .get((req, res) => {
         let { url } = req.query;
 
         url = decodeURIComponent(url);
@@ -29,20 +27,20 @@ router.route('/componentandmetadatafromroute').get((req, res) => {
                 break;
             default:
                 response = { match: false };
+                break;
         }
 
         res.json(response);
-    }, 25);
-});
+    });
 
-// Get some awesome data
-router.route('/awesomedata').get((req, res) => {
-    setTimeout(() => {
-        res.json({
-            title: 'An awesome title',
-            data: 123
-        });
-    }, 25);
-});
+router.route('/awesomedata')
+    .get((req, res) => {
+        setTimeout(() => {
+            res.json({
+                title: 'An awesome title',
+                data: 123
+            });
+        }, 25);
+    });
 
 module.exports = router;

@@ -5,7 +5,7 @@ import serverConfig from '../server/config';
 
 // Define the app specific config
 const APP_CONFIG = {};
-APP_CONFIG.imageUrlBase = serverConfig.imageUrlBase;
+APP_CONFIG.apiUri = serverConfig.apiUri;
 
 export default class MyDocument extends Document {
   render () {

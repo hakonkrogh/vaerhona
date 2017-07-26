@@ -17,5 +17,9 @@ npm-debug.log
 >>>>>>> Initial next setup with redux
 =======
 
+<<<<<<< master
 server/config.secret.json
 >>>>>>> Server refactoring
+=======
+.env
+>>>>>>> Deleted uneeded files. Clean up
