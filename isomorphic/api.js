@@ -21,6 +21,16 @@ api.getRouteComponentAndMetadata = (url = '') => {
         .then(r => r.json());
 };
 
+// Get the frontpage data
+api.getFrontpage = () => {
+    return fetch(apiUri + '/place/frontpage')
+        .then(r => r.json());
+};
+
+api.getImagePath = (snapshot) => {
+    return apiUri + `/snapshot/${snapshot.cuid}/image`;
+};
+
 // Get some awesome data
 api.getSomeAwesomeData = () => {
     return fetch(apiUri + '/awesomedata')

@@ -48,6 +48,20 @@ router.route('/snapshots')
         }
     });
 
+router.route('/place/frontpage')
+    .get(async (req, res) => {
+        try {
+            const response = await fetch(`${config.apiUri}/place/frontpage`);
+            const json = await response.json();
+            res.json(json);
+        } catch (error) {
+            res.status(500).json({
+                places: [],
+                error
+            });
+        }
+    });
+
 
 router.route('/snapshot/:id/image')
     .get(async (req, res) => {
