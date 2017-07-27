@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import withRedux from 'next-redux-wrapper';
 
-import initStore from '../store';
+import storeInitializer from '../modules/common/store-initializer';
 import { setAppTitle } from '../store/app/reducer';
 
 import Layout from '../modules/layout';
@@ -29,4 +27,4 @@ export class A extends Component {
   }
 }
 
-export default withRedux(initStore)(A);
+export default storeInitializer(A);

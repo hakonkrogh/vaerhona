@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import { getImagePath } from '../../isomorphic/api';
-import { ListItem, Image } from './ui';
+import { ListItem, Image, PlaceName, Temperature, Time } from './ui';
 
 export default class PlaceListItem extends React.Component {
     static propTypes = {
@@ -11,10 +12,15 @@ export default class PlaceListItem extends React.Component {
     
     render () {
         const { place, snapshot } = this.props.data;
+        const date = moment(snapshot.dateAdded);
         const imageAltText = `Bilde fra ${place.name} tatt ${snapshot.dateAdded.toLocaleString()}`;
+        const time = date.format('HH:mm');
+
         return (
             <ListItem>
-                {place.name} - {snapshot.temperature}
+                <PlaceName>{place.name}</PlaceName>
+                <Time>{time}</Time>
+                <Temperature>{snapshot.temperature}&#8451;</Temperature>
                 <Image src={getImagePath(snapshot)} alt={imageAltText}/>
             </ListItem>
         );

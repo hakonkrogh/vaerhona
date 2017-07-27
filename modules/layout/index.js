@@ -9,7 +9,7 @@ import {
     Menu,
     MenuItem,
     Content
-} from './styles';
+} from './ui';
 
 export default class Layout extends Component {
 

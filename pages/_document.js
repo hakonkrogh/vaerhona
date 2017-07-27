@@ -14,7 +14,7 @@ export default class MyDocument extends Document {
     const styleTags = sheet.getStyleElement();
 
     return (
-      <html>
+      <html lang='no'>
         <Head>
           <title>My page</title>
           {styleTags}

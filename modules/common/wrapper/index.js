@@ -1,0 +1,23 @@
+import React from 'react';
+import moment from 'moment';
+import Head from 'next/head';
+
+import initStore from '../../../store';
+
+import css from './styles';
+
+// Set the global locale
+moment.locale('no');
+
+export default class CommonWrapper extends React.Component {
+    render () {
+        return (
+            <div>
+                <Head>
+                    <style dangerouslySetInnerHTML={{ __html: css }}></style>
+                </Head>
+                {this.props.children}
+            </div>
+        );
+    }
+}
