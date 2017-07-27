@@ -3,14 +3,14 @@ import storeInitializer from '../modules/common/store-initializer';
 
 import Layout from '../modules/layout';
 
-export class B extends Component {
+export class Place extends Component {
   render () {
     return (
       <Layout>
-        <div>Page B</div>
+        <div>Place page</div>
       </Layout>
     );
   }
 }
 
-export default storeInitializer(B);
+export default storeInitializer(Place);

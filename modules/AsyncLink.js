@@ -8,18 +8,24 @@ export default class AsyncLink extends Component {
 
   static propTypes = {
     href: PropTypes.string,
+    className: PropTypes.string,
     children: PropTypes.any
+  }
+
+  constructor (props) {
+    super(props);
+    this.linkClicked = this.linkClicked.bind(this);
   }
 
   linkClicked (e) {
       e.preventDefault();
 
-      const { href } = e.target;
+      const { href } = this.props;
 
       getRouteComponentAndMetadata(href)
         .then(({ componentName, query, hrefResolved }) => {
 
-            if (componentName[0] !== '/') {
+            if (!componentName || componentName[0] !== '/') {
               componentName = '/' + componentName;
             }
 
@@ -31,7 +37,7 @@ export default class AsyncLink extends Component {
   }
 
   render () {
-    const { children, href } = this.props;
-    return <a href={href} onClick={this.linkClicked}>{children}</a>;
+    const { children, href, className } = this.props;
+    return <a href={href} onClick={this.linkClicked} className={className}>{children}</a>;
   }
 }

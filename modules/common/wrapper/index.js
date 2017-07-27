@@ -9,15 +9,11 @@ import css from './styles';
 // Set the global locale
 moment.locale('no');
 
-export default class CommonWrapper extends React.Component {
-    render () {
-        return (
-            <div>
-                <Head>
-                    <style dangerouslySetInnerHTML={{ __html: css }}></style>
-                </Head>
-                {this.props.children}
-            </div>
-        );
-    }
-}
+export default ({ children }) => (
+    <div>
+        <Head>
+            <style dangerouslySetInnerHTML={{ __html: css }}></style>
+        </Head>
+        {children}
+    </div>
+);

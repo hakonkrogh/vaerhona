@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import AsyncLink from '../AsyncLink';
 
 export const List = styled.ul`
     display: flex;
@@ -13,6 +14,10 @@ export const ListItem = styled.li`
     margin: 10px;
     padding: 0;
     position: relative;
+`;
+
+export const Link = styled(AsyncLink)`
+    display: block;
     color: #fff;
     font-size: 1.5rem;
 `;
