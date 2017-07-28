@@ -1,13 +1,18 @@
 let fetch = require('isomorphic-fetch');
 
-// Client side fix
-if (fetch.default) {
-    fetch = fetch.default;
-}
-
 const api = {};
 
-// Determine the api path. Absolute for server, and relative for client
+const jsonResponseHandler = (fetchRequest) => {
+    return fetchRequest
+        .then((response) => {
+            if (response.status === 200) {
+                return response.json();
+            }
+            throw new Error();
+        });
+}
+
+// Determine the api path
 let apiUri;
 if (typeof window !== 'undefined') {
     apiUri = location.origin + '/api';
@@ -17,24 +22,18 @@ if (typeof window !== 'undefined') {
 
 // Get the component and query from a url
 api.getRouteComponentAndMetadata = (url = '') => {
-    return fetch(apiUri + '/util/componentandmetadatafromroute?url=' + encodeURIComponent(url))
-        .then(r => r.json());
+    return jsonResponseHandler(fetch(apiUri + '/util/componentandmetadatafromroute?url=' + encodeURIComponent(url)));
 };
 
 // Get the frontpage data
-api.getFrontpage = () => {
-    return fetch(apiUri + '/place/frontpage')
-        .then(r => r.json());
-};
+api.getFrontpage = () => jsonResponseHandler(fetch(apiUri + '/frontpage'));
 
+// Get a place from name
+api.getPlace = (placeName) => jsonResponseHandler(fetch(apiUri + '/place/' + placeName));
+
+// Get the path to a snapshot image
 api.getImagePath = (snapshot) => {
     return apiUri + `/snapshot/${snapshot.cuid}/image`;
-};
-
-// Get some awesome data
-api.getSomeAwesomeData = () => {
-    return fetch(apiUri + '/awesomedata')
-        .then(r => r.json());
 };
 
 module.exports = api;

@@ -6,8 +6,6 @@ import Header from '../header';
 
 import {
     Wrapper,
-    Menu,
-    MenuItem,
     Content
 } from './ui';
 
@@ -20,15 +18,7 @@ export default class Layout extends Component {
   render () {
     return (
         <Wrapper>
-            <Header>
-                <Menu>
-                    <MenuItem><AsyncLink href='/'>Home</AsyncLink></MenuItem>
-                    <MenuItem><AsyncLink href='/a'>a</AsyncLink></MenuItem>
-                    <MenuItem><AsyncLink href='/aa'>aa</AsyncLink></MenuItem>
-                    <MenuItem><AsyncLink href='/b'>b</AsyncLink></MenuItem>
-                    <MenuItem><Link href='/b' as='/bb'><a>bb</a></Link></MenuItem>
-                </Menu>
-            </Header>
+            <Header />
             <Content>
                 {this.props.children}
             </Content>

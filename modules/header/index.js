@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 
 import AsyncLink from '../AsyncLink';
-import { Wrapper, AppIcon } from './styles';
+import { Wrapper, AppIcon } from './ui';
 
 export class Header extends Component {
   render () {
@@ -16,4 +16,5 @@ export class Header extends Component {
   }
 }
 
-export default connect(state => state.app)(Header);
+// export default connect(state => state.app)(Header);
+export default Header;

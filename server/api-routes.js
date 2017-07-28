@@ -2,6 +2,8 @@ const Router = require('express').Router;
 const config = require('./config');
 const router = new Router();
 
+const api = require('../isomorphic/api');
+
 router.route('/util/componentandmetadatafromroute')
     .get((req, res) => {
         let { url } = req.query;
@@ -13,11 +15,34 @@ router.route('/util/componentandmetadatafromroute')
             url = '/' + url;
         }
 
+        // Next routes
+        if (url.startsWith('/_next')) {
+            return res.json({ match: false });
+        }
+
+        // Front page
+        if (url === '/') {
+            return res.json({ match: true, hrefResolved: url, componentName: ''});
+        }
+        
+        // Check for place page (/placeName)
+        if (url.match(/\//g).length === 1) {
+            const placeName = url.replace('/','');
+            api
+                .getPlace(placeName)
+                .then((place) => {
+                    if (place) {
+                        res.json({ match: true, componentName: 'place', query: { placeName }})
+                    } else {
+                        res.json({ match: false });
+                    }
+                })
+                .catch(() => res.json({ match: false }));
+            return;
+        }
+
         let response;
         switch (url) {
-            case '/':
-                response = { match: true, hrefResolved: url, componentName: '', query: {} };
-                break;
             case '/a':
             case '/aa':
                 response = { match: true, hrefResolved: url, componentName: 'a', query: {} };
@@ -30,7 +55,6 @@ router.route('/util/componentandmetadatafromroute')
                 response = { match: false };
                 break;
         }
-
         res.json(response);
     });
 
@@ -48,10 +72,10 @@ router.route('/snapshots')
         }
     });
 
-router.route('/place/frontpage')
+router.route('/frontpage')
     .get(async (req, res) => {
         try {
-            const response = await fetch(`${config.apiUri}/place/frontpage`);
+            const response = await fetch(`${config.apiUri}/frontpage`);
             const json = await response.json();
             res.json(json);
         } catch (error) {
@@ -62,6 +86,18 @@ router.route('/place/frontpage')
         }
     });
 
+router.route('/place/:placeName')
+    .get(async (req, res) => {
+        try {
+            const response = await fetch(`${config.apiUri}/place/${req.params.placeName}`);
+            const json = await response.json();
+            res.json(json);
+        } catch (error) {
+            res.status(500).json({
+                error
+            });
+        }
+    });
 
 router.route('/snapshot/:id/image')
     .get(async (req, res) => {

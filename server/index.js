@@ -17,18 +17,19 @@ app.prepare()
   server.use('/api', apiRoutes);
 
   server.get('*', (req, res) => {
-    return new Promise((resolve) => {
-      api.getRouteComponentAndMetadata(req.url)
-        .then(({ match, componentName, query }) => {
-          if (match) {
-            // Render our matched route
-            return app.render(req, res, '/' + componentName, query);
-          } else {
-            // Defer to the Next framework handler
-            return handle(req, res);
-          }
-        })
-    });
+    if (req.url.startsWith('/_next')) {
+      return handle(req, res);
+    }
+    api.getRouteComponentAndMetadata(req.url)
+      .then(({ match, componentName, query }) => {
+        if (match) {
+          // Render our matched route
+          return app.render(req, res, '/' + componentName, query);
+        } else {
+          // Defer to the Next framework handler
+          return handle(req, res);
+        }
+      });
   });
 
   server.listen(process.env.APP_PORT, (err) => {

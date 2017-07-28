@@ -22,7 +22,7 @@ export default class PlaceListItem extends React.Component {
         const date = moment(snapshot.dateAdded);
         const imageAltText = `Bilde fra ${place.name} tatt ${snapshot.dateAdded.toLocaleString()}`;
         const time = date.format('HH:mm');
-        console.log(AsyncLink);
+
         return (
             <ListItem>
                 <AsyncLink href={`/${place.name}`}>

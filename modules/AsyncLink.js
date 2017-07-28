@@ -29,7 +29,7 @@ export default class AsyncLink extends Component {
               componentName = '/' + componentName;
             }
 
-            Router.push(componentName, href)
+            Router.push(componentName, href, query)
                 .catch((err) => {
                     console.error(err);
                 });

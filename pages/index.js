@@ -29,13 +29,14 @@ export class Index extends Component {
   }
 
   render () {
+    const { data } = this.props;
     return (
       <CommonWrapper>
         <Layout>
           <Head>
             <title>Værhøna.no</title>
           </Head>
-          <PlaceList data={this.props.data} />
+          {data && <PlaceList data={data} />}
         </Layout>
       </CommonWrapper>
     );
