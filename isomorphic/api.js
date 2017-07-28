@@ -2,6 +2,7 @@ let fetch = require('isomorphic-fetch');
 
 const api = {};
 
+// A generic fetch json request handler
 const jsonResponseHandler = (fetchRequest) => {
     return fetchRequest
         .then((response) => {
@@ -22,18 +23,23 @@ if (typeof window !== 'undefined') {
 
 // Get the component and query from a url
 api.getRouteComponentAndMetadata = (url = '') => {
-    return jsonResponseHandler(fetch(apiUri + '/util/componentandmetadatafromroute?url=' + encodeURIComponent(url)));
+    const apiRoute = apiUri + '/util/componentandmetadatafromroute?url=' + encodeURIComponent(url);
+    return jsonResponseHandler(fetch(apiRoute));
 };
 
 // Get the frontpage data
 api.getFrontpage = () => jsonResponseHandler(fetch(apiUri + '/frontpage'));
 
 // Get a place from name
-api.getPlace = (placeName) => jsonResponseHandler(fetch(apiUri + '/place/' + placeName));
+api.getPlace = placeName => jsonResponseHandler(fetch(apiUri + '/place/' + placeName));
+
+// Get snapshots for placev
+api.getSnapshots = placeName => jsonResponseHandler(fetch(apiUri + '/snapshots/' + placeName));
+
+// Get snapshots and place
+api.getSnapshotsAndPlace = placeName => jsonResponseHandler(fetch(apiUri + '/place-and-snapshots/' + placeName));
 
 // Get the path to a snapshot image
-api.getImagePath = (snapshot) => {
-    return apiUri + `/snapshot/${snapshot.cuid}/image`;
-};
+api.getImagePath = snapshot => `/snapshot/${snapshot.cuid}/image`;
 
 module.exports = api;

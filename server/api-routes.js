@@ -58,20 +58,6 @@ router.route('/util/componentandmetadatafromroute')
         res.json(response);
     });
 
-router.route('/snapshots')
-    .get(async (req, res) => {
-        try {
-            const response = await fetch(`${config.apiUri}/snapshot/?placeName=${req.query.placeName}`);
-            const json = await response.json();
-            res.json(json);
-        } catch (error) {
-            res.status(500).json({
-                snapshots: [],
-                error
-            });
-        }
-    });
-
 router.route('/frontpage')
     .get(async (req, res) => {
         try {
@@ -86,12 +72,49 @@ router.route('/frontpage')
         }
     });
 
+router.route('/snapshots')
+    .get(async (req, res) => {
+        try {
+            const response = await fetch(`${config.apiUri}/snapshot/?placeName=${req.query.placeName}`);
+            const json = await response.json();
+            res.json(json);
+        } catch (error) {
+            res.status(500).json({
+                snapshots: [],
+                error
+            });
+        }
+    });
+
 router.route('/place/:placeName')
     .get(async (req, res) => {
         try {
             const response = await fetch(`${config.apiUri}/place/${req.params.placeName}`);
             const json = await response.json();
             res.json(json);
+        } catch (error) {
+            res.status(500).json({
+                error
+            });
+        }
+    });
+
+
+router.route('/place-and-snapshots/:placeName')
+    .get(async (req, res) => {
+        try {
+            const { placeName } = req.params;
+            const placeResponse = await fetch(`${config.apiUri}/place/${placeName}`);
+            const place = await placeResponse.json();
+            if (!place) {
+                throw new Error('Place does not exist');
+            }
+            const snapshotsResponse = await fetch(`${config.apiUri}/snapshot/?placeName=${placeName}`);
+            const snapshots = await snapshotsResponse.json();
+            res.json({
+                place,
+                snapshots
+            });
         } catch (error) {
             res.status(500).json({
                 error
