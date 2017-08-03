@@ -104,12 +104,13 @@ router.route('/place-and-snapshots/:placeName')
     .get(async (req, res) => {
         try {
             const { placeName } = req.params;
+            const { limit = 100 } = req.query;
             const placeResponse = await fetch(`${config.apiUri}/place/${placeName}`);
             const place = await placeResponse.json();
             if (!place) {
                 throw new Error('Place does not exist');
             }
-            const snapshotsResponse = await fetch(`${config.apiUri}/snapshot/?placeName=${placeName}`);
+            const snapshotsResponse = await fetch(`${config.apiUri}/snapshot/?placeName=${placeName}&limit=${limit}`);
             const snapshots = await snapshotsResponse.json();
             res.json({
                 place,
