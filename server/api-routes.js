@@ -126,7 +126,8 @@ router.route('/snapshot/:id/image')
     .get(async (req, res) => {
         try {
             const accept = req.headers['accept'];
-            const browserSupportsWebp = accept === '*/*' || accept.indexOf('image/webp') !== -1;
+            const browserSupportsWebp = false;// accept === '*/*' || accept.indexOf('image/webp') !== -1;
+            console.log('webp', browserSupportsWebp);
             const response = await fetch(`${config.apiUri}/snapshot/${req.params.id}/image?webp=${browserSupportsWebp}`);
             const buffer = await response.buffer();
 

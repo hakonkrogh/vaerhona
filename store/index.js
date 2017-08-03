@@ -1,8 +1,9 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 
-import app from './app/reducer';
-import place from './place/reducer';
+import app from './app';
+import place from './place';
+import snapshots from './snapshots';
 
 export default function initStore (_initialState = {}) {
 
@@ -16,6 +17,7 @@ export default function initStore (_initialState = {}) {
 
   return createStore(combineReducers({
     app,
-    place
+    place,
+    snapshots
   }), _initialState, compose(...enhancers));
 }

@@ -40,6 +40,6 @@ api.getSnapshots = placeName => jsonResponseHandler(fetch(apiUri + '/snapshots/'
 api.getSnapshotsAndPlace = placeName => jsonResponseHandler(fetch(apiUri + '/place-and-snapshots/' + placeName));
 
 // Get the path to a snapshot image
-api.getImagePath = snapshot => apiUri + `/snapshot/${snapshot.cuid}/image`;
+api.getImagePath = snapshot => `${apiUri}/snapshot/${snapshot.cuid}/image`;
 
 module.exports = api;

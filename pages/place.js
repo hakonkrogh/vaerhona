@@ -5,13 +5,19 @@ import Layout from '../modules/layout';
 import CommonWrapper from '../modules/common/wrapper';
 import api from '../isomorphic/api';
 
+import { setPlace } from '../store/place';
+import { setSnapshots } from '../store/snapshots';
+
+import { SnapshotsNavigator } from '../modules/snapshot';
+
 export class Place extends Component {
-  static async getInitialProps ({ query, asPath }) {
+  static async getInitialProps ({ query, asPath, store }) {
     let props = {};
 
     try {
-      const placeName = (asPath || query.placeName).replace('/', '');
-      props = await api.getSnapshotsAndPlace(placeName);
+      props = await api.getSnapshotsAndPlace((asPath || query.placeName).replace('/', ''));
+      store.dispatch(setPlace(props.place));
+      store.dispatch(setSnapshots(props.snapshots));
     } catch (e) {
       console.error('error', e);
     }
@@ -19,23 +25,10 @@ export class Place extends Component {
   }
 
   render () {
-    const { place = {}, snapshots = [{ temperature: '=(' }] } = this.props;
-
-    // if (!place) {
-    //   return (
-    //     <CommonWrapper>
-    //       <Layout>
-    //         Error: place is not defined
-    //       </Layout>
-    //     </CommonWrapper>
-    //   );
-    // }
-
     return (
       <CommonWrapper>
         <Layout>
-          <div>{place.name} ({place.cuid})</div>
-          <div>First snapshot: {snapshots[0].temperature}</div>
+          <SnapshotsNavigator />
         </Layout>
       </CommonWrapper>
     );

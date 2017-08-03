@@ -2,34 +2,33 @@ import React, { Component } from 'react';
 import Head from 'next/head';
 
 import storeInitializer from '../modules/common/store-initializer';
-import { setAppTitle } from '../store/app/reducer';
+import { setAppTitle } from '../store/app';
 
 import api from '../isomorphic/api';
 import CommonWrapper from '../modules/common/wrapper';
 import Layout from '../modules/layout';
-import PlaceList from '../modules/place-list';
+import { PlaceList } from '../modules/place';
 
 export class Index extends Component {
-  static async getInitialProps ({ store }) {
+  static async getInitialProps ({ store, dispatch }) {
     let data;
-    let error;
 
     store.dispatch(setAppTitle(null));
 
     try {
       data = await api.getFrontpage();
     } catch (e) {
-      error = e;
+      console.error(e);
     }
     
     return {
-      data,
-      error
+      data
     };
   }
 
   render () {
     const { data } = this.props;
+
     return (
       <CommonWrapper>
         <Layout>

@@ -1,4 +1,6 @@
 {
     "name": "Værhøna",
-    "env": {}
+    "env": {
+        "API_URI": "@vh-api-uri"
+    }
 }
