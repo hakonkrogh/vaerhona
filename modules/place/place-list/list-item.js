@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import Link from 'next/link';
 
 import { getImagePath } from '../../../isomorphic/api';
 import {
     ListItem,
-    Link as AsyncLink,
+    PlaceLink,
     Image,
     PlaceName,
     Temperature,
@@ -25,12 +26,14 @@ export default class PlaceListItem extends React.Component {
 
         return (
             <ListItem>
-                <AsyncLink href={`/${place.name}`}>
-                    <PlaceName>{place.name}</PlaceName>
-                    <Time>{time}</Time>
-                    <Temperature>{snapshot.temperature}&#8451;</Temperature>
-                    <Image src={getImagePath(snapshot)} alt={imageAltText}/>
-                </AsyncLink>
+                <Link as={`/${place.name}`} href='/place' query={{ placeName: place.name }}>
+                    <a>
+                        <PlaceName>{place.name}</PlaceName>
+                        <Time>{time}</Time>
+                        <Temperature>{snapshot.temperature}&#8451;</Temperature>
+                        <Image src={getImagePath(snapshot)} alt={imageAltText}/>
+                    </a>
+                </Link>
             </ListItem>
         );
     }

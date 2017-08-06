@@ -1,14 +1,14 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
+import Link from 'next/link';
 
-import AsyncLink from '../AsyncLink';
 import { Wrapper, AppIcon } from './ui';
 
 export class Header extends Component {
   render () {
     return (
       <Wrapper>
-        <AsyncLink href='/'><AppIcon /></AsyncLink>
+        <Link as='/' href='/index'><a><AppIcon /></a></Link>
         <span>{this.props.headerTitle}</span>
         {this.props.children}
       </Wrapper>
