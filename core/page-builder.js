@@ -7,7 +7,7 @@ import { setClientInfo, getClientInfo } from '../store/app';
 
 function setClientInfoFromHeaders ({ isServer, req, store }) {
     return new Promise((resolve) => {
-        const unsubscriber = store.subscribe(() => {
+        function checkState () {
             const state = store.getState();
             const clientInfo = getClientInfo(state);
             if (typeof clientInfo !== 'undefined') {
@@ -18,7 +18,11 @@ function setClientInfoFromHeaders ({ isServer, req, store }) {
                 unsubscriber();
                 resolve();
             }
-        });
+        }
+        
+        const unsubscriber = store.subscribe(checkState);
+        checkState();
+        
         if (isServer) {
             const accept = req.headers['accept'];
             const webp = accept === '*/*' || accept.indexOf('image/webp') !== -1;
