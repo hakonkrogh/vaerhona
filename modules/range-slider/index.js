@@ -3,7 +3,7 @@ import Hammer from '../common/hammer';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { prettyDate, prettyTime } from '../../isomorphic/date';
+import { prettyDate, prettyTime } from '../../core/date';
 import {
   Container,
   Outer,

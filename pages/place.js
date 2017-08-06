@@ -1,38 +1,26 @@
-import React, { Component } from 'react';
-import storeInitializer from '../modules/common/store-initializer';
+import React from 'react';
 
-import Layout from '../modules/layout';
+import pageBuilder from '../core/page-builder';
 import CommonWrapper from '../modules/common/wrapper';
-import api from '../isomorphic/api';
+import Layout from '../modules/layout';
+import { SnapshotsNavigator } from '../modules/snapshot';
 
+import api from '../isomorphic/api';
 import { setPlace } from '../store/place';
 import { setSnapshots } from '../store/snapshots';
 
-import { SnapshotsNavigator } from '../modules/snapshot';
-
-export class Place extends Component {
-  static async getInitialProps ({ query, asPath, store }) {
-    let props = {};
-
-    try {
-      props = await api.getSnapshotsAndPlace((asPath || query.placeName).replace('/', ''));
-      store.dispatch(setPlace(props.place));
-      store.dispatch(setSnapshots(props.snapshots));
-    } catch (e) {
-      console.error('error', e);
-    }
+export default pageBuilder({
+  component: () => (
+    <CommonWrapper>
+      <Layout>
+        <SnapshotsNavigator />
+      </Layout>
+    </CommonWrapper>
+  ),
+  getInitialProps: async ({ query, asPath, store }) => {
+    const props = await api.getSnapshotsAndPlace((asPath || query.placeName).replace('/', ''));
+    store.dispatch(setPlace(props.place));
+    store.dispatch(setSnapshots(props.snapshots));
     return props;
   }
-
-  render () {
-    return (
-      <CommonWrapper>
-        <Layout>
-          <SnapshotsNavigator />
-        </Layout>
-      </CommonWrapper>
-    );
-  }
-}
-
-export default storeInitializer(Place);
+});

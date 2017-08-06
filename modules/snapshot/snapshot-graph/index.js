@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { isClient } from '../../common/utils';
+import { isClient } from '../../../core/utils';
 
 var Chart;
 if (isClient) {
@@ -17,8 +17,8 @@ import {
     PropChooser
 } from './ui';
 
-import { prettyDate } from '../../../isomorphic/date';
-import * as propTypeShapes from '../../../isomorphic/prop-type-shapes';
+import { prettyDate } from '../../../core/date';
+import * as propTypeShapes from '../../../core/prop-type-shapes';
 
 const snapshotProperties = [
   {

@@ -1,45 +1,30 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Head from 'next/head';
 
-import storeInitializer from '../modules/common/store-initializer';
+import pageBuilder from '../core/page-builder';
 import { setAppTitle } from '../store/app';
-
 import api from '../isomorphic/api';
+
 import CommonWrapper from '../modules/common/wrapper';
 import Layout from '../modules/layout';
 import { PlaceList } from '../modules/place';
 
-export class Index extends Component {
-  static async getInitialProps ({ store, dispatch }) {
-    let data;
-
+export default pageBuilder({
+  component: ({ data }) => (
+    <CommonWrapper>
+      <Layout>
+        <Head>
+          <title>Værhøna.no</title>
+        </Head>
+        {data && <PlaceList data={data} />}
+      </Layout>
+    </CommonWrapper>
+  ),
+  getInitialProps: async ({ store, dispatch }) => {
     store.dispatch(setAppTitle(null));
 
-    try {
-      data = await api.getFrontpage();
-    } catch (e) {
-      console.error(e);
-    }
+    const data = await api.getFrontpage();
     
-    return {
-      data
-    };
+    return { data };
   }
-
-  render () {
-    const { data } = this.props;
-
-    return (
-      <CommonWrapper>
-        <Layout>
-          <Head>
-            <title>Værhøna.no</title>
-          </Head>
-          {data && <PlaceList data={data} />}
-        </Layout>
-      </CommonWrapper>
-    );
-  }
-}
-
-export default storeInitializer(Index);
+});

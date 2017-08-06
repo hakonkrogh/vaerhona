@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 // Shapes
-import * as propTypeShapes from '../../../isomorphic/prop-type-shapes';
+import * as propTypeShapes from '../../../core/prop-type-shapes';
 
 // Import Components
 import Icon from '../icon';

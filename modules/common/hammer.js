@@ -1,4 +1,4 @@
-import { isClient } from './utils';
+import { isClient } from '../../core/utils';
 
 var Hammer;
 if (isClient) {

@@ -8,7 +8,7 @@ import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import TaNo from 'react-timeago/lib/language-strings/no';
 
 // Shapes
-import * as propTypeShapes from '../../../isomorphic/prop-type-shapes';
+import * as propTypeShapes from '../../../core/prop-type-shapes';
 
 import {
   showPrevSnapshot,
@@ -16,7 +16,7 @@ import {
   showSnapshotFromIndex,
   getAdjecentsSnapshots } from '../../../store/snapshots';
 import { getImagePath } from '../../../isomorphic/api';
-import { prettyDateTime } from '../../../isomorphic/date';
+import { prettyDateTime } from '../../../core/date';
 
 import RangeSlider from '../../range-slider';
 

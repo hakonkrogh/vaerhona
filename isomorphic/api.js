@@ -1,6 +1,7 @@
-let fetch = require('isomorphic-fetch');
+const fetch = require('isomorphic-fetch');
 
 const api = {};
+let clientInfo = {};
 
 // A generic fetch json request handler
 const jsonResponseHandler = (fetchRequest) => {
@@ -40,6 +41,17 @@ api.getSnapshots = placeName => jsonResponseHandler(fetch(apiUri + '/snapshots/'
 api.getSnapshotsAndPlace = placeName => jsonResponseHandler(fetch(apiUri + '/place-and-snapshots/' + placeName));
 
 // Get the path to a snapshot image
-api.getImagePath = snapshot => `${apiUri}/snapshot/${snapshot.cuid}/image`;
+api.getImagePath = snapshot => {
+    if (clientInfo.webp) {
+        return snapshot.imagePath;
+    }
+    if (typeof __NEXT_DATA__ !== 'undefined' && __NEXT_DATA__.props.initialState.app.clientInfo.webp) {
+        return snapshot.imagePath;
+    }
+    return `${apiUri}/snapshot/${snapshot.cuid}/image`;
+};
+
+// Get the path to a snapshot image
+api.setClientInfo = c => clientInfo = c;
 
 module.exports = api;
