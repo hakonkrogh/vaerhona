@@ -1,11 +1,7 @@
 import React from 'react';
-import moment from 'moment';
 import Head from 'next/head';
 
 import css from './styles';
-
-// Set the global locale
-moment.locale('nb');
 
 export default ({ children }) => (
     <div>
