@@ -19,7 +19,6 @@
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-unfetch": "^2.0.0",
     "keycode": "^2.1.9",
-    "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
     "next": "2.4.9",
     "next-redux-wrapper": "^1.1.3",

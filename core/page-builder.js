@@ -12,15 +12,15 @@ function setClientInfoFromHeaders ({ isServer, req, store }) {
             const clientInfo = getClientInfo(state);
             if (typeof clientInfo !== 'undefined') {
 
-                // Update the api
+                // Send the client info to the api
                 api.setClientInfo(clientInfo);
 
-                unsubscriber();
+                unsubscribe();
                 resolve();
             }
         }
         
-        const unsubscriber = store.subscribe(checkState);
+        const unsubscribe = store.subscribe(checkState);
         checkState();
         
         if (isServer) {
