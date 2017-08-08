@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import Link from 'next/link';
 
+import { prettyTime } from '../../../core/date';
 import { getImagePath } from '../../../isomorphic/api';
 import {
     ListItem,
@@ -20,16 +21,14 @@ export default class PlaceListItem extends React.Component {
     
     render () {
         const { place, snapshot } = this.props.data;
-        const date = moment(snapshot.dateAdded);
         const imageAltText = `Bilde fra ${place.name} tatt ${snapshot.dateAdded.toLocaleString()}`;
-        const time = date.format('HH:mm');
 
         return (
             <ListItem>
                 <Link as={`/${place.name}`} href='/place' query={{ placeName: place.name }}>
                     <a>
                         <PlaceName>{place.name}</PlaceName>
-                        <Time>{time}</Time>
+                        <Time>{prettyTime(snapshot.dateAdded)}</Time>
                         <Temperature>{snapshot.temperature}&#8451;</Temperature>
                         <Image src={getImagePath(snapshot)} alt={imageAltText}/>
                     </a>

@@ -1,6 +1,7 @@
 {
     "name": "Værhøna",
     "env": {
-        "API_URI": "@vh-api-uri"
+        "API_URI": "@vh-api-uri",
+        "TZ": "Europe/Oslo"
     }
 }
