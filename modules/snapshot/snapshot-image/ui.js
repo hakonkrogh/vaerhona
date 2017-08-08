@@ -28,6 +28,10 @@ export const DateAddedTimeAgo = styled.div`
   text-align: center;
   color: #555;
   margin-bottom: 10px;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
 `;
 
 export const Values = styled.div`
