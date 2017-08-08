@@ -10,7 +10,7 @@ export function prettyDate (date) {
 }
 
 export function prettyDateTime (date) {
-  return moment(date).format('llll');
+  return moment(date).tz(tz).format('llll');
 }
 
 export function prettyTime (date) {
