@@ -17,9 +17,17 @@ app.prepare()
   server.use('/api', apiRoutes);
 
   server.get('*', (req, res) => {
-    if (req.url.startsWith('/_next')) {
-      return handle(req, res);
+    const { url } = req;
+
+    const urlCheck = url.replace(/http(s?):\/\/[^\/]*/, '');
+    if (urlCheck[0] !== '/') {
+        urlCheck = '/' + urlCheck;
     }
+
+    if (urlCheck.startsWith('/_next')) return handle(req, res);
+    if (urlCheck.startsWith('/static')) return handle(req, res);
+    if (urlCheck.startsWith('/favico')) return handle(req, res);
+
     api.getRouteComponentAndMetadata(req.url)
       .then(({ match, componentName, query }) => {
         if (match) {

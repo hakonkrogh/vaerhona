@@ -7,10 +7,10 @@ let clientInfo = {};
 const jsonResponseHandler = (fetchRequest) => {
     return fetchRequest
         .then((response) => {
-            if (response.status === 200) {
+            if (response.ok) {
                 return response.json();
             }
-            throw new Error();
+            throw new Error(response);
         });
 }
 
@@ -34,7 +34,7 @@ api.getFrontpage = () => jsonResponseHandler(fetch(apiUri + '/frontpage'));
 // Get a place from name
 api.getPlace = placeName => jsonResponseHandler(fetch(apiUri + '/place/' + placeName));
 
-// Get snapshots for placev
+// Get snapshots for place
 api.getSnapshots = placeName => jsonResponseHandler(fetch(apiUri + '/snapshots/' + placeName));
 
 // Get snapshots and place
