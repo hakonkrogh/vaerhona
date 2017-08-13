@@ -1,8 +1,13 @@
 const config = require('../config');
 
+let frontpageCache;
+
 async function getFrontpage () {
-    const response = await fetch(`${config.apiUri}/frontpage`);
-    return await response.json();
+    if (!frontpageCache) {   
+        const response = await fetch(`${config.apiUri}/frontpage`);
+        frontpageCache = await response.json();
+    }
+    return frontpageCache;
 }
 
 module.exports = {

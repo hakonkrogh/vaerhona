@@ -19,6 +19,19 @@ async function getPlace ({ placeName }) {
     return place;
 }
 
+async function getAllPlaces () {
+    const response = await fetch(`${config.apiUri}/place`);
+    return await response.json();
+}
+
+async function populateInitialCache () {
+    const places = await getAllPlaces();
+    placeCache.length = 0;
+    places.forEach(p => placeCache.push(p));
+}
+
+setTimeout(populateInitialCache, 10000);
+
 module.exports = {
     getPlace
 };

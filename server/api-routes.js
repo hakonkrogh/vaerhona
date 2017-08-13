@@ -1,8 +1,8 @@
 const Router = require('express').Router;
 const router = new Router();
 
-const SnapshotService = require('./services/snapshot-service');
 const PlaceService = require('./services/place-service');
+const SnapshotService = require('./services/snapshot-service');
 const FrontpageService = require('./services/frontpage-service');
 
 router.route('/util/componentandmetadatafromroute')
@@ -31,7 +31,7 @@ router.route('/util/componentandmetadatafromroute')
             try {
                 const place = await PlaceService.getPlace({ placeName });
 
-                if (place) {
+                if (place && place.isPublic) {
                     return res.json({ match: true, componentName: 'place', query: { placeName }});
                 }
 

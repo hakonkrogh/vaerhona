@@ -1,7 +1,14 @@
 const config = require('../config');
 
+const snapshotCache = [];
+
 async function getSnapshots ({ placeName, limit = 100 }) {
     const response = await fetch(`${config.apiUri}/snapshot/?placeName=${placeName}&limit=${limit}`);
+    return await response.json();
+}
+
+async function getLastSnapshot ({ placeName }) {
+    const response = await fetch(`${config.apiUri}/snapshot/?placeName=${placeName}&last=true`);
     return await response.json();
 }
 
@@ -21,5 +28,6 @@ async function getSnapshotImage ({ id, webp }) {
 
 module.exports = {
     getSnapshots,
+    getLastSnapshot,
     getSnapshotImage
 };
