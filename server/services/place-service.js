@@ -9,11 +9,16 @@ async function getPlace ({ placeName }) {
         return cachedPlace;
     }
 
-    const response = await fetch(`${config.apiUri}/place/${placeName}`);
-    const place = await response.json();
-    
-    if (place) {
-        placeCache.push(place);
+    let place;
+    try {
+        const response = await fetch(`${config.apiUri}/place/${placeName}`);
+        place = await response.json();
+        
+        if (place) {
+            placeCache.push(place);
+        }
+    } catch (e) {
+        console.error(e);
     }
 
     return place;
