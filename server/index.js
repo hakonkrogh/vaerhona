@@ -9,6 +9,9 @@ const handle = app.getRequestHandler();
 
 const api = require('../isomorphic/api');
 const apiRoutes = require('./api-routes');
+const services = require('./services');
+
+setTimeout(services.populateInitialCache, 5000);
 
 app.prepare()
 .then(() => {

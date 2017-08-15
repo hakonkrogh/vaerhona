@@ -10,12 +10,16 @@ async function getFrontpage () {
 }
 
 async function rebuildCache () {
-    const response = await fetch(`${config.apiUri}/frontpage`);
-    frontpageCache = await response.json();
+    try {
+        const response = await fetch(`${config.apiUri}/frontpage`);
+        frontpageCache = await response.json();
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-setTimeout(rebuildCache, 10000);
-setInterval(rebuildCache, 60000);
+// setTimeout(rebuildCache, 10000);
+// setInterval(rebuildCache, 60000);
 
 module.exports = {
     getFrontpage

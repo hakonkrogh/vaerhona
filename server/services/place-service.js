@@ -2,9 +2,9 @@ const config = require('../config');
 
 const placeCache = [];
 
-async function getPlace ({ placeName }) {
+async function getPlace ({ placeName, placeCuid }) {
 
-    const cachedPlace = placeCache.find(p => p.name === placeName);
+    const cachedPlace = placeCache.find(p => placeName ? p.name === placeName : p.cuid === placeCuid);
     if (cachedPlace) {
         return cachedPlace;
     }
@@ -24,19 +24,26 @@ async function getPlace ({ placeName }) {
     return place;
 }
 
-async function getAllPlaces () {
-    const response = await fetch(`${config.apiUri}/place`);
-    return await response.json();
+async function getPlaces () {
+    return placeCache;
 }
 
 async function populateInitialCache () {
-    const places = await getAllPlaces();
-    placeCache.length = 0;
-    places.forEach(p => placeCache.push(p));
+    console.log('Starting populating Initial cache for places...');
+    try {
+        const response = await fetch(`${config.apiUri}/place`);
+        const places = await response.json();
+        placeCache.length = 0;
+        places.forEach(p => placeCache.push(p));
+    } catch (error) {
+        console.error(error);
+    }
+    console.log(`Initial cache for places done. Cached ${placeCache.length} places`);
+    return placeCache;
 }
 
-setTimeout(populateInitialCache, 10000);
-
 module.exports = {
-    getPlace
+    getPlace,
+    getPlaces,
+    populateInitialCache
 };

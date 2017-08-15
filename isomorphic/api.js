@@ -48,7 +48,8 @@ api.getImagePath = snapshot => {
     if (typeof __NEXT_DATA__ !== 'undefined' && __NEXT_DATA__.props.initialState.app.clientInfo.webp) {
         return snapshot.imagePath;
     }
-    return `${apiUri}/snapshot/${snapshot.cuid}/image`;
+    return `/static/snapshots/${snapshot.cuid}.jpg`;
+    // return `${apiUri}/snapshot/${snapshot.cuid}/image`;
 };
 
 // Get the path to a snapshot image
