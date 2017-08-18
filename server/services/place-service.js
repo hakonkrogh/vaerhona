@@ -1,3 +1,4 @@
+const ora = require('ora');
 const config = require('../config');
 
 const placeCache = [];
@@ -29,16 +30,17 @@ async function getPlaces () {
 }
 
 async function populateInitialCache () {
-    console.log('Starting populating Initial cache for places...');
+    const spinner = ora('Populating initial cache for places');
     try {
         const response = await fetch(`${config.apiUri}/place`);
         const places = await response.json();
         placeCache.length = 0;
         places.forEach(p => placeCache.push(p));
+        spinner.succeed();
     } catch (error) {
+        spinner.fail(error.message || 'Failed to fetch places');
         console.error(error);
     }
-    console.log(`Initial cache for places done. Cached ${placeCache.length} places`);
     return placeCache;
 }
 

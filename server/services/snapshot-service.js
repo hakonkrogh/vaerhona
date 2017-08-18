@@ -66,6 +66,24 @@ async function cacheLatestNotWebpImages () {
     return cached;
 }
 
+async function rebuildCache ({ limit = 100 }) {
+    try {
+        const places = await placeService.getPlaces();
+        const bar = new ProgressBar('Populating cache for snapshots :bar', { total: places.length });
+        snapshotCache.length = 0;
+        for (place of places) {
+            const snapshots = await getSnapshotsFromServer({ placeName: place.name });
+            for (snapshot of snapshots) {
+                snapshotCache.push(snapshot);
+            }
+            bar.tick();
+        }
+        const imagesCached = await cacheLatestNotWebpImages();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 async function populateInitialCache () {
     try {
         const places = await placeService.getPlaces();
