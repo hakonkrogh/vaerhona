@@ -5,6 +5,7 @@ const config = require('../config');
 const placeService = require('./place-service');
 
 const snapshotCache = [];
+const snapshotImageCache = new Map();
 
 async function getSnapshots ({ placeName, limit = 100 }) {
     const place = await placeService.getPlace({ placeName });
@@ -22,8 +23,9 @@ async function getSnapshotsFromServer ({ placeName, limit = 100 }) {
 
 async function getSnapshotImage ({ id, webp }) {
     const snapshot = snapshotCache.find(s => s.cuid === id);
-    if (!webp && snapshot && snapshot.notWebPImage) {
-        return snapshot.notWebPImage;
+    const cachedNotWebpImage = snapshotImageCache.get(snapshot);
+    if (!webp && cachedNotWebpImage) {
+        return cachedNotWebpImage;
     }
 
     const response = await fetch(`${config.apiUri}/snapshot/${id}/image?webp=${webp}`);
@@ -47,9 +49,10 @@ async function cacheLatestNotWebpImages () {
     for (let i = len - 1; i > 0; i--) {
         const snapshot = snapshotCache[i];
         if (len - i < (toCache + 1)) {
-            if (!snapshot.notWebPImage) {
+            if (!snapshotImageCache.get(snapshot)) {
                 try {
-                    snapshot.notWebPImage = await getSnapshotImage({ id: snapshot.cuid, webp: false });
+                    const image = await getSnapshotImage({ id: snapshot.cuid, webp: false });
+                    snapshotImageCache.set(snapshot, image);
                     cached++;
                     bar.tick();
                 } catch (error) {
@@ -57,7 +60,7 @@ async function cacheLatestNotWebpImages () {
                 }
             }
         } else {
-            snapshot.notWebPImage = null;
+            snapshotImageCache.delete(snapshot);
         }
     }
     return cached;
@@ -75,8 +78,8 @@ async function populateInitialCache () {
             }
             bar.tick();
         }
-        const images = await cacheLatestNotWebpImages();
-        console.log(`Cache for snapshots done. Cached ${snapshotCache.length} snapshots and ${images} not webp images`);
+        const imagesCached = await cacheLatestNotWebpImages();
+        console.log(`Cache for snapshots done. Cached ${snapshotCache.length} snapshots and ${imagesCached} not webp images`);
     } catch (error) {
         console.error(error);
     }
