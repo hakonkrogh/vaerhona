@@ -1,6 +1,9 @@
 {
-    "name": "Værhøna",
-    "env": {
-        "API_URI": "@vh-api-uri"
-    }
+  "name": "Værhøna",
+  "env": {
+    "API_URI": "@vh-api-uri"
+  },
+  "regions": [
+    "eu-west-1"
+  ]
 }
