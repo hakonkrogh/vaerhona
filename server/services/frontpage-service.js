@@ -3,7 +3,7 @@ const config = require('../config');
 let frontpageCache;
 
 async function getFrontpage () {
-    if (!frontpageCache) {   
+    if (!frontpageCache) {
         await rebuildCache();
     }
     return frontpageCache;
@@ -18,9 +18,13 @@ async function rebuildCache () {
     }
 }
 
-// setTimeout(rebuildCache, 10000);
-// setInterval(rebuildCache, 60000);
+async function populateInitialCache () {
+  return await rebuildCache();
+}
+
+setInterval(rebuildCache, 60 * 60 * 1000);
 
 module.exports = {
-    getFrontpage
+    getFrontpage,
+    populateInitialCache
 };

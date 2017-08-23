@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const ProgressBar = require('progress');
+const ora = require('ora');
 
 const config = require('../config');
 const placeService = require('./place-service');
@@ -66,43 +67,39 @@ async function cacheLatestNotWebpImages () {
     return cached;
 }
 
-async function rebuildCache ({ limit = 100 }) {
+async function rebuildCache ({ limit = 100 } = {}) {
+    const spinner = ora('Populating cache for snapshots');
+    let imagesCached;
     try {
         const places = await placeService.getPlaces();
-        const bar = new ProgressBar('Populating cache for snapshots :bar', { total: places.length });
         snapshotCache.length = 0;
         for (place of places) {
             const snapshots = await getSnapshotsFromServer({ placeName: place.name });
             for (snapshot of snapshots) {
                 snapshotCache.push(snapshot);
             }
-            bar.tick();
         }
-        const imagesCached = await cacheLatestNotWebpImages();
+        spinner.succeed();
+        imagesCached = await cacheLatestNotWebpImages();
     } catch (error) {
+        spinner.fail(error.message || 'Failed to fetch snapshots');
         console.error(error);
     }
+
+    return { imagesCached };
 }
 
 async function populateInitialCache () {
     try {
-        const places = await placeService.getPlaces();
-        const bar = new ProgressBar('Populating cache for snapshots :bar', { total: places.length });
-        snapshotCache.length = 0;
-        for (place of places) {
-            const snapshots = await getSnapshotsFromServer({ placeName: place.name, limit: 100 });
-            for (snapshot of snapshots) {
-                snapshotCache.push(snapshot);
-            }
-            bar.tick();
-        }
-        const imagesCached = await cacheLatestNotWebpImages();
+        const { imagesCached } = await rebuildCache();
         console.log(`Cache for snapshots done. Cached ${snapshotCache.length} snapshots and ${imagesCached} not webp images`);
     } catch (error) {
         console.error(error);
     }
     return snapshotCache;
 }
+
+setInterval(rebuildCache, 60 * 1000);
 
 module.exports = {
     getSnapshots,
