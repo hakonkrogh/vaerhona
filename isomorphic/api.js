@@ -41,14 +41,17 @@ api.getSnapshots = placeName => jsonResponseHandler(fetch(apiUri + '/snapshots/'
 api.getSnapshotsAndPlace = placeName => jsonResponseHandler(fetch(apiUri + '/place-and-snapshots/' + placeName));
 
 // Get the path to a snapshot image
-api.getImagePath = snapshot => {
+api.getImagePath = ({ snapshot }) => {
     if (clientInfo.webp) {
         return snapshot.imagePath;
     }
     if (typeof __NEXT_DATA__ !== 'undefined' && __NEXT_DATA__.props.initialState.app.clientInfo.webp) {
         return snapshot.imagePath;
     }
-    return `${apiUri}/snapshot/${snapshot.cuid}/image`;
+    // if (absolutePath) {
+    //   return `${apiUri}/snapshot/${snapshot.cuid}/image`;
+    // }
+    return `/api/snapshot/${snapshot.cuid}/image`;
 };
 
 // Get the path to a snapshot image

@@ -18,7 +18,7 @@ export default class PlaceListItem extends React.Component {
     static propTypes = {
         data: PropTypes.object
     }
-    
+
     render () {
         const { place, snapshot } = this.props.data;
         const imageAltText = `Bilde fra ${place.name} tatt ${snapshot.dateAdded.toLocaleString()}`;
@@ -30,7 +30,7 @@ export default class PlaceListItem extends React.Component {
                         <PlaceName>{place.name}</PlaceName>
                         <Time>{prettyTime(snapshot.dateAdded)}</Time>
                         <Temperature>{snapshot.temperature}&#8451;</Temperature>
-                        <Image src={getImagePath(snapshot)} alt={imageAltText}/>
+                        <Image src={getImagePath({ snapshot })} alt={imageAltText}/>
                     </a>
                 </Link>
             </ListItem>

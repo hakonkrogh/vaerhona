@@ -6,7 +6,9 @@ const config = require('../config');
 const placeService = require('./place-service');
 
 const snapshotCache = [];
+const snapshotCacheMaxLength = 1000;
 const snapshotImageCache = new Map();
+const snapshotImageCacheMaxLength = 10;
 
 async function getSnapshots ({ placeName, limit = 100 }) {
     const place = await placeService.getPlace({ placeName });
@@ -43,23 +45,22 @@ async function getSnapshotImage ({ id, webp }) {
 }
 
 async function cacheLatestNotWebpImages () {
-    const toCache = 10;
-    const bar = new ProgressBar('Caching latest not webp images :bar', { total: toCache });
+    const bar = new ProgressBar('Caching latest not webp images :bar', { total: snapshotImageCacheMaxLength });
     let cached = 0;
     const len = snapshotCache.length;
     for (let i = len - 1; i > 0; i--) {
         const snapshot = snapshotCache[i];
-        if (len - i < (toCache + 1)) {
+        if (len - i < (snapshotImageCacheMaxLength + 1)) {
             if (!snapshotImageCache.get(snapshot)) {
                 try {
-                    const image = await getSnapshotImage({ id: snapshot.cuid, webp: false });
-                    snapshotImageCache.set(snapshot, image);
-                    cached++;
-                    bar.tick();
+                  const image = await getSnapshotImage({ id: snapshot.cuid, webp: false });
+                  snapshotImageCache.set(snapshot, image);
+                  cached++;
                 } catch (error) {
-                    console.error(error);
+                  console.error(error);
                 }
             }
+            bar.tick();
         } else {
             snapshotImageCache.delete(snapshot);
         }
@@ -72,13 +73,21 @@ async function rebuildCache ({ limit = 100 } = {}) {
     let imagesCached;
     try {
         const places = await placeService.getPlaces();
-        snapshotCache.length = 0;
         for (place of places) {
             const snapshots = await getSnapshotsFromServer({ placeName: place.name });
             for (snapshot of snapshots) {
-                snapshotCache.push(snapshot);
+                if (!snapshotCache.find(s => s.cuid === snapshot.cuid)) {
+                  snapshotCache.push(snapshot);
+                }
             }
         }
+
+        // Limit the cache to 1000 snapshots
+        if (snapshotCache.length > snapshotCacheMaxLength) {
+          const toRemove = snapshotCache.length - snapshotCacheMaxLength;
+          snapshotCache.splice(0, toRemove);
+        }
+
         spinner.succeed();
         imagesCached = await cacheLatestNotWebpImages();
     } catch (error) {

@@ -24,7 +24,7 @@ router.route('/util/componentandmetadatafromroute')
         if (url === '/') {
             return res.json({ match: true, hrefResolved: url, componentName: ''});
         }
-        
+
         // Check for place page (/:placeName)
         if (url.match(/\//g).length === 1) {
             const placeName = url.replace('/','');
@@ -105,7 +105,7 @@ router.route('/snapshot/:id/image')
     .get(async (req, res) => {
         try {
             const accept = req.headers['accept'];
-            const browserSupportsWebp = accept === '*/*' || accept.indexOf('image/webp') !== -1;
+            const browserSupportsWebp = accept.indexOf('image/webp') !== -1;
 
             const image = await SnapshotService.getSnapshotImage({
                 id: req.params.id,

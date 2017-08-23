@@ -62,7 +62,7 @@ class SnapshotImage extends Component {
         onPointerDownAndRepeat: this.onImageClick.bind(this),
         onSwipe: this.onImageSwipe.bind(this)
       });
-      
+
       preloadSnapshotImages({
         place: this.props.place,
         snapshots: this.props.adjecentsSnapshots
@@ -113,12 +113,12 @@ class SnapshotImage extends Component {
   }
 
   onImageClick (event) {
-    
+
     // Determine position
     const clientX = event.center.x;
     const imageWidth = this.image.offsetWidth;
     const position = (clientX / imageWidth) * 100;
-    
+
     if (position < 50) {
       return this.navigate({ direction: 'prev' });
     }
@@ -141,7 +141,7 @@ class SnapshotImage extends Component {
 
     // Set up the time ago component
     let timeAgoFormatter = buildFormatter(TaNo);
- 
+
     return (
       <Outer>
         <Inner>
@@ -156,11 +156,11 @@ class SnapshotImage extends Component {
           </Values>
 
           <Image
-            src={getImagePath(selectedSnapshot)}
+            src={getImagePath({ snapshot: selectedSnapshot })}
             innerRef={x => this.image = x}
            />
         </Inner>
-        
+
          <RangeSlider
           value={selectedSnapshot}
           values={snapshots}
