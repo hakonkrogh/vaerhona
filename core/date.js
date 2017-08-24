@@ -5,8 +5,8 @@ moment.locale('nb');
 
 const tz = 'Europe/Oslo';
 
-export function prettyDate (date) {
-  return moment(date).tz(tz).format('L');
+export function prettyDate (date, { year = true } = {}) {
+  return moment(date).tz(tz).format(year ? 'L' : 'MM.DD');
 }
 
 export function prettyDateTime (date) {
@@ -15,4 +15,11 @@ export function prettyDateTime (date) {
 
 export function prettyTime (date) {
   return moment(date).tz(tz).format('LT');
+}
+
+export function timeOrDate (date) {
+  if (moment().isSame(date, 'day')) {
+    return prettyTime(date);
+  }
+  return prettyDate(date, { year: false });
 }
