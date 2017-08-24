@@ -50,12 +50,3 @@ export const Values = styled.div`
     min-width: 50px;
   }
 `;
-
-export const Image = styled.img`
-	background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  flex: 1 1 auto;
-  object-fit: cover;
-  height: 200px;
-`;

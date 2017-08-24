@@ -26,8 +26,8 @@ import {
   DateAdded,
   DateAddedTimeAgo,
   Values,
-  Image
 } from './ui';
+import Image from './image';
 
 import KeyHandler from './helpers/key-handler';
 import PointerHandler from './helpers/pointer-handler';
