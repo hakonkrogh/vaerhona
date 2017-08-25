@@ -83,10 +83,10 @@ async function rebuildCache ({ limit = 100 } = {}) {
         }
 
         // Limit the cache to 1000 snapshots
-        if (snapshotCache.length > snapshotCacheMaxLength) {
-          const toRemove = snapshotCache.length - snapshotCacheMaxLength;
-          snapshotCache.splice(0, toRemove);
-        }
+        // if (snapshotCache.length > snapshotCacheMaxLength) {
+        //   const toRemove = snapshotCache.length - snapshotCacheMaxLength;
+        //   snapshotCache.splice(0, toRemove);
+        // }
 
         spinner.succeed();
         imagesCached = await cacheLatestNotWebpImages();
