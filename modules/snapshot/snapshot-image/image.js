@@ -57,17 +57,25 @@ export default class Image extends React.Component {
   }
 
   onLoad () {
+    clearTimeout(this.loadingTimeout);
     this.setState({ loading: false });
   }
 
   onError () {
+    clearTimeout(this.loadingTimeout);
     this.setState({ loading: false, error: true });
   }
 
   componentWillReceiveProps ({ src }) {
-    if (src) {
-      this.setState({ loading: true, error: false });
+    if (src !== this.props.src) {
+      this.loadingTimeout = setTimeout(() => {
+        this.setState({ loading: true, error: false });
+      }, 50);
     }
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.loadingTimeout);
   }
 
   render () {

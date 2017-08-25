@@ -4,7 +4,6 @@ import { breakpoints } from '../../../core/ui-shared';
 export const List = styled.ul`
     display: flex;
     justify-content: space-around;
-    justify-content: space-evenly;
     margin: 0;
     padding: 0;
     list-style: none;

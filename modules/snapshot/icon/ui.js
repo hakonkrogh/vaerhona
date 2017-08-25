@@ -7,7 +7,8 @@ export const Container = styled.div`
   align-items: center;
   margin: 0 10px;
   padding: 0 10px;
-  cursor: {p => props.selected ? 'default' : 'pointer'};
+  cursor: default;
+  touch-action: manipulation;
 `;
 
 export const Label = styled.div`
