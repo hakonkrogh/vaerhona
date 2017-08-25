@@ -18,6 +18,18 @@ export default class Icon extends Component {
     onClick: PropTypes.func
   }
 
+  constructor (props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick (e, ...rest) {
+    e.preventDefault();
+    if (this.props.onClick) {
+      this.props.onClick(e, ...rest);
+    }
+  }
+
   render () {
 
     let icon;
@@ -50,8 +62,8 @@ export default class Icon extends Component {
 
     return (
       <Container selected={this.props.selected}
-        onClick={this.props.onClick}
-        onTouchStart={this.props.onClick}
+        onClick={this.onClick}
+        onTouchStart={this.onClick}
       >
         {icon}
         {this.props.label ? <Label style={{ color: fillColor }}>{this.props.label}</Label> : null}
