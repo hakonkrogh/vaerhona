@@ -1,0 +1,10 @@
+{
+  "name": "Værhøna",
+  "env": {
+    "APP_PORT": "3000",
+    "API_URI": "@vh-api-uri"
+  },
+  "regions": [
+    "eu-west-1"
+  ]
+}
