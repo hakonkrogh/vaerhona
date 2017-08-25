@@ -41,7 +41,7 @@ class SnapshotsNavigator extends Component {
 
   changeMainNavigation (e, itemName) {
     e.preventDefault();
-    changeMainNavigation(itemName);
+    this.props.changeMainNavigation(itemName);
   }
 
   render () {
@@ -51,8 +51,7 @@ class SnapshotsNavigator extends Component {
     const {
       place,
       snapshots,
-      selectedMainNavigation,
-      changeMainNavigation
+      selectedMainNavigation
     } = this.props;
 
     switch (selectedMainNavigation) {
