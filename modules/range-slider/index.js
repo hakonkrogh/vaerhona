@@ -20,23 +20,20 @@ export default class RangeSlider extends Component {
     onChange: PropTypes.func
   }
 
-  // componentDidMount () {
-  //   if (Hammer && !this.eventsBinded && this.wrap) {
-  //     this.eventsBinded = true;
+  componentDidMount () {
+    if (Hammer && !this.eventsBinded && this.wrap) {
+      this.eventsBinded = true;
 
-  //     this.hammertime = new Hammer.Manager(this.wrap);
-  //     //this.hammertime.add(new Hammer.Pan());
-  //     //this.hammertime.get('pan').set({ threshold: 0 });
-  //     //this.hammertime.on('pan', this.onPan);
-  //     this.hammertime.on('hammer.input', event => this.onPan(event));
-  //   }
-  // }
+      this.hammertime = new Hammer.Manager(this.wrap);
+      this.hammertime.on('hammer.input', event => this.onPan(event));
+    }
+  }
 
-  // componentWillUnmount () {
-  //   if (this.eventsBinded && this.hammertime) {
-  //     this.hammertime.destroy();
-  //   }
-  // }
+  componentWillUnmount () {
+    if (this.eventsBinded && this.hammertime) {
+      this.hammertime.destroy();
+    }
+  }
 
   onPan (event) {
 

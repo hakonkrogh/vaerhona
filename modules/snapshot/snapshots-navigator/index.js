@@ -39,6 +39,11 @@ class SnapshotsNavigator extends Component {
     changeMainNavigation: itemName => dispatch(changeMainNavigation(itemName))
   })
 
+  changeMainNavigation (e, itemName) {
+    e.preventDefault();
+    changeMainNavigation(itemName);
+  }
+
   render () {
 
     let child;
@@ -74,7 +79,7 @@ class SnapshotsNavigator extends Component {
               selected={selectedMainNavigation === itemName}
               key={itemName}
               type={itemName}
-              onClick={() => changeMainNavigation(itemName)}
+              onClick={(e) => this.changeMainNavigation(e, itemName)}
             />
           ))}
         </IconMenu>

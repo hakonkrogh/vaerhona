@@ -42,6 +42,11 @@ class SnapshotImage extends Component {
     adjecentsSnapshots: PropTypes.arrayOf(propTypeShapes.snapshot)
   }
 
+  constructor (props) {
+    super(props);
+    this.onRangeSliderChange = this.onRangeSliderChange.bind(this);
+  }
+
   componentDidUpdate () {
     preloadSnapshotImages({
       place: this.props.place,
@@ -164,7 +169,7 @@ class SnapshotImage extends Component {
          <RangeSlider
           value={selectedSnapshot}
           values={snapshots}
-          onChange={this.onRangeSliderChange.bind(this)}
+          onChange={this.onRangeSliderChange}
          />
       </Outer>
     );
