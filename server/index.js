@@ -1,5 +1,10 @@
 require('dotenv').config();
 
+if (!process.env.API_URI) {
+  console.error('Cannot start. Missing process.env.API_URI');
+  return;
+}
+
 const express = require('express');
 const next = require('next');
 
