@@ -12,7 +12,7 @@ const snapshotImageCacheMaxLength = 10;
 
 async function getSnapshots ({ placeName, limit = 100 }) {
     const place = await placeService.getPlace({ placeName });
-    return snapshotCache.filter(s => s.placeCuid === place.cuid).slice(0, limit);
+    return snapshotCache.filter(s => s.placeCuid === place.cuid).slice(limit * -1);
 }
 
 async function getLastSnapshot ({ placeName }) {
@@ -48,9 +48,10 @@ async function cacheLatestNotWebpImages () {
     const bar = new ProgressBar('Caching latest not webp images :bar', { total: snapshotImageCacheMaxLength });
     let cached = 0;
     const len = snapshotCache.length;
+    const snapshotToCache = snapshotCache.slice(snapshotImageCacheMaxLength * -1);
     for (let i = len - 1; i > 0; i--) {
         const snapshot = snapshotCache[i];
-        if (len - i < (snapshotImageCacheMaxLength + 1)) {
+        if (snapshotToCache.find(s => s.cuid === snapshot.cuid)) {
             if (!snapshotImageCache.get(snapshot)) {
                 try {
                   const image = await getSnapshotImage({ id: snapshot.cuid, webp: false });
@@ -83,10 +84,10 @@ async function rebuildCache ({ limit = 100 } = {}) {
         }
 
         // Limit the cache to 1000 snapshots
-        // if (snapshotCache.length > snapshotCacheMaxLength) {
-        //   const toRemove = snapshotCache.length - snapshotCacheMaxLength;
-        //   snapshotCache.splice(0, toRemove);
-        // }
+        if (snapshotCache.length > snapshotCacheMaxLength) {
+          const toRemove = snapshotCache.length - snapshotCacheMaxLength;
+          snapshotCache.splice(0, toRemove);
+        }
 
         spinner.succeed();
         imagesCached = await cacheLatestNotWebpImages();
