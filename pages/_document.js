@@ -12,7 +12,7 @@ export default class MyDocument extends Document {
     return (
       <html lang='no'>
         <Head>
-          <title>Værhøna.no</title>
+          <title>Værhøna</title>
           <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png?v=M4yo99lAWP" />

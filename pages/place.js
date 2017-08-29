@@ -10,6 +10,7 @@ import { setPlace } from '../store/place';
 import { setSnapshots } from '../store/snapshots';
 
 export default pageBuilder({
+  category: 'place',
   component: () => (
     <CommonWrapper>
       <Layout>

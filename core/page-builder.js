@@ -19,10 +19,10 @@ function setClientInfoFromHeaders ({ isServer, req, store }) {
                 resolve();
             }
         }
-        
+
         const unsubscribe = store.subscribe(checkState);
         checkState();
-        
+
         if (isServer) {
             const accept = req.headers['accept'];
             const webp = accept === '*/*' || accept.indexOf('image/webp') !== -1;
@@ -33,10 +33,14 @@ function setClientInfoFromHeaders ({ isServer, req, store }) {
     });
 }
 
-export default function pageBuilder ({ component, getInitialProps }) {
-    component.getInitialProps = async (...args) => {
-        let props = {};
+export default function pageBuilder ({ category, component, getInitialProps }) {
 
+    // Uppercase name ensures we can pass props
+    const Page = component;
+
+    class GenericPage extends React.Component {
+      static async getInitialProps (...args) {
+        let props;
         try {
             await setClientInfoFromHeaders(...args);
             props = await getInitialProps(...args);
@@ -44,7 +48,12 @@ export default function pageBuilder ({ component, getInitialProps }) {
             console.error('error', e);
         }
         return props;
+      }
+
+      render () {
+        return <Page {...this.props} />;
+      }
     }
 
-    return withRedux(initStore)(component);
+    return withRedux(initStore)(GenericPage);
 }
