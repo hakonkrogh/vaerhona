@@ -50,7 +50,7 @@ class SnapshotsNavigator extends Component {
       changeMainNavigation
     } = this.props;
 
-    if (!place || !place.cuid || !snapshots || snapshots.length === 0 || true) {
+    if (!place || !place.cuid || !snapshots || snapshots.length === 0) {
       return (
         <Outer>
           <Inner center>
