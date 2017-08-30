@@ -50,6 +50,16 @@ class SnapshotsNavigator extends Component {
       changeMainNavigation
     } = this.props;
 
+    if (!place || !place.cuid || !snapshots || snapshots.length === 0 || true) {
+      return (
+        <Outer>
+          <Inner center>
+            Loading...
+          </Inner>
+        </Outer>
+      );
+    }
+
     switch (selectedMainNavigation) {
       case 'image' :
         child = <SnapshotImage snapshots={snapshots} place={place} key='image' />;

@@ -38,20 +38,41 @@ export default function pageBuilder ({ category, component, getInitialProps }) {
     // Uppercase name ensures we can pass props
     const Page = component;
 
+    let loadPropsAfterMount = false;
+    let getInitialPropsArgs;
+
     class GenericPage extends React.Component {
       static async getInitialProps (...args) {
-        let props;
-        try {
-            await setClientInfoFromHeaders(...args);
-            props = await getInitialProps(...args);
-        } catch (e) {
-            console.error('error', e);
+        const { isServer } = args;
+        let props = {};
+        if (args[0].isServer) {
+          try {
+              await setClientInfoFromHeaders(...args);
+              props = await getInitialProps(...args);
+          } catch (e) {
+              console.error('error', e);
+          }
+        } else {
+          loadPropsAfterMount = true;
+          getInitialPropsArgs = args;
         }
         return props;
       }
 
+      constructor (props) {
+        super(props);
+        this.state = props;
+      }
+
+      componentDidMount () {
+        if (loadPropsAfterMount) {
+          getInitialProps(...getInitialPropsArgs)
+            .then(props => this.setState(props));
+        }
+      }
+
       render () {
-        return <Page {...this.props} />;
+        return <Page {...this.state} />;
       }
     }
 
