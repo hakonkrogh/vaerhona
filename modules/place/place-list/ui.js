@@ -10,6 +10,13 @@ export const List = styled.ul`
     flex-wrap: wrap;
 `;
 
+export const ListLoading = styled.div`
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const ListItem = styled.li`
     margin: 10px;
     padding: 0;

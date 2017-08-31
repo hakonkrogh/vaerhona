@@ -9,6 +9,7 @@ import * as propTypeShapes from '../../../core/prop-type-shapes';
 import Icon from '../icon';
 import SnapshotImage from '../snapshot-image';
 import SnapshotGraph from '../snapshot-graph';
+import Loader from '../../Loader';
 
 // Import store
 import { changeMainNavigation, MAIN_NAVIGATION_ITEMS } from '../../../store/app';
@@ -54,7 +55,7 @@ class SnapshotsNavigator extends Component {
       return (
         <Outer>
           <Inner center>
-            Loading...
+            <Loader>Henter siste data...</Loader>
           </Inner>
         </Outer>
       );

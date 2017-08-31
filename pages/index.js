@@ -18,7 +18,7 @@ export default pageBuilder({
         <Head>
           <title>Værhøna</title>
         </Head>
-        {data && <PlaceList data={data} />}
+        <PlaceList data={data} />
       </Layout>
     </CommonWrapper>
   ),
