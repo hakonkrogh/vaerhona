@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import Loader from '../../Loader';
 import { getImagePath } from '../../../isomorphic/api';
 
 const Outer = styled.div`
@@ -23,7 +24,7 @@ const Outer = styled.div`
   }
 `;
 
-const Loader = styled.div`
+const LoaderOuter = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -33,15 +34,13 @@ const Loader = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
 
-  &::after {
-    display: block;
-    content: 'Henter bilde...';
-    padding: 5px 10px;
-    background: rgba(0, 0, 0, .2);
-    color: rgba(255, 255, 255, .7);
-    border-radius: 3px;
-  }
+const LoaderInner = styled.div`
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, .5);
+  color: rgba(255, 255, 255, .75);
+  border-radius: 3px;
 `;
 
 export default class Image extends React.Component {
@@ -83,7 +82,13 @@ export default class Image extends React.Component {
     const { loading, error } = this.state;
     return (
       <Outer innerRef={innerRef}>
-        {loading && <Loader />}
+        {loading && (
+          <LoaderOuter>
+            <LoaderInner>
+              <Loader color={'inherit'} size={'small'}>Laster ned bilde...</Loader>
+            </LoaderInner>
+          </LoaderOuter>
+        )}
         {error ? '=(' : <img src={src} onLoad={this.onLoad} onError={this.onError} />}
       </Outer>
     );

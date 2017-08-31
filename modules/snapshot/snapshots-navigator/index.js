@@ -26,7 +26,7 @@ class SnapshotsNavigator extends Component {
   static propTypes = {
     selectedMainNavigation: PropTypes.string.isRequired,
     snapshots: PropTypes.arrayOf(propTypeShapes.snapshot).isRequired,
-    place: propTypeShapes.place.isRequired,
+    place: propTypeShapes.place,
     changeMainNavigation: PropTypes.func.isRequired
   }
 

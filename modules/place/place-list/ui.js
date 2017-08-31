@@ -38,6 +38,7 @@ export const Image = styled.img`
     width: 150px;
     object-fit: cover;
     display: block;
+    background: #ccc;
 
     @media (min-width: ${breakpoints.mdMin}) {
       height: 300px;

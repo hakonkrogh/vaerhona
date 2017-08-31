@@ -20,17 +20,16 @@ const Outer = styled.span`
 `;
 
 const Spinner = styled.span`
-  width: 30px;
-  height: 27px;
+  display: flex;
+  width: ${p => p.size ==='small' ? '20px' : '30px'};
+  height: ${p => p.size ==='small' ? '17px' : '27px'};
+  color: ${p => p.color || '#00628b'};
   margin-bottom: 10px;
-  color: #00628b;
 `;
 
 const SpinnerBar = styled.span`
   background-color: currentColor;
-  height: 100%;
-  width: 6px;
-  display: inline-block;
+  flex: 1 1 auto;
   animation: ${animation} 1.2s infinite ease-in-out;
 
   &:nth-child(2) { animation-delay: -1.1s; }
@@ -39,9 +38,9 @@ const SpinnerBar = styled.span`
   &:nth-child(5) { animation-delay: -0.8s; }
 `;
 
-export default ({ children }) => (
+export default ({ children, color, size }) => (
   <Outer>
-    <Spinner>
+    <Spinner color={color} size={size}>
       <SpinnerBar />
       <SpinnerBar />
       <SpinnerBar />
