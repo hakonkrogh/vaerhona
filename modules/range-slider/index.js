@@ -3,14 +3,15 @@ import Hammer from '../common/hammer';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { prettyDate, prettyTime } from '../../core/date';
+import { prettyDate, prettyTime, prettyDateTime } from '../../core/date';
 import {
   Container,
   Outer,
   Inner,
   Values,
   Line,
-  Indicator
+  Indicator,
+  CurrentValue
 } from './ui';
 
 export default class RangeSlider extends Component {
@@ -41,7 +42,7 @@ export default class RangeSlider extends Component {
     event.preventDefault();
 
     if (event.pointers.length === 1) {
-    
+
       // Store dimensions for range
       if (event.isFirst) {
         let computedStyle = getComputedStyle(this.outer, null);
@@ -89,7 +90,6 @@ export default class RangeSlider extends Component {
   }
 
   getSelectedIndex () {
-
     if (typeof this.props.value === 'undefined') {
       return 0;
     }
@@ -110,16 +110,17 @@ export default class RangeSlider extends Component {
       return null;
     }
 
-    let firstDate = prettyDate(new Date(values[0].dateAdded));
-    let lastDate = prettyDate(new Date(values[values.length - 1].dateAdded));
+    const firstDate = prettyDate(new Date(values[0].dateAdded));
+    const lastDate = prettyDate(new Date(values[values.length - 1].dateAdded));
+    const currentDate = values[this.getSelectedIndex()].dateAdded;
 
     return (
       <Container hidden={values.length <= 1} innerRef={el => this.wrap = el}>
         <Values>
           <div>{firstDate}</div>
+          <div>{prettyDateTime(currentDate)}</div>
           <div>{lastDate}</div>
         </Values>
-
         <Outer innerRef={el => this.outer = el}>
           <Inner innerRef={el => this.inner = el}>
             <Line />

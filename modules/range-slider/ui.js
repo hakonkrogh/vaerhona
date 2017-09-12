@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-	height: 60px;
+  height: 60px;
 	display: flex;
   flex-direction: column;
   user-select: none;
   touch-action: none;
+  margin-top: 10px;
   ${props => props.hide ? 'visibility: hidden': ''}
 `;
 
@@ -60,7 +61,7 @@ export const Indicator = styled.div`
 	position: absolute;
 	top: 50%;
   left: 0;
-  
+
   &::before {
     content: '';
     width: 15px;

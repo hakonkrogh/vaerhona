@@ -16,15 +16,13 @@ import {
   showSnapshotFromIndex,
   getAdjecentsSnapshots } from '../../../store/snapshots';
 import { getImagePath } from '../../../isomorphic/api';
-import { prettyDateTime } from '../../../core/date';
 
 import RangeSlider from '../../range-slider';
 
 import {
   Outer,
   Inner,
-  DateAdded,
-  DateAddedTimeAgo,
+  DateTimeAgo,
   Values,
 } from './ui';
 import Image from './image';
@@ -150,10 +148,9 @@ class SnapshotImage extends Component {
     return (
       <Outer>
         <Inner>
-          <DateAdded>{prettyDateTime(selectedSnapshot.dateAdded)}</DateAdded>
-          <DateAddedTimeAgo>
+          <DateTimeAgo>
             <TimeAgo date={selectedSnapshot.dateAdded} formatter={timeAgoFormatter} />
-          </DateAddedTimeAgo>
+          </DateTimeAgo>
           <Values>
             <span>{selectedSnapshot.temperature}&#8451;</span>
             <span>{selectedSnapshot.humidity}%</span>

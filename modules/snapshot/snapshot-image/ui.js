@@ -5,6 +5,7 @@ export const Outer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding-top: 10px;
 `;
 
 export const Inner = styled.div`
@@ -13,17 +14,7 @@ export const Inner = styled.div`
   flex-direction: column;
 `;
 
-export const DateAdded = styled.div`
-  flex: 0 0 auto;
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-transform: capitalize;
-  color: #555;
-`;
-
-export const DateAddedTimeAgo = styled.div`
+export const DateTimeAgo = styled.div`
   font-size: 1.5rem;
   text-align: center;
   color: #555;
