@@ -56,7 +56,6 @@ export default class SnapshotGraph extends Component {
   }
 
   getColumnData () {
-      console.log('asd');
     return this.props.snapshots.map(snapshot => snapshot[this.state.selectedProperty.type]);
   }
 
@@ -83,7 +82,7 @@ export default class SnapshotGraph extends Component {
       if (!data.length || !labels.length) {
         return;
       }
-      
+
       if (this.myLineChart) {
         this.myLineChart.data.labels = labels;
         this.myLineChart.data.datasets[0].label = this.state.selectedProperty.label;
