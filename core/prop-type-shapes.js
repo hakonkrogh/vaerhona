@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 
 export const snapshot = PropTypes.shape({
-    cuid: PropTypes.string.isRequired,
-    placeCuid: PropTypes.string.isRequired,
-    temperature: PropTypes.number.isRequired,
-    humidity: PropTypes.number.isRequired,
-    pressure: PropTypes.number.isRequired
+    cuid: PropTypes.string,
+    placeCuid: PropTypes.string,
+    temperature: PropTypes.number,
+    humidity: PropTypes.number,
+    pressure: PropTypes.number
 });
 
 export const place = PropTypes.shape({
-    cuid: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    isPublic: PropTypes.bool.isRequired
+    cuid: PropTypes.string,
+    name: PropTypes.string,
+    isPublic: PropTypes.bool
 });

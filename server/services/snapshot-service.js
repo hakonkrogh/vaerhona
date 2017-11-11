@@ -45,7 +45,7 @@ async function getSnapshotImage ({ id, webp }) {
 }
 
 async function cacheLatestNotWebpImages () {
-    const bar = new ProgressBar('Caching latest not webp images :bar', { total: snapshotImageCacheMaxLength });
+    const bar = new ProgressBar('Caching latest images for not webp browsers :bar', { total: snapshotImageCacheMaxLength });
     let cached = 0;
     const len = snapshotCache.length;
     const snapshotToCache = snapshotCache.slice(snapshotImageCacheMaxLength * -1);

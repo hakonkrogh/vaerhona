@@ -16,7 +16,8 @@ import {
 
 export default class PlaceListItem extends React.Component {
     static propTypes = {
-        data: PropTypes.object
+        data: PropTypes.object,
+        query: PropTypes.object
     }
 
     render () {
@@ -25,7 +26,7 @@ export default class PlaceListItem extends React.Component {
 
         return (
             <ListItem>
-                <Link as={`/${place.name}`} href='/place' query={{ placeName: place.name }}>
+                <Link as={`/${place.name}`} href={{ pathname: '/place', query: { placeName: place.name }}}>
                     <a>
                         <PlaceName>{place.name}</PlaceName>
                         <Time>{timeOrDate(snapshot.dateAdded)}</Time>
