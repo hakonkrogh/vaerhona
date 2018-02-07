@@ -2,7 +2,8 @@
   "name": "Værhøna",
   "env": {
     "APP_PORT": "3000",
-    "API_URI": "@vh-api-uri"
+    "API_URI": "@vh-api-uri",
+    "NODE_ENV": "production"
   },
   "regions": [
     "eu-west-1"
