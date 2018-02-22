@@ -50,6 +50,7 @@ api.getSnapshotsAndPlace = placeName =>
   jsonResponseHandler(fetch(apiUri + "/place-and-snapshots/" + placeName));
 
 // Get the path to a snapshot image
+const jpegStorageDate = new Date("2018-02-22");
 api.getImagePath = ({ snapshot }) => {
   // if (clientInfo.webp) {
   //     return snapshot.imagePath;
@@ -60,6 +61,13 @@ api.getImagePath = ({ snapshot }) => {
   // if (absolutePath) {
   //   return `${apiUri}/snapshot/${snapshot.cuid}/image`;
   // }
+
+  // Newer image. Get directly from S3
+  if (new Date(snapshot.dateAdded) >= jpegStorageDate) {
+    return snapshot.imagePath;
+  }
+
+  // Older image. We need to go through the API since we might need to do image transform from webp to jpeg
   return `/api/snapshot/${snapshot.cuid}/image`;
 };
 
