@@ -1,5 +1,3 @@
-const fs = require("fs-extra");
-const ProgressBar = require("progress");
 const ora = require("ora");
 
 const config = require("../config");
