@@ -75,7 +75,7 @@ export default class MyDocument extends Document {
           <GlobalStyle />
           {styleTags}
         </Head>
-        <body style={{ margin: 0 }}>
+        <body style={{ margin: 0, fontFamily: `'Lato', sans-serif` }}>
           <div className="root">{main}</div>
           <NextScript />
         </body>

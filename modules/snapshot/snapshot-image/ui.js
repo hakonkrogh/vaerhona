@@ -60,10 +60,11 @@ export const Bottom = styled.div`
     display: flex;
 
     > button {
-      flex: 0 0 50%;
-      padding: 0 25px;
+      flex: 1 1 50%;
+      padding: 0;
       touch-action: none;
       outline-offset: -5px;
+      white-space: nowrap;
 
       &:disabled {
         opacity: 0.25;
