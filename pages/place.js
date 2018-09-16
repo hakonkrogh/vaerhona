@@ -15,12 +15,17 @@ function onlyUniqueSnapshots(value, index, self) {
 class PlacePage extends React.Component {
   static graphSettings = {
     query: gql`
-      query PlaceData($placeName: String!, $from: String, $to: String) {
+      query PlaceData(
+        $placeName: String!
+        $from: String
+        $to: String
+        $limit: Int
+      ) {
         place(name: $placeName) {
           name
         }
 
-        snapshots(place: $placeName, from: $from, to: $to) {
+        snapshots(place: $placeName, from: $from, to: $to, limit: $limit) {
           cuid
           date
           temperature
@@ -32,15 +37,10 @@ class PlacePage extends React.Component {
     `,
 
     options: ctx => {
-      const to = new Date();
-      const from = new Date();
-      from.setDate(from.getDate() - 1);
-
       return {
         variables: {
           placeName: ctx.router.asPath.replace(/^\//, ""),
-          from: from.toString(),
-          to: to.toString()
+          limit: 24
         }
       };
     },
@@ -48,24 +48,23 @@ class PlacePage extends React.Component {
     props: ({ data }) => {
       return {
         data,
-        loadMoreSnapshots: ({ from, to }) => {
+        loadMoreSnapshots: ({ from, to, limit }) => {
           return data.fetchMore({
             variables: {
               ...data.variables,
-              from: from.toString(),
-              to: to.toString()
+              from: from && new Date(from).toISOString(),
+              to: to && new Date(to).toISOString(),
+              limit
             },
             updateQuery: (previousResult, { fetchMoreResult }) => {
-              if (!fetchMoreResult.snapshots) {
-                return Object.assign({}, previousResult, {
-                  from,
-                  to
-                });
+              if (
+                !fetchMoreResult.snapshots ||
+                fetchMoreResult.snapshots.length === 0
+              ) {
+                return previousResult;
               }
 
               return Object.assign({}, previousResult, {
-                from,
-                to,
                 snapshots: [
                   ...previousResult.snapshots,
                   ...fetchMoreResult.snapshots

@@ -62,9 +62,13 @@ export const Bottom = styled.div`
     > button {
       flex: 1 1 50%;
       padding: 0;
-      touch-action: none;
       outline-offset: -5px;
       white-space: nowrap;
+
+      &,
+      * {
+        touch-action: manipulation;
+      }
 
       &:disabled {
         opacity: 0.25;

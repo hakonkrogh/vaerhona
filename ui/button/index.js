@@ -3,7 +3,9 @@ import styled from "styled-components";
 import is, { isNot } from "styled-is";
 import { lighten } from "polished";
 
-import { Spinner } from "./spinner";
+import { Spinner } from "../spinner";
+
+import preventDoubleTapZoom from "./preventDoubleTapZoom";
 
 const themes = {
   primary: {
@@ -179,7 +181,13 @@ export const Button = ({
   const as = rest.as || "button";
 
   return (
-    <ButtonOuter as={as} {...rest} theme={theme} block={block}>
+    <ButtonOuter
+      as={as}
+      {...rest}
+      theme={theme}
+      block={block}
+      onTouchStart={preventDoubleTapZoom}
+    >
       <ButtonInner theme={theme} size={size}>
         <ButtonText shown={!loading}>{children}</ButtonText>
         <ButtonLoading shown={loading}>

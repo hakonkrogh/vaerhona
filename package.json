@@ -4,7 +4,6 @@
   },
   "scripts": {
     "dev": "node server/index.js",
-    "dev:inspect": "node --inspect server/index.js",
     "build": "NODE_ENV=production next build",
     "start": "NODE_ENV=production node server/index.js"
   },

@@ -32,7 +32,13 @@ const typeDefs = gql`
   type Query {
     places: [Place]
     place(name: String!): Place
-    snapshots(place: String!, limit: Int, from: String, to: String): [Snapshot]
+    snapshots(
+      place: String!
+      limit: Int
+      from: String
+      to: String
+      limit: Int
+    ): [Snapshot]
   }
 `;
 
@@ -73,7 +79,7 @@ const resolvers = {
   },
   Date: new GraphQLScalarType({
     name: "Date",
-    description: "Date custom scalar type",
+    description: "Date (custom scalar type)",
     parseValue(value) {
       return new Date(value); // value from the client
     },

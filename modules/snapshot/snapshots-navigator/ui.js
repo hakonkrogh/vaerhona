@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Outer = styled.div`
   flex-grow: 1;
@@ -10,8 +10,8 @@ export const Outer = styled.div`
 export const Inner = styled.div`
   flex-grow: 1;
   display: flex;
-  ${p => p.center && 'justify-content: center;'}
-  ${p => p.center && 'align-items: center;'}
+  ${p => p.center && "justify-content: center;"} ${p =>
+    p.center && "align-items: center;"};
 `;
 
 export const IconMenu = styled.div`
@@ -22,6 +22,7 @@ export const IconMenu = styled.div`
   box-sizing: border-box;
   border-top: 1px solid #ccc;
   flex-shrink: 0;
+  pointer-events: none;
 
   svg path {
     transition: fill 150ms;

@@ -19,18 +19,9 @@ export default class SnapshotImage extends Component {
 
     const { snapshots = [] } = props;
 
-    let from = new Date();
-    let to = new Date();
-    if (snapshots.length) {
-      from = new Date(snapshots[0].date);
-      to = new Date(snapshots[snapshots.length - 1].date);
-    }
-
     this.state = {
       selectedSnapshot: snapshots[snapshots.length - 1],
-      loadingDir: 0,
-      from,
-      to
+      loadingDir: 0
     };
   }
 
@@ -78,37 +69,26 @@ export default class SnapshotImage extends Component {
       let from;
       let to;
 
+      const { snapshots } = this.props;
+
       if (dir < 0) {
         // Load older
-        from = new Date(this.state.from.getTime());
-        from.setDate(from.getDate() - 1);
-        to = new Date(this.state.from.getTime());
-
-        this.ss({
-          from
-        });
+        const [first] = snapshots;
+        to = new Date(first.date).getTime();
       } else {
         // Load newer
-        from = new Date(this.state.to.getTime());
-        to = new Date(this.state.to.getTime());
-        to.setDate(to.getDate() + 1);
-
-        this.ss({
-          to
-        });
+        const last = snapshots[snapshots.length - 1];
+        from = new Date(last.date).getTime();
       }
 
       try {
-        console.log({ from, to });
-        await this.props.loadMoreSnapshots({ from, to });
+        await this.props.loadMoreSnapshots({ from, to, limit: 24 });
       } catch (e) {
         console.log(e);
       }
 
       await this.ss({
-        loadingDir: 0,
-        from,
-        to
+        loadingDir: 0
       });
 
       this.go(dir, true);
