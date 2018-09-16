@@ -22,7 +22,11 @@ export const IconMenu = styled.div`
   box-sizing: border-box;
   border-top: 1px solid #ccc;
   flex-shrink: 0;
-  pointer-events: none;
+
+  > div {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
 
   svg path {
     transition: fill 150ms;
