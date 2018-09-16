@@ -1,61 +1,42 @@
-const ora = require("ora");
+const fetch = require("isomorphic-unfetch");
+const querystring = require("querystring");
+
 const config = require("../config");
 
-const placeCache = [];
+const useApi = config.graphqlSource === "api";
 
-async function getPlace({ placeName, placeCuid }) {
-  const cachedPlace = placeCache.find(
-    p => (placeName ? p.name === placeName : p.cuid === placeCuid)
-  );
-  if (cachedPlace) {
-    return cachedPlace;
+async function getPlace({ placeName, from, to }) {
+  if (useApi) {
+    const response = await fetch(
+      `${config.apiUri}/place/${placeName}?${querystring.stringify({
+        from,
+        to
+      })}`
+    );
+    return response.json();
   }
 
-  let place;
-  try {
-    const response = await fetch(`${config.apiUri}/place/${placeName}`);
-    place = await response.json();
-
-    if (place) {
-      placeCache.push(place);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
-  return place;
+  return {
+    cuid: "1",
+    name: "Test"
+  };
 }
 
 async function getPlaces() {
-  return placeCache;
-}
-
-async function rebuildCache() {
-  try {
-    const spinner = ora("Populating cache for place");
+  if (useApi) {
     const response = await fetch(`${config.apiUri}/place`);
-    const places = await response.json();
-    placeCache.length = 0;
-    places.forEach(p => placeCache.push(p));
-    spinner.succeed();
-  } catch (error) {
-    spinner.fail(error);
+    return response.json();
   }
-}
 
-async function populateInitialCache() {
-  try {
-    await rebuildCache();
-  } catch (error) {
-    console.error(error);
-  }
-  return placeCache;
+  return [
+    {
+      cuid: "1",
+      name: "Test"
+    }
+  ];
 }
-
-setInterval(rebuildCache, 60 * 1000);
 
 module.exports = {
   getPlace,
-  getPlaces,
-  populateInitialCache
+  getPlaces
 };

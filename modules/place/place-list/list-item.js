@@ -1,40 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import Link from 'next/link';
+import React from "react";
+import PropTypes from "prop-types";
+import Link from "next/link";
 
-import { timeOrDate } from '../../../core/date';
-import { getImagePath } from '../../../isomorphic/api';
-import {
-    ListItem,
-    PlaceLink,
-    Image,
-    PlaceName,
-    Temperature,
-    Time
-} from './ui';
+import { timeOrDate } from "core/date";
+import SnapshotImg from "modules/snapshot-image";
+
+import { ListItem, Image, PlaceName, Temperature, Time } from "./ui";
 
 export default class PlaceListItem extends React.Component {
-    static propTypes = {
-        data: PropTypes.object,
-        query: PropTypes.object
-    }
+  static propTypes = {
+    data: PropTypes.object,
+    query: PropTypes.object
+  };
 
-    render () {
-        const { place, snapshot } = this.props.data;
-        const imageAltText = `Bilde fra ${place.name} tatt ${snapshot.dateAdded.toLocaleString()}`;
+  render() {
+    const { name, mostRecentSnapshot: snapshot } = this.props.data;
 
-        return (
-            <ListItem>
-                <Link as={`/${place.name}`} href={{ pathname: '/place', query: { placeName: place.name }}}>
-                    <a>
-                        <PlaceName>{place.name}</PlaceName>
-                        <Time>{timeOrDate(snapshot.dateAdded)}</Time>
-                        <Temperature>{snapshot.temperature}&#8451;</Temperature>
-                        <Image src={getImagePath({ snapshot })} alt={imageAltText}/>
-                    </a>
-                </Link>
-            </ListItem>
-        );
-    }
+    return (
+      <ListItem>
+        <Link
+          as={`/${name}`}
+          href={{ pathname: "/place", query: { placeName: name } }}
+        >
+          <a>
+            <PlaceName>{name}</PlaceName>
+            <Time>{timeOrDate(snapshot.date)}</Time>
+            <Temperature>
+              {snapshot.temperature}
+              &#8451;
+            </Temperature>
+            <SnapshotImg snapshot={snapshot} />
+          </a>
+        </Link>
+      </ListItem>
+    );
+  }
 }

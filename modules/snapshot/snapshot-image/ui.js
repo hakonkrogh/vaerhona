@@ -1,4 +1,6 @@
-import styled from 'styled-components';
+import styled from "styled-components";
+
+import { Button } from "ui";
 
 export const Outer = styled.div`
   flex-grow: 1;
@@ -17,12 +19,18 @@ export const Inner = styled.div`
 export const DateTimeAgo = styled.div`
   font-size: 1.5rem;
   text-align: center;
-  color: #555;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
 
   &::first-letter {
     text-transform: uppercase;
   }
+`;
+
+export const DateString = styled.div`
+  display: block;
+  color: #888;
+  text-align: center;
+  margin-bottom: 15px;
 `;
 
 export const Values = styled.div`
@@ -39,5 +47,31 @@ export const Values = styled.div`
     margin: 0 10px;
     text-align: center;
     min-width: 50px;
+  }
+`;
+
+export const Bottom = styled.div`
+  flex: 1 0 50px;
+  display: flex;
+  justify-content: space-between;
+
+  > span {
+    flex: 0 0 50%;
+    display: flex;
+
+    > button {
+      flex: 0 0 50%;
+      padding: 0 25px;
+      touch-action: none;
+      outline-offset: -5px;
+
+      &:disabled {
+        opacity: 0.25;
+      }
+
+      svg:not(:first-child) {
+        margin-left: -10px;
+      }
+    }
   }
 `;

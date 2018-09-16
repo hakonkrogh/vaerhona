@@ -115,14 +115,14 @@ export default class RangeSlider extends Component {
     const currentDate = values[this.getSelectedIndex()].dateAdded;
 
     return (
-      <Container hidden={values.length <= 1} innerRef={el => this.wrap = el}>
+      <Container hidden={values.length <= 1} ref={el => this.wrap = el}>
         <Values>
           <div>{firstDate}</div>
           <div>{prettyDateTime(currentDate)}</div>
           <div>{lastDate}</div>
         </Values>
-        <Outer innerRef={el => this.outer = el}>
-          <Inner innerRef={el => this.inner = el}>
+        <Outer ref={el => this.outer = el}>
+          <Inner ref={el => this.inner = el}>
             <Line />
             <Indicator style={{ left: this.getIndicatorPercentage() + '%' }} />
           </Inner>

@@ -1,97 +1,59 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-
-// Shapes
-import * as propTypeShapes from '../../../core/prop-type-shapes';
+import React, { Component } from "react";
 
 // Import Components
-import Icon from '../icon';
-import SnapshotImage from '../snapshot-image';
-import SnapshotGraph from '../snapshot-graph';
-import Loader from '../../Loader';
-
-// Import store
-import { changeMainNavigation, MAIN_NAVIGATION_ITEMS } from '../../../store/app';
+import Icon from "../icon";
+import SnapshotImage from "../snapshot-image";
+import SnapshotGraph from "../snapshot-graph";
 
 // Import ui
-import {
-  Outer,
-  Inner,
-  IconMenu
-} from './ui';
+import { Outer, Inner, IconMenu } from "./ui";
 
-class SnapshotsNavigator extends Component {
+export default class SnapshotsNavigator extends Component {
+  state = {
+    selected: "image"
+  };
 
-  static propTypes = {
-    selectedMainNavigation: PropTypes.string.isRequired,
-    snapshots: PropTypes.arrayOf(propTypeShapes.snapshot).isRequired,
-    place: propTypeShapes.place,
-    changeMainNavigation: PropTypes.func.isRequired
-  }
+  changeToImage = () => {
+    this.setState({
+      selected: "image"
+    });
+  };
 
-  static mapStateToProps = (state) => ({
-    selectedMainNavigation: state.app.mainNavigation,
-    snapshots: state.snapshots.data,
-    place: state.place
-  })
+  changeToGraph = () => {
+    this.setState({
+      selected: "graph"
+    });
+  };
 
-  static mapDispatchToProps = (dispatch) => ({
-    changeMainNavigation: itemName => dispatch(changeMainNavigation(itemName))
-  })
-
-  render () {
-
+  render() {
     let child;
+    const { selected } = this.state;
 
-    const {
-      place,
-      snapshots,
-      selectedMainNavigation,
-      changeMainNavigation
-    } = this.props;
-
-    if (!place || !place.cuid || !snapshots || snapshots.length === 0) {
-      return (
-        <Outer>
-          <Inner center>
-            <Loader>Henter siste data...</Loader>
-          </Inner>
-        </Outer>
-      );
-    }
-
-    switch (selectedMainNavigation) {
-      case 'image' :
-        child = <SnapshotImage snapshots={snapshots} place={place} key='image' />;
+    switch (selected) {
+      case "graph":
+        child = <SnapshotGraph {...this.props} key="graph" />;
         break;
 
-      case 'graph' :
-        child = <SnapshotGraph snapshots={snapshots} place={place} key='graph' />;
-        break;
-
-      default :
-        child = '404';
+      default:
+        child = <SnapshotImage {...this.props} key="image" />;
     }
 
     return (
       <Outer>
-        <Inner>
-          {child}
-        </Inner>
+        <Inner>{child}</Inner>
         <IconMenu>
-          {MAIN_NAVIGATION_ITEMS.map((itemName) => (
-            <Icon
-              selected={selectedMainNavigation === itemName}
-              key={itemName}
-              type={itemName}
-              onClick={() => changeMainNavigation(itemName)}
-            />
-          ))}
+          <Icon
+            selected={selected === "image"}
+            type="image"
+            onClick={this.changeToImage}
+          />
+          <Icon
+            selected={selected === "graph"}
+            type="graph"
+            onClick={this.changeToGraph}
+          />
         </IconMenu>
       </Outer>
     );
   }
 }
-
-export default connect(SnapshotsNavigator.mapStateToProps, SnapshotsNavigator.mapDispatchToProps)(SnapshotsNavigator);

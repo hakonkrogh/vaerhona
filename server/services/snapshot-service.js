@@ -1,32 +1,43 @@
-const ora = require("ora");
+const fetch = require("isomorphic-unfetch");
+const querystring = require("querystring");
 
 const config = require("../config");
-const placeService = require("./place-service");
 
-const snapshotCache = [];
-const snapshotCacheMaxLength = 1000;
+const useApi = config.graphqlSource === "api";
 
-async function getSnapshots({ placeName, limit = 100 }) {
-  const place = await placeService.getPlace({ placeName });
-  return snapshotCache
-    .filter(s => s.placeCuid === place.cuid)
-    .slice(limit * -1);
-}
+async function getSnapshots({ limit = 10, placeName, ...rest }) {
+  if (useApi) {
+    const response = await fetch(
+      `${config.apiUri}/snapshot/?${querystring.stringify({
+        limit,
+        placeName,
+        ...rest
+      })}`
+    );
 
-async function getLastSnapshot({ placeName }) {
-  return await getSnapshots({ placeName, limit: 1 });
-}
+    const snapshots = await response.json();
+    if (!snapshots) {
+      return [];
+    }
 
-async function getSnapshotsFromServer({ placeName, limit = 100 }) {
-  const response = await fetch(
-    `${config.apiUri}/snapshot/?placeName=${placeName}&limit=${limit}`
-  );
-  return await response.json();
+    return snapshots.map(s => ({
+      ...s,
+      placeName
+    }));
+  }
+
+  return [
+    {
+      cuid: "test",
+      temperature: 1,
+      pressure: 1,
+      humidity: 1,
+      placeName
+    }
+  ];
 }
 
 async function getSnapshotImage({ id, webp }) {
-  const snapshot = snapshotCache.find(s => s.cuid === id);
-
   const response = await fetch(
     `${config.apiUri}/snapshot/${id}/image?webp=${webp}`
   );
@@ -42,45 +53,7 @@ async function getSnapshotImage({ id, webp }) {
   };
 }
 
-async function rebuildCache({ limit = 100 } = {}) {
-  const spinner = ora("Populating cache for snapshots");
-  try {
-    const places = await placeService.getPlaces();
-    for (place of places) {
-      const snapshots = await getSnapshotsFromServer({ placeName: place.name });
-      for (snapshot of snapshots) {
-        if (!snapshotCache.find(s => s.cuid === snapshot.cuid)) {
-          snapshotCache.push(snapshot);
-        }
-      }
-    }
-
-    // Limit the cache to 1000 snapshots
-    if (snapshotCache.length > snapshotCacheMaxLength) {
-      const toRemove = snapshotCache.length - snapshotCacheMaxLength;
-      snapshotCache.splice(0, toRemove);
-    }
-
-    spinner.succeed();
-  } catch (error) {
-    spinner.fail(error.message || "Failed to fetch snapshots");
-    console.error(error);
-  }
-}
-
-async function populateInitialCache() {
-  try {
-    await rebuildCache();
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-setInterval(rebuildCache, 60 * 1000);
-
 module.exports = {
   getSnapshots,
-  getLastSnapshot,
-  getSnapshotImage,
-  populateInitialCache
+  getSnapshotImage
 };

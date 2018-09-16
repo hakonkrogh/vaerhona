@@ -1,188 +1,195 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import keycode from 'keycode';
+import React, { Component } from "react";
+import keycode from "keycode";
+import TimeAgo from "react-timeago";
+import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
+import TaNo from "react-timeago/lib/language-strings/no";
 
-import TimeAgo from 'react-timeago';
-import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
-import TaNo from 'react-timeago/lib/language-strings/no';
+import { prettyDateTime } from "core/date";
+import { Button, Arrow } from "ui";
 
-// Shapes
-import * as propTypeShapes from '../../../core/prop-type-shapes';
+import { Outer, Inner, DateTimeAgo, Values, DateString, Bottom } from "./ui";
+import Image from "./image";
 
-import {
-  showPrevSnapshot,
-  showNextSnapshot,
-  showSnapshotFromIndex,
-  getAdjecentsSnapshots } from '../../../store/snapshots';
-import { getImagePath } from '../../../isomorphic/api';
+// Set up the time ago component
+let timeAgoFormatter = buildFormatter(TaNo);
 
-import RangeSlider from '../../range-slider';
-
-import {
-  Outer,
-  Inner,
-  DateTimeAgo,
-  Values,
-} from './ui';
-import Image from './image';
-
-import KeyHandler from './helpers/key-handler';
-import PointerHandler from './helpers/pointer-handler';
-import preloadSnapshotImages from './helpers/preload-snapshot-images';
-
-class SnapshotImage extends Component {
-
-  static propTypes = {
-    selectedSnapshot: propTypeShapes.snapshot,
-    place: propTypeShapes.place.isRequired,
-    snapshots: PropTypes.arrayOf(propTypeShapes.snapshot).isRequired,
-    adjecentsSnapshots: PropTypes.arrayOf(propTypeShapes.snapshot)
-  }
-
-  constructor (props) {
+export default class SnapshotImage extends Component {
+  constructor(props) {
     super(props);
-    this.onRangeSliderChange = this.onRangeSliderChange.bind(this);
+
+    const { snapshots = [] } = props;
+
+    let from = new Date();
+    let to = new Date();
+    if (snapshots.length) {
+      from = new Date(snapshots[0].date);
+      to = new Date(snapshots[snapshots.length - 1].date);
+    }
+
+    this.state = {
+      selectedSnapshot: snapshots[snapshots.length - 1],
+      loadingDir: 0,
+      from,
+      to
+    };
   }
 
-  componentDidUpdate () {
-    preloadSnapshotImages({
-      place: this.props.place,
-      snapshots: this.props.adjecentsSnapshots
-    });
-  }
+  getCurrentIndex = () =>
+    this.props.snapshots.findIndex(
+      s => s.cuid === this.state.selectedSnapshot.cuid
+    );
 
-  componentDidMount () {
-    if (typeof document !== 'undefined') {
+  go = (dir, comingFromDataLoad) => {
+    const { snapshots } = this.props;
 
-      this.keyHandler = new KeyHandler({
-        element: document,
-        onKeyPressAndRepeat: this.navigateFromKeyDown.bind(this)
-      });
+    const currentIndex = this.getCurrentIndex();
+    let newIndex = currentIndex + dir;
 
-      this.pointerHandler = new PointerHandler({
-        element: this.image,
-        onPointerDownAndRepeat: this.onImageClick.bind(this),
-        onSwipe: this.onImageSwipe.bind(this)
-      });
-
-      preloadSnapshotImages({
-        place: this.props.place,
-        snapshots: this.props.adjecentsSnapshots
-      });
-    }
-  }
-
-  componentWillUnmount () {
-    if (this.keyHandler) {
-      this.keyHandler.unBind();
-    }
-    if (this.pointerHandler) {
-      this.pointerHandler.unBind();
-    }
-  }
-
-  navigateFromKeyDown (event) {
-    if (keycode(event) === 'left') {
-      this.navigate({ direction: 'prev' });
-    }
-    else if (keycode(event) === 'right') {
-      this.navigate({ direction: 'next' });
-    }
-  }
-
-  navigate ({ direction }) {
-    if (direction) {
-      if (direction === 'prev') {
-        return this.props.showPrevSnapshot();
-      }
-      else if (direction === 'next') {
-        return this.props.showNextSnapshot();
+    if (comingFromDataLoad) {
+      if (dir > 0 && newIndex > snapshots.length - 1) {
+        newIndex = snapshots.length - 1;
+      } else if (dir < 0 && newIndex < 0) {
+        newIndex = 0;
       }
     }
-  }
 
-  onRangeSliderChange (data) {
-    this.props.showSnapshotFromIndex(data.index);
-  }
-
-  onImageSwipe (direction) {
-    if (direction === 'left') {
-      return this.navigate({ direction: 'prev' });
+    if (snapshots[newIndex]) {
+      return this.setState({
+        selectedSnapshot: snapshots[newIndex]
+      });
     }
-    else {
-      return this.navigate({ direction: 'next' });
+
+    if (!comingFromDataLoad) {
+      this.loadMoreSnapshots(dir);
     }
-  }
+  };
 
-  onImageClick (event) {
+  goBackOneHour = () => this.go(-1);
+  goForwardOneHour = () => this.go(1);
+  goBackOneDay = () => this.go(-24);
+  goForwardOneDay = () => this.go(24);
 
-    // Determine position
-    const clientX = event.center.x;
-    const imageWidth = this.image.offsetWidth;
-    const position = (clientX / imageWidth) * 100;
+  loadMoreSnapshots = async dir => {
+    if (this.state.loadingDir === 0) {
+      await this.ss({
+        loadingDir: dir
+      });
 
-    if (position < 50) {
-      return this.navigate({ direction: 'prev' });
+      let from;
+      let to;
+
+      if (dir < 0) {
+        // Load older
+        from = new Date(this.state.from.getTime());
+        from.setDate(from.getDate() - 1);
+        to = new Date(this.state.from.getTime());
+
+        this.ss({
+          from
+        });
+      } else {
+        // Load newer
+        from = new Date(this.state.to.getTime());
+        to = new Date(this.state.to.getTime());
+        to.setDate(to.getDate() + 1);
+
+        this.ss({
+          to
+        });
+      }
+
+      try {
+        console.log({ from, to });
+        await this.props.loadMoreSnapshots({ from, to });
+      } catch (e) {
+        console.log(e);
+      }
+
+      await this.ss({
+        loadingDir: 0,
+        from,
+        to
+      });
+
+      this.go(dir, true);
     }
-    else {
-      return this.navigate({ direction: 'next' });
-    }
-  }
+  };
 
-  render () {
+  ss = s => new Promise(r => this.setState(s, r));
 
-    const { place, snapshots, selectedSnapshot } = this.props;
+  render() {
+    const { place } = this.props;
+    const { selectedSnapshot, loadingDir } = this.state;
 
-    if (!snapshots || !selectedSnapshot) {
+    if (!selectedSnapshot) {
       return (
         <Outer>
-          <Inner>No snapshots</Inner>
+          <Inner>No snapshots found for {place.name}</Inner>
         </Outer>
       );
     }
-
-    // Set up the time ago component
-    let timeAgoFormatter = buildFormatter(TaNo);
 
     return (
       <Outer>
         <Inner>
           <DateTimeAgo>
-            <TimeAgo date={selectedSnapshot.dateAdded} formatter={timeAgoFormatter} />
+            <TimeAgo
+              date={new Date(selectedSnapshot.date)}
+              formatter={timeAgoFormatter}
+            />
           </DateTimeAgo>
+          <DateString>{prettyDateTime(selectedSnapshot.date)}</DateString>
           <Values>
-            <span>{selectedSnapshot.temperature}&#8451;</span>
+            <span>
+              {selectedSnapshot.temperature}
+              &#8451;
+            </span>
             <span>{selectedSnapshot.humidity}%</span>
-            <span>{selectedSnapshot.pressure}hPa</span>
+            <span>
+              {selectedSnapshot.pressure}
+              hPa
+            </span>
           </Values>
 
-          <Image
-            src={getImagePath({ snapshot: selectedSnapshot })}
-            innerRef={x => this.image = x}
-           />
+          <Image snapshot={selectedSnapshot} place={place} />
+          <Bottom>
+            <span>
+              <Button
+                clean
+                onClick={this.goBackOneDay}
+                loading={loadingDir === -24}
+              >
+                <Arrow left />
+                <Arrow left />
+              </Button>
+              <Button
+                clean
+                onClick={this.goBackOneHour}
+                loading={loadingDir === -1}
+              >
+                <Arrow left />
+              </Button>
+            </span>
+            <span>
+              <Button
+                clean
+                onClick={this.goForwardOneHour}
+                loading={loadingDir === 1}
+              >
+                <Arrow />
+              </Button>
+              <Button
+                clean
+                onClick={this.goForwardOneDay}
+                loading={loadingDir === 24}
+              >
+                <Arrow />
+                <Arrow />
+              </Button>
+            </span>
+          </Bottom>
         </Inner>
-
-         <RangeSlider
-          value={selectedSnapshot}
-          values={snapshots}
-          onChange={this.onRangeSliderChange}
-         />
       </Outer>
     );
   }
 }
-
-const mapStateToProps = (state) => ({
-  selectedPlace: state.place,
-  selectedSnapshot: state.snapshots.selected,
-  adjecentsSnapshots: getAdjecentsSnapshots(state)
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  showPrevSnapshot: () => dispatch(showPrevSnapshot()),
-  showNextSnapshot: () => dispatch(showNextSnapshot()),
-  showSnapshotFromIndex: index => dispatch(showSnapshotFromIndex(index))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(SnapshotImage);

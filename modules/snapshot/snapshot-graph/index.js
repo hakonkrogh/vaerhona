@@ -129,7 +129,7 @@ export default class SnapshotGraph extends Component {
     return (
       <Outer>
         <Inner>
-          <Canvas innerRef={x => this.canvas = x} />
+          <Canvas ref={x => this.canvas = x} />
         </Inner>
         <PropChooser>
           {

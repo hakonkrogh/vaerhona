@@ -1,12 +1,21 @@
 {
-  "presets": [
-    "next/babel"
-  ],
+  "presets": ["next/babel"],
   "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "lib": "./lib",
+          "modules": "./modules",
+          "core": "./core",
+          "ui": "./ui"
+        }
+      }
+    ],
     [
       "styled-components",
       {
-        "ssr": true,
         "displayName": true,
         "preprocess": false
       }

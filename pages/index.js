@@ -1,32 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Head from 'next/head';
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
 
-import pageBuilder from '../core/page-builder';
-import { setAppTitle } from '../store/app';
-import api from '../isomorphic/api';
+import Layout from "../modules/layout";
+import { PlaceList } from "../modules/place";
 
-import CommonWrapper from '../modules/common/wrapper';
-import Layout from '../modules/layout';
-import { PlaceList } from '../modules/place';
+class FrontPage extends React.Component {
+  static graphSettings = {
+    query: gql`
+      {
+        places {
+          name
+          cuid
+          mostRecentSnapshot {
+            cuid
+            date
+            temperature
+            image
+            placeName
+          }
+        }
+      }
+    `,
+    options: () => ({})
+  };
 
-export default pageBuilder({
-  category: 'frontpage',
-  component: ({ data }) => (
-    <CommonWrapper>
-      <Layout>
-        <Head>
-          <title>Værhøna</title>
-        </Head>
-        <PlaceList data={data} />
+  render() {
+    const { loading, places } = this.props.data;
+
+    return (
+      <Layout loading={loading} title="Værhøna">
+        <PlaceList places={places} />
       </Layout>
-    </CommonWrapper>
-  ),
-  getInitialProps: async ({ store, dispatch }) => {
-    store.dispatch(setAppTitle(null));
-
-    const data = await api.getFrontpage();
-
-    return { data };
+    );
   }
-});
+}
+
+export default graphql(FrontPage.graphSettings.query)(FrontPage);

@@ -1,30 +1,42 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Link from 'next/link';
-import styled from 'styled-components';
+import React, { Component } from "react";
+import Head from "next/head";
+import styled from "styled-components";
 
-import AsyncLink from '../AsyncLink';
-import Header from '../header';
+import { Spinner } from "ui";
+import Header from "../header";
 
 const Wrapper = styled.div`
-    background: #fcfcfc;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+  background: #fcfcfc;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const Loading = styled.div`
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default class Layout extends Component {
+  render() {
+    const { loading, title } = this.props;
 
-  static propTypes = {
-    children: PropTypes.any
-  }
-
-  render () {
     return (
-        <Wrapper>
-            <Header />
-            {this.props.children}
-        </Wrapper>
-    )
+      <Wrapper>
+        <Head>
+          <title>{loading ? "Henter..." : title}</title>
+        </Head>
+        <Header />
+        {loading ? (
+          <Loading>
+            <Spinner size={50} />
+          </Loading>
+        ) : (
+          this.props.children
+        )}
+      </Wrapper>
+    );
   }
 }
