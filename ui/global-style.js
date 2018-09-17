@@ -5,4 +5,8 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     font-family: 'Lato', sans-serif;
   }
+
+  * {
+    box-sizing: border-box;
+  }
 `;

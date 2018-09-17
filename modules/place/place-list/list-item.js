@@ -3,9 +3,8 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 
 import { timeOrDate } from "core/date";
-import SnapshotImg from "modules/snapshot-image";
 
-import { ListItem, Image, PlaceName, Temperature, Time } from "./ui";
+import { ListItem, PlaceName, Temperature, Time, Image } from "./ui";
 
 export default class PlaceListItem extends React.Component {
   static propTypes = {
@@ -21,6 +20,7 @@ export default class PlaceListItem extends React.Component {
         <Link
           as={`/${name}`}
           href={{ pathname: "/place", query: { placeName: name } }}
+          prefetch
         >
           <a>
             <PlaceName>{name}</PlaceName>
@@ -29,7 +29,7 @@ export default class PlaceListItem extends React.Component {
               {snapshot.temperature}
               &#8451;
             </Temperature>
-            <SnapshotImg snapshot={snapshot} />
+            <Image snapshot={snapshot} />
           </a>
         </Link>
       </ListItem>

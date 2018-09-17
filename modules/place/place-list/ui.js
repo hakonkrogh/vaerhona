@@ -5,22 +5,15 @@ import { breakpoints } from "core/ui-shared";
 
 export const List = styled.ul`
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   margin: 0;
   padding: 0;
   list-style: none;
   flex-wrap: wrap;
 `;
 
-export const ListLoading = styled.div`
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const ListItem = styled.li`
-  margin: 10px;
+  margin: 30px;
   padding: 0;
   position: relative;
 
