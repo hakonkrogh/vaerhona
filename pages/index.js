@@ -4,6 +4,12 @@ import gql from "graphql-tag";
 import Layout from "../modules/layout";
 import { PlaceList } from "../modules/place";
 
+function byMostRecentSnapshot(a, b) {
+  return (
+    new Date(b.mostRecentSnapshot.date) - new Date(a.mostRecentSnapshot.date)
+  );
+}
+
 class FrontPage extends React.Component {
   static graphSettings = {
     query: gql`
@@ -21,6 +27,20 @@ class FrontPage extends React.Component {
         }
       }
     `,
+    props: ({ data }) => {
+      const { places } = data;
+      if (places) {
+        return {
+          data: {
+            ...data,
+            places: places.sort(byMostRecentSnapshot)
+          }
+        };
+      }
+      return {
+        data
+      };
+    },
     options: () => ({})
   };
 
@@ -35,4 +55,6 @@ class FrontPage extends React.Component {
   }
 }
 
-export default graphql(FrontPage.graphSettings.query)(FrontPage);
+export default graphql(FrontPage.graphSettings.query, FrontPage.graphSettings)(
+  FrontPage
+);
