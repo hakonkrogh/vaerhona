@@ -72,7 +72,7 @@ const resolvers = {
     },
     image(snapshot) {
       const date = new Date(snapshot.dateAdded);
-      return `https://vaerhona.s3-eu-west-1.amazonaws.com/${
+      return `https://d31r10omfuzino.cloudfront.net/${
         snapshot.placeName
       }/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}`;
     }
