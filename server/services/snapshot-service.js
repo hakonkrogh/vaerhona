@@ -16,7 +16,7 @@ async function getSnapshots({ limit = 10, placeName, ...rest }) {
     );
 
     const snapshots = await response.json();
-    if (!snapshots) {
+    if (!Array.isArray(snapshots)) {
       return [];
     }
 

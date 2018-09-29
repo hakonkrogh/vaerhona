@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SnapshotImg from "modules/snapshot-image";
 
 import { breakpoints } from "core/ui-shared";
 
@@ -28,16 +27,21 @@ export const ListItem = styled.li`
   }
 `;
 
-export const Image = styled(SnapshotImg)`
-  height: 150px;
-  width: 150px;
-  object-fit: cover;
+export const Image = styled.figure`
   display: block;
-  background: #ccc;
+  margin: 0;
 
-  @media (min-width: ${breakpoints.mdMin}) {
-    height: 300px;
-    width: 300px;
+  img {
+    height: 150px;
+    width: 150px;
+    object-fit: cover;
+    display: block;
+    background: #ccc;
+
+    @media (min-width: ${breakpoints.mdMin}) {
+      height: 300px;
+      width: 300px;
+    }
   }
 `;
 

@@ -1,6 +1,5 @@
 import styled from "styled-components";
-
-import { Button } from "ui";
+import is from "styled-is";
 
 export const Outer = styled.div`
   flex-grow: 1;
@@ -38,20 +37,34 @@ export const Values = styled.div`
   margin-bottom: 12px;
   display: flex;
   justify-content: space-around;
-  padding: 0 20px;
   font-size: 1.5rem;
   color: #555;
 
   > span {
     display: inline-block;
-    margin: 0 10px;
+    margin: 0 20px;
     text-align: center;
-    min-width: 50px;
+    min-width: 80px;
   }
 `;
 
+export const Images = styled.div`
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+
+  ${is("compare")`
+    > :first-child {
+      margin-right: 10px;
+    }
+    > :last-child {
+      margin-left: 10px;
+    }
+  `};
+`;
+
 export const Bottom = styled.div`
-  flex: 1 0 50px;
+  flex: 0 0 65px;
   display: flex;
   justify-content: space-between;
 
@@ -64,6 +77,10 @@ export const Bottom = styled.div`
       padding: 0;
       outline-offset: -5px;
       white-space: nowrap;
+
+      &:active {
+        transform: scale(0.9);
+      }
 
       &,
       * {

@@ -2,30 +2,22 @@ import React from "react";
 
 import { prettyDateTime } from "core/date";
 
-// The date the API started to save as jpg
-const jpegStorageDate = new Date("2018-02-22");
+// All the possible image variations
+const imageSizeVariations = [100, 320, 640, 1024, 1280];
 
 export default class SnapshotImage extends React.Component {
   render() {
-    const { snapshot, place = {}, ...rest } = this.props;
-    const date = new Date(snapshot.date);
+    const { date, placeName, cuid, image, sizes } = this.props;
 
     const props = {
-      alt: `Bilde fra ${snapshot.placeName || place.name} tatt ${prettyDateTime(
-        date
-      )}`
+      alt: `Bilde fra ${placeName} tatt ${prettyDateTime(date)}`
     };
 
-    if (date >= jpegStorageDate) {
-      const sizes = [100, 320, 640, 1024, 1280];
-      props.src = `${snapshot.image}/${sizes[3]}_r`;
-      props.srcSet = sizes
-        .map(size => `${snapshot.image}/${size}_r ${size}w`)
-        .join(", ");
-    } else {
-      props.src = `/api/snapshot/${snapshot.cuid}/image`;
-    }
+    props.src = `${image}/${imageSizeVariations[3]}_r`;
+    props.srcSet = imageSizeVariations
+      .map(size => `${image}/${size}_r ${size}w`)
+      .join(", ");
 
-    return <img {...rest} {...props} />;
+    return <img sizes={sizes} {...props} />;
   }
 }

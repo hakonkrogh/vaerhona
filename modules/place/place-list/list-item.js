@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 
 import { timeOrDate } from "core/date";
+import SnapshotImg from "modules/snapshot-image";
 
 import { ListItem, PlaceName, Temperature, Time, Image } from "./ui";
 
@@ -29,7 +30,9 @@ export default class PlaceListItem extends React.Component {
               {snapshot.temperature}
               &#8451;
             </Temperature>
-            <Image snapshot={snapshot} />
+            <Image>
+              <SnapshotImg {...snapshot} />
+            </Image>
           </a>
         </Link>
       </ListItem>

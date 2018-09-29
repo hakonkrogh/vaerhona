@@ -19,6 +19,12 @@ export default class SnapshotsNavigator extends Component {
     });
   };
 
+  changeToImageCompare = () => {
+    this.setState({
+      selected: "image-compare"
+    });
+  };
+
   changeToGraph = () => {
     this.setState({
       selected: "graph"
@@ -31,11 +37,15 @@ export default class SnapshotsNavigator extends Component {
 
     switch (selected) {
       case "graph":
-        child = <SnapshotGraph {...this.props} key="graph" />;
+        child = <SnapshotGraph {...this.props} />;
+        break;
+
+      case "image-compare":
+        child = <SnapshotImage {...this.props} compare />;
         break;
 
       default:
-        child = <SnapshotImage {...this.props} key="image" />;
+        child = <SnapshotImage {...this.props} />;
     }
 
     return (
@@ -46,6 +56,11 @@ export default class SnapshotsNavigator extends Component {
             selected={selected === "image"}
             type="image"
             onClick={this.changeToImage}
+          />
+          <Icon
+            selected={selected === "image-compare"}
+            type="image-compare"
+            onClick={this.changeToImageCompare}
           />
           <Icon
             selected={selected === "graph"}

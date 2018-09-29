@@ -1,34 +1,59 @@
 import React, { Component } from "react";
-import keycode from "keycode";
-import TimeAgo from "react-timeago";
-import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
-import TaNo from "react-timeago/lib/language-strings/no";
+// import keycode from "keycode";
 
-import { prettyDateTime } from "core/date";
 import { Button, Arrow } from "ui";
 
-import { Outer, Inner, DateTimeAgo, Values, DateString, Bottom } from "./ui";
+import { Outer, Inner, Images, Bottom } from "./ui";
 import Image from "./image";
-
-// Set up the time ago component
-let timeAgoFormatter = buildFormatter(TaNo);
 
 export default class SnapshotImage extends Component {
   constructor(props) {
     super(props);
 
-    const { snapshots = [] } = props;
-
+    const { snapshots = [], compareSnapshots = [] } = props;
     this.state = {
       selectedSnapshot: snapshots[snapshots.length - 1],
+      compareSnapshot: compareSnapshots[compareSnapshots.length - 1],
       loadingDir: 0
     };
+  }
+
+  componentDidMount() {
+    const { selectedSnapshot, compareSnapshot } = this.state;
+    if (selectedSnapshot.date === compareSnapshot.date) {
+      this.ss({
+        compareSnapshot: this.getCompareSnapshot(selectedSnapshot)
+      });
+    }
   }
 
   getCurrentIndex = () =>
     this.props.snapshots.findIndex(
       s => s.cuid === this.state.selectedSnapshot.cuid
     );
+
+  getCompareSnapshot = selectedSnapshot => {
+    const { compareSnapshots, compare } = this.props;
+    let compareSnapshot = compareSnapshots[0];
+
+    if (compare) {
+      const dateToBeCloseTo = new Date(selectedSnapshot.date);
+      dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
+      for (let i = 1; i < compareSnapshots.length; i++) {
+        const s = compareSnapshots[i];
+        const d = new Date(s.date);
+
+        if (
+          Math.abs(d - dateToBeCloseTo) <
+          Math.abs(new Date(compareSnapshot.date) - dateToBeCloseTo)
+        ) {
+          compareSnapshot = s;
+        }
+      }
+    }
+
+    return compareSnapshot;
+  };
 
   go = (dir, comingFromDataLoad) => {
     const { snapshots } = this.props;
@@ -44,9 +69,11 @@ export default class SnapshotImage extends Component {
       }
     }
 
-    if (snapshots[newIndex]) {
+    const newSnapshot = snapshots[newIndex];
+    if (newSnapshot) {
       return this.setState({
-        selectedSnapshot: snapshots[newIndex]
+        selectedSnapshot: newSnapshot,
+        compareSnapshot: this.getCompareSnapshot(newSnapshot)
       });
     }
 
@@ -98,8 +125,8 @@ export default class SnapshotImage extends Component {
   ss = s => new Promise(r => this.setState(s, r));
 
   render() {
-    const { place } = this.props;
-    const { selectedSnapshot, loadingDir } = this.state;
+    const { place, compare } = this.props;
+    const { selectedSnapshot, compareSnapshot, loadingDir } = this.state;
 
     if (!selectedSnapshot) {
       return (
@@ -112,26 +139,16 @@ export default class SnapshotImage extends Component {
     return (
       <Outer>
         <Inner>
-          <DateTimeAgo>
-            <TimeAgo
-              date={new Date(selectedSnapshot.date)}
-              formatter={timeAgoFormatter}
-            />
-          </DateTimeAgo>
-          <DateString>{prettyDateTime(selectedSnapshot.date)}</DateString>
-          <Values>
-            <span>
-              {selectedSnapshot.temperature}
-              &#8451;
-            </span>
-            <span>{selectedSnapshot.humidity}%</span>
-            <span>
-              {selectedSnapshot.pressure}
-              hPa
-            </span>
-          </Values>
-
-          <Image snapshot={selectedSnapshot} place={place} />
+          <Images compare={compare}>
+            {!compare ? (
+              <Image snapshot={selectedSnapshot} place={place} />
+            ) : (
+              <>
+                <Image compare snapshot={compareSnapshot} place={place} />
+                <Image compare snapshot={selectedSnapshot} place={place} />
+              </>
+            )}
+          </Images>
           <Bottom>
             <span>
               <Button
