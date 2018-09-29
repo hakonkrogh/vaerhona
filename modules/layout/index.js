@@ -31,7 +31,7 @@ export default class Layout extends Component {
         <Header />
         {loading ? (
           <Loading>
-            <Spinner size={50} />
+            <Spinner size="50px" />
           </Loading>
         ) : (
           this.props.children

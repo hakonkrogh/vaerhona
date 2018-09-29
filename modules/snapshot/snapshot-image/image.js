@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import is from "styled-is";
 import TimeAgo from "react-timeago";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import TaNo from "react-timeago/lib/language-strings/no";
 
+import { responsive } from "ui";
 import { prettyDateTime } from "core/date";
 import SnapshotImage from "modules/snapshot-image";
 
@@ -17,12 +19,29 @@ const Outer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  ${is("compare")`
+    ${responsive.smAndLess} {
+      display: block;
+      font-size: .75em;
+    }
+  `};
+`;
+
+const Top = styled.div`
+  flex: 0 0 auto;
 `;
 
 const ImgOuter = styled.div`
   position: relative;
   flex: 1 1 auto;
   width: 100%;
+
+  ${is("compare")`
+    ${responsive.smAndLess} {
+      display: none;
+    }
+  `};
 
   > img {
     position: absolute;
@@ -36,28 +55,30 @@ const ImgOuter = styled.div`
 
 export default class Image extends React.PureComponent {
   render() {
-    const { snapshot } = this.props;
+    const { snapshot, compare } = this.props;
     return (
-      <Outer>
-        <DateTimeAgo>
-          <TimeAgo
-            date={new Date(snapshot.date)}
-            formatter={timeAgoFormatter}
-          />
-        </DateTimeAgo>
-        <DateString>{prettyDateTime(snapshot.date)}</DateString>
-        <Values>
-          <span>
-            {snapshot.temperature}
-            &#8451;
-          </span>
-          <span>{snapshot.humidity}%</span>
-          <span>
-            {snapshot.pressure}
-            hPa
-          </span>
-        </Values>
-        <ImgOuter>
+      <Outer compare={compare}>
+        <Top>
+          <DateTimeAgo compare={compare}>
+            <TimeAgo
+              date={new Date(snapshot.date)}
+              formatter={timeAgoFormatter}
+            />
+          </DateTimeAgo>
+          <DateString>{prettyDateTime(snapshot.date)}</DateString>
+          <Values compare={compare}>
+            <span>
+              {snapshot.temperature}
+              &#8451;
+            </span>
+            <span>{snapshot.humidity}%</span>
+            <span>
+              {snapshot.pressure}
+              hPa
+            </span>
+          </Values>
+        </Top>
+        <ImgOuter compare={compare}>
           <SnapshotImage {...snapshot} sizes="100vw" />
         </ImgOuter>
       </Outer>

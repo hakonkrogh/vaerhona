@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import is from "styled-is";
 
+import { responsive } from "ui";
+
 export const Outer = styled.div`
   flex-grow: 1;
   display: flex;
@@ -16,13 +18,19 @@ export const Inner = styled.div`
 `;
 
 export const DateTimeAgo = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.5em;
   text-align: center;
   margin-bottom: 3px;
 
   &::first-letter {
     text-transform: uppercase;
   }
+
+  ${is("compare")`
+    ${responsive.smAndLess} {
+      font-size: 1.2em;
+    }
+  `};
 `;
 
 export const DateString = styled.div`
@@ -37,7 +45,7 @@ export const Values = styled.div`
   margin-bottom: 12px;
   display: flex;
   justify-content: space-around;
-  font-size: 1.5rem;
+  font-size: 1.5em;
   color: #555;
 
   > span {
@@ -46,6 +54,19 @@ export const Values = styled.div`
     text-align: center;
     min-width: 80px;
   }
+
+  ${is("compare")`
+    ${responsive.smAndLess} {
+      max-width: 50vw;
+      margin-bottom: 0;
+      font-size: 1em;
+
+      > span {
+        margin: 0;
+        min-width: 0;
+      }
+    }
+  `};
 `;
 
 export const Images = styled.div`
@@ -54,11 +75,9 @@ export const Images = styled.div`
   justify-content: center;
 
   ${is("compare")`
-    > :first-child {
-      margin-right: 10px;
-    }
-    > :last-child {
-      margin-left: 10px;
+    ${responsive.smAndLess} {
+      flex: 0 0 auto;
+      margin-bottom: 42px;
     }
   `};
 `;

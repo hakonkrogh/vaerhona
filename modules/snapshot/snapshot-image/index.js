@@ -5,6 +5,7 @@ import { Button, Arrow } from "ui";
 
 import { Outer, Inner, Images, Bottom } from "./ui";
 import Image from "./image";
+import SplitImage from "./split-image";
 
 export default class SnapshotImage extends Component {
   constructor(props) {
@@ -149,6 +150,12 @@ export default class SnapshotImage extends Component {
               </>
             )}
           </Images>
+          {compare && (
+            <SplitImage
+              snapshot={selectedSnapshot}
+              compareSnapshot={compareSnapshot}
+            />
+          )}
           <Bottom>
             <span>
               <Button
