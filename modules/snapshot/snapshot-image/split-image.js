@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import is from "styled-is";
-import Draggable from "react-draggable";
+import Hammer from "hammerjs";
 
 import SnapshotImage from "modules/snapshot-image";
 import { responsive } from "ui";
@@ -75,8 +75,25 @@ export default class SplitImage extends React.Component {
     pos: 0.5
   };
 
+  componentDidMount() {
+    if (this.outer) {
+      this.hammer = {
+        mc: new Hammer.Manager(this.outer)
+      };
+
+      // this.hammer.mc.add(new Hammer.)
+
+      this.hammer.mc.on("hammer.input", this.onDrag);
+    }
+  }
+
   onDrag = event => {
-    let pos = event.clientX / window.innerWidth;
+    if (event.pointers.length === 1) {
+      event.srcEvent.preventDefault();
+      event.srcEvent.stopPropagation();
+    }
+
+    let pos = event.center.x / window.innerWidth;
 
     if (pos < 0) {
       pos = 0;
@@ -89,21 +106,21 @@ export default class SplitImage extends React.Component {
     });
   };
 
+  getOuterRef = el => (this.outer = el);
+
   render() {
     const { snapshot, compareSnapshot } = this.props;
     const { pos } = this.state;
 
     return (
-      <Outer>
+      <Outer ref={this.getOuterRef}>
         <Img left style={{ width: `${pos * 100}vw` }}>
           <SnapshotImage {...compareSnapshot} />
         </Img>
         <Img right style={{ width: `${(1 - pos) * 100}vw` }}>
           <SnapshotImage {...snapshot} />
         </Img>
-        <Draggable axis="x" onDrag={this.onDrag} onStop={this.onDrag}>
-          <Handle />
-        </Draggable>
+        <Handle style={{ left: `${pos * 100}%` }} />
       </Outer>
     );
   }
