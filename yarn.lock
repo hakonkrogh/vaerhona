@@ -4425,7 +4425,7 @@ prop-types-exact@1.2.0:
     object.assign "^4.1.0"
     reflect.ownkeys "^0.2.0"
 
-prop-types@15.6.2, prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.2:
+prop-types@15.6.2, prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   integrity sha512-3pboPvLiWD7dkI3qf3KbUe6hKFKa52w+AE0VCqECtf+QHAKgOL37tTaNCnuX1nAAQ4ZhyP+kYVKf8rLmJ/feDQ==
@@ -4646,6 +4646,13 @@ react-redux@^5.0.7:
     lodash-es "^4.17.5"
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
+
+react-switch@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/react-switch/-/react-switch-3.0.4.tgz#52958b2736b4d21b4f0050997955c5365019ca7b"
+  integrity sha512-11WipoiPNHZx4fWzF/fsYXu+w+HZb8tzNTo7ymaJES8uc3nJZl46rxg1DAB1u669W7SOnshDNnJZOi28IblOeg==
+  dependencies:
+    prop-types "^15.6.1"
 
 react-timeago@^4.1.9:
   version "4.1.9"

@@ -54,7 +54,7 @@ export default class SnapshotGraph extends Component {
   }
 
   getColumnDates() {
-    return this.props.snapshots.map(snapshot => prettyDate(snapshot.dateAdded));
+    return this.props.snapshots.map(snapshot => prettyDate(snapshot.date));
   }
 
   componentDidMount() {

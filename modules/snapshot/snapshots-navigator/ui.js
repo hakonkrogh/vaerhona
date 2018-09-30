@@ -22,6 +22,7 @@ export const IconMenu = styled.div`
   box-sizing: border-box;
   border-top: 1px solid #ccc;
   flex-shrink: 0;
+  position: relative;
 
   > div {
     cursor: pointer;
@@ -30,5 +31,23 @@ export const IconMenu = styled.div`
 
   svg path {
     transition: fill 150ms;
+  }
+`;
+
+export const SwitchOuter = styled.div`
+  position: absolute;
+  right: 15px;
+  top: 8px;
+  display: flex;
+
+  label {
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-left: 5px;
+      position: relative;
+      top: 2px;
+    }
   }
 `;
