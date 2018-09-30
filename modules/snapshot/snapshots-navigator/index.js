@@ -10,7 +10,7 @@ import { Outer, Inner, IconMenu } from "./ui";
 
 export default class SnapshotsNavigator extends Component {
   state = {
-    selected: "image"
+    selected: "image-compare"
   };
 
   changeToImage = () => {

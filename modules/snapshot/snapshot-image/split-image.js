@@ -1,7 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import is from "styled-is";
-import Hammer from "hammerjs";
+
+import { isClient } from "core/utils";
+
+var Hammer;
+if (isClient) {
+  Hammer = require("hammerjs");
+}
 
 import SnapshotImage from "modules/snapshot-image";
 import { responsive } from "ui";
@@ -58,6 +64,7 @@ export const Handle = styled.div`
   top: 0;
   left: 50%;
   margin-left: -20px;
+  cursor: ew-resize;
 
   &::after {
     content: "";

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 // import keycode from "keycode";
 
-import { Button, Arrow } from "ui";
+import { Button, IconArrow } from "ui";
 
 import { Outer, Inner, Images, Bottom } from "./ui";
 import Image from "./image";
@@ -19,11 +19,13 @@ export default class SnapshotImage extends Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     const { selectedSnapshot, compareSnapshot } = this.state;
-    if (selectedSnapshot.date === compareSnapshot.date) {
+    const s = this.getCompareSnapshot(selectedSnapshot);
+
+    if (s.cuid !== compareSnapshot.cuid) {
       this.ss({
-        compareSnapshot: this.getCompareSnapshot(selectedSnapshot)
+        compareSnapshot: s
       });
     }
   }
@@ -163,15 +165,15 @@ export default class SnapshotImage extends Component {
                 onClick={this.goBackOneDay}
                 loading={loadingDir === -24}
               >
-                <Arrow left />
-                <Arrow left />
+                <IconArrow left />
+                <IconArrow left />
               </Button>
               <Button
                 clean
                 onClick={this.goBackOneHour}
                 loading={loadingDir === -1}
               >
-                <Arrow left />
+                <IconArrow left />
               </Button>
             </span>
             <span>
@@ -180,15 +182,15 @@ export default class SnapshotImage extends Component {
                 onClick={this.goForwardOneHour}
                 loading={loadingDir === 1}
               >
-                <Arrow />
+                <IconArrow />
               </Button>
               <Button
                 clean
                 onClick={this.goForwardOneDay}
                 loading={loadingDir === 24}
               >
-                <Arrow />
-                <Arrow />
+                <IconArrow />
+                <IconArrow />
               </Button>
             </span>
           </Bottom>

@@ -14,7 +14,6 @@ export default class MyDocument extends Document {
     return (
       <html lang="no">
         <Head>
-          <title>Værhøna</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1, minimal-ui"

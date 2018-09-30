@@ -8,7 +8,7 @@ const Svg = styled.svg`
   `};
 `;
 
-export const Arrow = ({ size = 24, ...rest }) => {
+export const IconArrow = ({ size = 24, ...rest }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" {...rest}>
       <path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" />

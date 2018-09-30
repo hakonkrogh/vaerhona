@@ -53,6 +53,7 @@ class PlacePage extends React.Component {
         humidity
         pressure
         image
+        placeName
       }
     `,
 
