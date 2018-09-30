@@ -1,5 +1,6 @@
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+import upperFirst from "upper-case-first";
 
 import { graphDate } from "core/date";
 import Layout from "../modules/layout";
@@ -128,7 +129,7 @@ class PlacePage extends React.Component {
     } = data;
 
     return (
-      <Layout loading={loading} title={place && place.name}>
+      <Layout loading={loading} title={place && upperFirst(place.name)}>
         <SnapshotsNavigator
           place={place}
           snapshots={snapshots}

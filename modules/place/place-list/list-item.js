@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Link from "next/link";
+import upperFirst from "upper-case-first";
 
 import { timeOrDate } from "core/date";
 import SnapshotImg from "modules/snapshot-image";
@@ -24,7 +25,7 @@ export default class PlaceListItem extends React.Component {
           prefetch
         >
           <a>
-            <PlaceName>{name}</PlaceName>
+            <PlaceName>{upperFirst(name)}</PlaceName>
             <Time>{timeOrDate(snapshot.date)}</Time>
             <Temperature>
               {snapshot.temperature}
