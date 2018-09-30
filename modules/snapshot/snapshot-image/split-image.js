@@ -98,19 +98,19 @@ export default class SplitImage extends React.Component {
     if (event.pointers.length === 1) {
       event.srcEvent.preventDefault();
       event.srcEvent.stopPropagation();
+
+      let pos = event.center.x / window.innerWidth;
+
+      if (pos < 0) {
+        pos = 0;
+      } else if (pos > 1) {
+        pos = 1;
+      }
+
+      this.setState({
+        pos
+      });
     }
-
-    let pos = event.center.x / window.innerWidth;
-
-    if (pos < 0) {
-      pos = 0;
-    } else if (pos > 1) {
-      pos = 1;
-    }
-
-    this.setState({
-      pos
-    });
   };
 
   getOuterRef = el => (this.outer = el);
