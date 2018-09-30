@@ -36,22 +36,20 @@ export default class SnapshotImage extends Component {
     );
 
   getCompareSnapshot = selectedSnapshot => {
-    const { compareSnapshots, compare } = this.props;
+    const { compareSnapshots } = this.props;
     let compareSnapshot = compareSnapshots[0];
 
-    if (compare) {
-      const dateToBeCloseTo = new Date(selectedSnapshot.date);
-      dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
-      for (let i = 1; i < compareSnapshots.length; i++) {
-        const s = compareSnapshots[i];
-        const d = new Date(s.date);
+    const dateToBeCloseTo = new Date(selectedSnapshot.date);
+    dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
+    for (let i = 1; i < compareSnapshots.length; i++) {
+      const s = compareSnapshots[i];
+      const d = new Date(s.date);
 
-        if (
-          Math.abs(d - dateToBeCloseTo) <
-          Math.abs(new Date(compareSnapshot.date) - dateToBeCloseTo)
-        ) {
-          compareSnapshot = s;
-        }
+      if (
+        Math.abs(d - dateToBeCloseTo) <
+        Math.abs(new Date(compareSnapshot.date) - dateToBeCloseTo)
+      ) {
+        compareSnapshot = s;
       }
     }
 
