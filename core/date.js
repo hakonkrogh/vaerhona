@@ -17,6 +17,12 @@ export function prettyDateTime(date) {
     .format("llll");
 }
 
+export function chartDate(date) {
+  return moment(date)
+    .tz(tz)
+    .format("Do MMM HH");
+}
+
 export function prettyTime(date) {
   return moment(date)
     .tz(tz)

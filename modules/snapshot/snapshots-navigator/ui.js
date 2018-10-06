@@ -39,6 +39,15 @@ export const SwitchOuter = styled.div`
   right: 15px;
   top: 8px;
   display: flex;
+  cursor: pointer;
+
+  input {
+    appearance: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
 
   label {
     display: flex;

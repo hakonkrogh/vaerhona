@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 
 import { isClient } from "core/utils";
-import { prettyDate } from "core/date";
-import * as propTypeShapes from "core/prop-type-shapes";
+import { chartDate } from "core/date";
 
 var Chart;
 if (isClient) {
@@ -34,11 +32,9 @@ const snapshotProperties = [
   }
 ];
 
-export default class SnapshotGraph extends Component {
-  static propTypes = {
-    snapshots: PropTypes.arrayOf(propTypeShapes.snapshot).isRequired
-  };
+const setColors = ["rgba(129, 165, 148, .5)", "rgba(72, 120, 220, .5)"];
 
+export default class SnapshotGraph extends Component {
   constructor(props) {
     super(props);
 
@@ -46,15 +42,43 @@ export default class SnapshotGraph extends Component {
       selectedProperty: snapshotProperties[0]
     };
   }
+  getColumnDates() {
+    const { snapshots } = this.props;
+    let [first] = snapshots;
+    let firstDate = new Date(first.date);
+    const lastDate = new Date(snapshots[snapshots.length - 1].date);
+    const dates = [];
+    while (firstDate <= lastDate) {
+      dates.push(chartDate(firstDate));
+      firstDate.setHours(firstDate.getHours() + 1);
+    }
 
-  getColumnData() {
-    return this.props.snapshots.map(
-      snapshot => snapshot[this.state.selectedProperty.type]
-    );
+    return dates;
   }
 
-  getColumnDates() {
-    return this.props.snapshots.map(snapshot => prettyDate(snapshot.date));
+  getColumnData() {
+    const { selectedProperty } = this.state;
+    const { snapshots, compareSnapshots, compare } = this.props;
+
+    if (compare) {
+      return [
+        compareSnapshots.map(s => s[selectedProperty.type]),
+        snapshots.map(s => s[selectedProperty.type])
+      ];
+    }
+
+    return [snapshots.map(s => s[selectedProperty.type])];
+  }
+
+  getLegends() {
+    function getYearFromSnapshots(s) {
+      return new Date(s[s.length - 1].date).getFullYear();
+    }
+    const { snapshots, compareSnapshots } = this.props;
+    return [
+      getYearFromSnapshots(compareSnapshots),
+      getYearFromSnapshots(snapshots)
+    ];
   }
 
   componentDidMount() {
@@ -62,37 +86,41 @@ export default class SnapshotGraph extends Component {
   }
 
   componentDidUpdate() {
-    setTimeout(this.loadChart.bind(this), 100);
+    clearTimeout(this.loadChartTimeout);
+    this.loadChartTimeout = setTimeout(this.loadChart, 100);
   }
 
-  loadChart() {
+  loadChart = () => {
     // Client side only for now. Waiting for a universal graph framework
     if (isClient) {
+      const { selectedProperty } = this.state;
+
       const labels = this.getColumnDates();
       const data = this.getColumnData();
+      const legends = this.getLegends();
 
-      if (!data.length || !labels.length) {
+      if (!data[0].length || !labels.length) {
         return;
       }
 
+      const datasets = data.map((d, i) => ({
+        labelOld: selectedProperty.label,
+        label: legends[i],
+        data: d,
+        fill: false,
+        borderColor: setColors[i]
+      }));
+
       if (this.myLineChart) {
         this.myLineChart.data.labels = labels;
-        this.myLineChart.data.datasets[0].label = this.state.selectedProperty.label;
-        this.myLineChart.data.datasets[0].data = data;
+        this.myLineChart.data.datasets = datasets;
         this.myLineChart.update();
       } else {
         this.myLineChart = new Chart(this.canvas, {
           type: "line",
           data: {
             labels,
-            datasets: [
-              {
-                label: this.state.selectedProperty.label,
-                data,
-                fill: false,
-                borderColor: "rgba(72, 120, 220, .5)"
-              }
-            ]
+            datasets
           },
           options: {
             maintainAspectRatio: false,
@@ -101,14 +129,17 @@ export default class SnapshotGraph extends Component {
               position: "bottom"
             },
             legend: {
-              display: false,
-              position: "bottom"
+              position: "bottom",
+              fillStyle: "red",
+              labels: {
+                boxWidth: 20
+              }
             }
           }
         });
       }
     }
-  }
+  };
 
   changeSelectedProperty(newProperty) {
     this.setState({

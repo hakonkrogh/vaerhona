@@ -65,9 +65,9 @@ export default class SnapshotsNavigator extends Component {
           <SwitchOuter>
             <label htmlFor="compare-switch">
               <Switch
-                onChange={this.onCompareChange}
                 checked={compare}
                 id="compare-switch"
+                onChange={this.onCompareChange}
                 onColor="#b7ccc2"
                 onHandleColor="#81a594"
                 handleDiameter={20}
