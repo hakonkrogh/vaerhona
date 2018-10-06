@@ -7,6 +7,27 @@ import { Outer, Inner, Images, Bottom } from "./ui";
 import Image from "./image";
 import SplitImage from "./split-image";
 
+function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
+  let closest = snapshots[0];
+  if (!closest) {
+    return;
+  }
+
+  for (let i = 1; i < snapshots.length; i++) {
+    const s = snapshots[i];
+    const d = new Date(s.date);
+
+    if (
+      Math.abs(d - dateToBeCloseTo) <
+      Math.abs(new Date(closest.date) - dateToBeCloseTo)
+    ) {
+      closest = s;
+    }
+  }
+
+  return closest;
+}
+
 export default class SnapshotImage extends Component {
   constructor(props) {
     super(props);
@@ -37,23 +58,11 @@ export default class SnapshotImage extends Component {
 
   getCompareSnapshot = selectedSnapshot => {
     const { compareSnapshots } = this.props;
-    let compareSnapshot = compareSnapshots[0];
 
     const dateToBeCloseTo = new Date(selectedSnapshot.date);
     dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
-    for (let i = 1; i < compareSnapshots.length; i++) {
-      const s = compareSnapshots[i];
-      const d = new Date(s.date);
 
-      if (
-        Math.abs(d - dateToBeCloseTo) <
-        Math.abs(new Date(compareSnapshot.date) - dateToBeCloseTo)
-      ) {
-        compareSnapshot = s;
-      }
-    }
-
-    return compareSnapshot;
+    return getClosestSnapshot({ dateToBeCloseTo, snapshots: compareSnapshots });
   };
 
   go = (dir, comingFromDataLoad) => {

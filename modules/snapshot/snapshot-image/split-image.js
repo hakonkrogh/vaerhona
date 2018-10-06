@@ -1,16 +1,16 @@
-import React from 'react'
-import styled from 'styled-components'
-import is from 'styled-is'
+import React from "react";
+import styled from "styled-components";
+import is from "styled-is";
 
-import { isClient } from 'core/utils'
+import { isClient } from "core/utils";
 
-var Hammer
+var Hammer;
 if (isClient) {
-  Hammer = require('hammerjs')
+  Hammer = require("hammerjs");
 }
 
-import SnapshotImage from 'modules/snapshot-image'
-import { responsive } from 'ui'
+import SnapshotImage from "modules/snapshot-image";
+import { responsive } from "ui";
 
 export const Outer = styled.div`
   display: none;
@@ -22,7 +22,7 @@ export const Outer = styled.div`
     width: 100vw;
     overflow: hidden;
   }
-`
+`;
 
 export const Img = styled.figure`
   position: absolute;
@@ -45,7 +45,7 @@ export const Img = styled.figure`
     object-position: center;
   }
 
-  ${is('right')`
+  ${is("right")`
     left: auto;
     right: 0;
 
@@ -54,7 +54,7 @@ export const Img = styled.figure`
       right: 0;
     }
   `};
-`
+`;
 
 export const Handle = styled.div`
   height: 100%;
@@ -74,49 +74,47 @@ export const Handle = styled.div`
     height: 100%;
     background: #fcfcfc;
   }
-`
+`;
 
 export default class SplitImage extends React.Component {
   state = {
     pos: 0.5
-  }
+  };
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.outer) {
       this.hammer = {
         mc: new Hammer.Manager(this.outer)
-      }
+      };
 
-      // this.hammer.mc.add(new Hammer.)
-
-      this.hammer.mc.on('hammer.input', this.onDrag)
+      this.hammer.mc.on("hammer.input", this.onDrag);
     }
   }
 
   onDrag = event => {
     if (event.pointers.length === 1) {
-      event.srcEvent.preventDefault()
-      event.srcEvent.stopPropagation()
+      event.srcEvent.preventDefault();
+      event.srcEvent.stopPropagation();
 
-      let pos = event.center.x / window.innerWidth
+      let pos = event.center.x / window.innerWidth;
 
       if (pos < 0) {
-        pos = 0
+        pos = 0;
       } else if (pos > 1) {
-        pos = 1
+        pos = 1;
       }
 
       this.setState({
         pos
-      })
+      });
     }
-  }
+  };
 
-  getOuterRef = el => (this.outer = el)
+  getOuterRef = el => (this.outer = el);
 
-  render () {
-    const { snapshot, compareSnapshot } = this.props
-    const { pos } = this.state
+  render() {
+    const { snapshot, compareSnapshot } = this.props;
+    const { pos } = this.state;
 
     return (
       <Outer ref={this.getOuterRef}>
@@ -128,6 +126,6 @@ export default class SplitImage extends React.Component {
         </Img>
         <Handle style={{ left: `${pos * 100}%` }} />
       </Outer>
-    )
+    );
   }
 }
