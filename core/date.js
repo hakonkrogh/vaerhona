@@ -17,6 +17,12 @@ export function prettyDateTime(date) {
     .format("llll");
 }
 
+export function prettyYearMonth(date) {
+  return moment(date)
+    .tz(tz)
+    .format("MMM YYYY");
+}
+
 export function chartDate(date) {
   return moment(date)
     .tz(tz)

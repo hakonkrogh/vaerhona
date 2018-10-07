@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { isClient } from "core/utils";
-import { chartDate } from "core/date";
+import { chartDate, prettyYearMonth } from "core/date";
 
 var Chart;
 if (isClient) {
@@ -48,31 +48,76 @@ export default class SnapshotGraph extends Component {
     let firstDate = new Date(first.date);
     const lastDate = new Date(snapshots[snapshots.length - 1].date);
     const dates = [];
+
+    // The display labels
+    dates.labels = [];
+
+    // firstDate.setHours(12);
+
     while (firstDate <= lastDate) {
-      dates.push(chartDate(firstDate));
+      dates.labels.push(chartDate(firstDate));
+      dates.push(new Date(firstDate.getTime()));
       firstDate.setHours(firstDate.getHours() + 1);
+      // firstDate.setDate(firstDate.getDate() + 1);
     }
 
     return dates;
   }
 
-  getColumnData() {
+  getColumnData(dates) {
     const { selectedProperty } = this.state;
     const { snapshots, compareSnapshots, compare } = this.props;
 
-    if (compare) {
-      return [
-        compareSnapshots.map(s => s[selectedProperty.type]),
-        snapshots.map(s => s[selectedProperty.type])
-      ];
+    function handleArr({ month, date, hours }, arr, returnArr) {
+      const snapshot = arr.find(s => {
+        const sD = new Date(s.date);
+
+        // Month, date and hour need to match
+        return (
+          sD.getMonth() === month &&
+          sD.getDate() === date &&
+          sD.getHours() === hours
+        );
+      });
+
+      if (snapshot) {
+        returnArr.push(snapshot[selectedProperty.type]);
+      } else {
+        returnArr.push(null);
+      }
     }
 
-    return [snapshots.map(s => s[selectedProperty.type])];
+    const returnSnapshots = [];
+    const returnCompareSnapshots = [];
+
+    dates.forEach(date => {
+      const d = {
+        month: date.getMonth(),
+        date: date.getDate(),
+        hours: date.getHours()
+      };
+
+      handleArr(d, snapshots, returnSnapshots);
+      if (compare) {
+        handleArr(d, compareSnapshots, returnCompareSnapshots);
+      }
+    });
+
+    if (compare) {
+      return [returnCompareSnapshots, returnSnapshots];
+    }
+
+    return [returnSnapshots];
   }
 
   getLegends() {
     function getYearFromSnapshots(s) {
-      return new Date(s[s.length - 1].date).getFullYear();
+      const $0 = prettyYearMonth(s[0].date);
+      const $1 = prettyYearMonth(s[s.length - 1].date);
+      if ($0 === $1) {
+        return $0;
+      }
+      return `${$0} - ${$1}`;
     }
     const { snapshots, compareSnapshots } = this.props;
     return [
@@ -95,11 +140,11 @@ export default class SnapshotGraph extends Component {
     if (isClient) {
       const { selectedProperty } = this.state;
 
-      const labels = this.getColumnDates();
-      const data = this.getColumnData();
+      const dates = this.getColumnDates();
+      const data = this.getColumnData(dates);
       const legends = this.getLegends();
 
-      if (!data[0].length || !labels.length) {
+      if (!data[0].length || !dates.length) {
         return;
       }
 
@@ -112,14 +157,14 @@ export default class SnapshotGraph extends Component {
       }));
 
       if (this.myLineChart) {
-        this.myLineChart.data.labels = labels;
+        this.myLineChart.data.labels = dates.labels;
         this.myLineChart.data.datasets = datasets;
         this.myLineChart.update();
       } else {
         this.myLineChart = new Chart(this.canvas, {
           type: "line",
           data: {
-            labels,
+            labels: dates.labels,
             datasets
           },
           options: {
