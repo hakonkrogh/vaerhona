@@ -1,38 +1,38 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import { isClient } from "core/utils";
-import { chartDate, prettyYearMonth } from "core/date";
+import { isClient } from 'core/utils';
+import { chartDate, prettyYearMonth } from 'core/date';
 
 var Chart;
 if (isClient) {
-  Chart = require("chart.js");
+  Chart = require('chart.js');
 }
 
-import Icon from "../icon";
-import { Outer, Inner, Canvas, PropChooser } from "./ui";
+import Icon from '../icon';
+import { Outer, Inner, Canvas, PropChooser } from './ui';
 
 const snapshotProperties = [
   {
-    type: "temperature",
-    icon: "thermometer",
-    label: "Temperatur",
-    valueType: "C"
+    type: 'temperature',
+    icon: 'thermometer',
+    label: 'Temperatur',
+    valueType: 'C'
   },
   {
-    type: "humidity",
-    icon: "droplets",
-    label: "Luftfuktighet",
-    valueType: "%"
+    type: 'humidity',
+    icon: 'droplets',
+    label: 'Luftfuktighet',
+    valueType: '%'
   },
   {
-    type: "pressure",
-    icon: "compass",
-    label: "Trykk",
-    valueType: "hPa"
+    type: 'pressure',
+    icon: 'compass',
+    label: 'Trykk',
+    valueType: 'hPa'
   }
 ];
 
-const setColors = ["rgba(129, 165, 148, .5)", "rgba(72, 120, 220, .5)"];
+const setColors = ['rgba(129, 165, 148, .5)', 'rgba(72, 120, 220, .5)'];
 
 export default class SnapshotGraph extends Component {
   constructor(props) {
@@ -162,7 +162,7 @@ export default class SnapshotGraph extends Component {
         this.myLineChart.update();
       } else {
         this.myLineChart = new Chart(this.canvas, {
-          type: "line",
+          type: 'line',
           data: {
             labels: dates.labels,
             datasets
@@ -171,11 +171,11 @@ export default class SnapshotGraph extends Component {
             maintainAspectRatio: false,
             title: {
               display: false,
-              position: "bottom"
+              position: 'bottom'
             },
             legend: {
-              position: "bottom",
-              fillStyle: "red",
+              position: 'bottom',
+              fillStyle: 'red',
               labels: {
                 boxWidth: 20
               }

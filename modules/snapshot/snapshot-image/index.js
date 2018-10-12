@@ -1,18 +1,18 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 // import keycode from "keycode";
 
-import { Button, IconArrow } from "ui";
+import { Button, IconArrow } from 'ui';
 
-import { Outer, Inner, Images, Bottom } from "./ui";
-import Image from "./image";
-import SplitImage from "./split-image";
+import { Outer, Inner, Images, Bottom } from './ui';
+import Image from './image';
+import SplitImage from './split-image';
 
 function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
-  let closest = snapshots[0];
-  if (!closest) {
+  if (!snapshots.length) {
     return;
   }
 
+  let closest = snapshots[0];
   for (let i = 1; i < snapshots.length; i++) {
     const s = snapshots[i];
     const d = new Date(s.date);
@@ -69,7 +69,17 @@ export default class SnapshotImage extends Component {
     const { snapshots } = this.props;
 
     const currentIndex = this.getCurrentIndex();
+
     let newIndex = currentIndex + dir;
+    if (dir >= 0 && dir <= snapshots.length - 1 && Math.abs(dir) === 24) {
+      const currentDate = new Date(snapshots[currentIndex].date);
+      currentDate.setHours(currentDate.getHours() + dir);
+      const snapshot = getClosestSnapshot({
+        dateToBeCloseTo: currentDate,
+        snapshots
+      });
+      newIndex = snapshots.findIndex(s => s === snapshot);
+    }
 
     if (comingFromDataLoad) {
       if (dir > 0 && newIndex > snapshots.length - 1) {

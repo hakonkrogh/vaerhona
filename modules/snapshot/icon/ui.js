@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -7,7 +7,7 @@ export const Container = styled.div`
   align-items: center;
   margin: 0 10px;
   padding: 0 10px;
-  cursor: default;
+  cursor: pointer;
   touch-action: manipulation;
 
   &:active {
@@ -26,7 +26,7 @@ export const ImageCompare = styled.span`
   position: relative;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     top: -2px;
     left: calc(50% - 1px);
