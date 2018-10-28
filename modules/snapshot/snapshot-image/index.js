@@ -121,11 +121,15 @@ export default class SnapshotImage extends Component {
       if (dir < 0) {
         // Load older
         const [first] = snapshots;
-        to = new Date(first.date).getTime();
+        to = new Date(first.date);
+        to.setDate(to.getDate() + 1);
+        to = to.getTime();
       } else {
         // Load newer
         const last = snapshots[snapshots.length - 1];
-        from = new Date(last.date).getTime();
+        from = new Date(last.date);
+        from.setDate(from.getDate() + 1);
+        from = from.getTime();
       }
 
       try {

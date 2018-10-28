@@ -1,10 +1,10 @@
-import { graphql } from "react-apollo";
-import gql from "graphql-tag";
-import upperFirst from "upper-case-first";
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import upperFirst from 'upper-case-first';
 
-import { graphDate } from "core/date";
-import Layout from "../modules/layout";
-import { SnapshotsNavigator } from "../modules/snapshot";
+import { graphDate } from 'core/date';
+import Layout from '../modules/layout';
+import { SnapshotsNavigator } from '../modules/snapshot';
 
 function bySnapshotDate(a, b) {
   return new Date(a.date) - new Date(b.date);
@@ -69,7 +69,7 @@ class PlacePage extends React.Component {
 
       return {
         variables: {
-          placeName: ctx.router.asPath.replace(/^\//, ""),
+          placeName: ctx.router.asPath.replace(/^\//, ''),
           limit: 24,
           to,
           compareTo
@@ -102,6 +102,10 @@ class PlacePage extends React.Component {
               limit
             },
             updateQuery: (previousResult, { fetchMoreResult }) => {
+              console.log(
+                fetchMoreResult.currentSnapshots.map(s => new Date(s.date))
+              );
+
               function handleSnaps(name) {
                 return [...previousResult[name], ...fetchMoreResult[name]]
                   .filter(onlyUniqueSnapshots)
@@ -109,8 +113,8 @@ class PlacePage extends React.Component {
               }
 
               return Object.assign({}, previousResult, {
-                currentSnapshots: handleSnaps("currentSnapshots"),
-                compareSnapshots: handleSnaps("compareSnapshots")
+                currentSnapshots: handleSnaps('currentSnapshots'),
+                compareSnapshots: handleSnaps('compareSnapshots')
               });
             }
           });
