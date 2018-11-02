@@ -6,5 +6,13 @@
     "NODE_ENV": "production"
   },
   "regions": ["bru"],
-  "alias": ["xn--vrhna-sra2k.com", "www.xn--vrhna-sra2k.no"]
+  "alias": ["xn--vrhna-sra2k.com", "www.xn--vrhna-sra2k.no"],
+  "scale": {
+    "bru1": {
+      "min": 1
+    },
+    "sfo": {
+      "min": 1
+    }
+  }
 }
