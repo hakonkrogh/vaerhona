@@ -60,7 +60,6 @@ class PlacePage extends React.Component {
 
     options: ctx => {
       const now = new Date();
-      now.setDate(now.getDate() + 1);
 
       const to = graphDate(now);
 
@@ -102,10 +101,6 @@ class PlacePage extends React.Component {
               limit
             },
             updateQuery: (previousResult, { fetchMoreResult }) => {
-              console.log(
-                fetchMoreResult.currentSnapshots.map(s => new Date(s.date))
-              );
-
               function handleSnaps(name) {
                 return [...previousResult[name], ...fetchMoreResult[name]]
                   .filter(onlyUniqueSnapshots)

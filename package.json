@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@babel/core": "^7.1.2",
-    "apollo-boost": "^0.1.16",
-    "apollo-server-express": "^2.0.6",
+    "apollo-boost": "^0.1.19",
+    "apollo-server-express": "^2.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
-    "babel-plugin-styled-components": "^1.7.1",
+    "babel-plugin-styled-components": "^1.8.0",
     "chart.js": "^2.7.2",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
@@ -22,7 +22,7 @@
     "isomorphic-unfetch": "^2.1.1",
     "keycode": "^2.2.0",
     "moment-timezone": "^0.5.21",
-    "next": "^7.0.1",
+    "next": "^7.0.2",
     "ora": "^2.1.0",
     "polished": "^2.0.3",
     "progress": "^2.0.0",
@@ -32,7 +32,7 @@
     "react-dom": "^16.5.1",
     "react-switch": "^3.0.4",
     "react-timeago": "^4.1.9",
-    "styled-components": "^4.0.0-beta.9",
+    "styled-components": "^4.0.3",
     "styled-is": "^1.1.5",
     "upper-case-first": "^1.1.2"
   }

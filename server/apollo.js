@@ -1,13 +1,13 @@
-const { ApolloServer, gql } = require("apollo-server-express");
+const { ApolloServer, gql } = require('apollo-server-express');
 const {
   GraphQLScalarType,
   GraphQLUnionType,
   GraphQLInt,
   GraphQLString
-} = require("graphql");
-const { Kind } = require("graphql/language");
+} = require('graphql');
+const { Kind } = require('graphql/language');
 
-const { PlaceService, SnapshotService } = require("./services");
+const { PlaceService, SnapshotService } = require('./services');
 
 const typeDefs = gql`
   scalar Date
@@ -78,8 +78,8 @@ const resolvers = {
     }
   },
   Date: new GraphQLScalarType({
-    name: "Date",
-    description: "Date (custom scalar type)",
+    name: 'Date',
+    description: 'Date (custom scalar type)',
     parseValue(value) {
       return new Date(value); // value from the client
     },
@@ -97,4 +97,4 @@ const resolvers = {
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
-module.exports = app => server.applyMiddleware({ app, path: "/api/graphql" });
+module.exports = app => server.applyMiddleware({ app, path: '/api/graphql' });

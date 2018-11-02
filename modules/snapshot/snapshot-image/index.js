@@ -15,10 +15,9 @@ function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
   let closest = snapshots[0];
   for (let i = 1; i < snapshots.length; i++) {
     const s = snapshots[i];
-    const d = new Date(s.date);
 
     if (
-      Math.abs(d - dateToBeCloseTo) <
+      Math.abs(new Date(s.date) - dateToBeCloseTo) <
       Math.abs(new Date(closest.date) - dateToBeCloseTo)
     ) {
       closest = s;
@@ -44,7 +43,7 @@ export default class SnapshotImage extends Component {
     const { selectedSnapshot, compareSnapshot } = this.state;
     const s = this.getCompareSnapshot(selectedSnapshot);
 
-    if (s.cuid !== compareSnapshot.cuid) {
+    if (compareSnapshot && s.cuid !== compareSnapshot.cuid) {
       this.ss({
         compareSnapshot: s
       });
@@ -121,15 +120,11 @@ export default class SnapshotImage extends Component {
       if (dir < 0) {
         // Load older
         const [first] = snapshots;
-        to = new Date(first.date);
-        to.setDate(to.getDate() + 1);
-        to = to.getTime();
+        to = new Date(first.date).getTime();
       } else {
         // Load newer
         const last = snapshots[snapshots.length - 1];
-        from = new Date(last.date);
-        from.setDate(from.getDate() + 1);
-        from = from.getTime();
+        from = new Date(last.date).getTime();
       }
 
       try {
