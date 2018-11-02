@@ -42,6 +42,7 @@ export default class SnapshotGraph extends Component {
       selectedProperty: snapshotProperties[0]
     };
   }
+
   getColumnDates() {
     const { snapshots } = this.props;
     let [first] = snapshots;
@@ -52,13 +53,10 @@ export default class SnapshotGraph extends Component {
     // The display labels
     dates.labels = [];
 
-    // firstDate.setHours(12);
-
     while (firstDate <= lastDate) {
       dates.labels.push(chartDate(firstDate));
       dates.push(new Date(firstDate.getTime()));
       firstDate.setHours(firstDate.getHours() + 1);
-      // firstDate.setDate(firstDate.getDate() + 1);
     }
 
     return dates;
@@ -112,14 +110,19 @@ export default class SnapshotGraph extends Component {
 
   getLegends() {
     function getYearFromSnapshots(s) {
-      const $0 = prettyYearMonth(s[0].date);
-      const $1 = prettyYearMonth(s[s.length - 1].date);
+      const $0 = new Date(s[0].date).getFullYear();
+      const $1 = new Date(s[s.length - 1].date).getFullYear();
       if ($0 === $1) {
         return $0;
       }
       return `${$0} - ${$1}`;
     }
-    const { snapshots, compareSnapshots } = this.props;
+    const { snapshots, compareSnapshots, compare } = this.props;
+
+    if (!compare) {
+      return [getYearFromSnapshots(snapshots)];
+    }
+
     return [
       getYearFromSnapshots(compareSnapshots),
       getYearFromSnapshots(snapshots)
@@ -134,6 +137,16 @@ export default class SnapshotGraph extends Component {
     clearTimeout(this.loadChartTimeout);
     this.loadChartTimeout = setTimeout(this.loadChart, 100);
   }
+
+  getColor = index => {
+    const { compare } = this.props;
+
+    if (!compare) {
+      return setColors[1];
+    }
+
+    return setColors[index];
+  };
 
   loadChart = () => {
     // Client side only for now. Waiting for a universal graph framework
@@ -153,7 +166,7 @@ export default class SnapshotGraph extends Component {
         label: legends[i],
         data: d,
         fill: false,
-        borderColor: setColors[i]
+        borderColor: this.getColor(i)
       }));
 
       if (this.myLineChart) {
