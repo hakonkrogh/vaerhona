@@ -1,8 +1,24 @@
-import { graphql } from "react-apollo";
-import gql from "graphql-tag";
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 
-import Layout from "../modules/layout";
-import { PlaceList } from "../modules/place";
+import Layout from '../modules/layout';
+import { PlaceList } from '../modules/place';
+
+const QUERY_HOME = gql`
+  {
+    places {
+      name
+      cuid
+      mostRecentSnapshot {
+        cuid
+        date
+        temperature
+        image
+        placeName
+      }
+    }
+  }
+`;
 
 function byMostRecentSnapshot(a, b) {
   return (
@@ -10,51 +26,28 @@ function byMostRecentSnapshot(a, b) {
   );
 }
 
-class FrontPage extends React.Component {
-  static graphSettings = {
-    query: gql`
-      {
-        places {
-          name
-          cuid
-          mostRecentSnapshot {
-            cuid
-            date
-            temperature
-            image
-            placeName
-          }
-        }
-      }
-    `,
-    props: ({ data }) => {
-      const { places } = data;
-      if (places) {
-        return {
-          data: {
-            ...data,
-            places: places.sort(byMostRecentSnapshot)
-          }
-        };
-      }
-      return {
-        data
-      };
-    },
-    options: () => ({})
-  };
-
+export default class FrontPage extends React.Component {
   render() {
-    const { loading, places } = this.props.data;
-
     return (
-      <Layout loading={loading} title="Værhøna">
-        <PlaceList places={places} />
-      </Layout>
+      <Query query={QUERY_HOME} variables={{}}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <Layout loading={loading} title="Værhøna" />;
+          }
+
+          if (error || !data.places) {
+            return 'Oh no.';
+          }
+
+          const places = data.places.sort(byMostRecentSnapshot);
+
+          return (
+            <Layout title="Værhøna">
+              <PlaceList places={places} />
+            </Layout>
+          );
+        }}
+      </Query>
     );
   }
 }
-
-export default graphql(FrontPage.graphSettings.query, FrontPage.graphSettings)(
-  FrontPage
-);

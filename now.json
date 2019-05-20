@@ -2,9 +2,18 @@
   "name": "Værhøna",
   "env": {
     "APP_PORT": "3000",
-    "API_URI": "@vh-api-uri",
-    "NODE_ENV": "production"
+    "API_URI": "@vh-api-uri"
   },
   "regions": ["bru"],
-  "alias": ["xn--vrhna-sra2k.com", "www.xn--vrhna-sra2k.no"]
+  "alias": ["xn--vrhna-sra2k.com", "www.xn--vrhna-sra2k.no"],
+  "version": 2,
+  "routes": [
+    { "src": "/product/(?<name>[^/]+)$", "dest": "/product?name=$name" }
+  ],
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@now/next"
+    }
+  ]
 }
