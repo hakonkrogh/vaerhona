@@ -3,8 +3,8 @@ import gql from 'graphql-tag';
 import upperFirst from 'upper-case-first';
 
 import { graphDate } from 'core/date';
-import Layout from '../modules/layout';
-import { SnapshotsNavigator } from '../modules/snapshot';
+import Layout from '../../modules/layout';
+import { SnapshotsNavigator } from '../../modules/snapshot';
 
 function bySnapshotDate(a, b) {
   return new Date(a.date) - new Date(b.date);
