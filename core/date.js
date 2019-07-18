@@ -51,9 +51,9 @@ export function graphDate(date) {
    * Cannot use this on the server side
    * Throws an error in apollo.cache.readQyuery
    */
-  if (typeof window !== 'undefined') {
-    return new Date(date).toISOString();
-  }
+  // if (typeof window !== 'undefined') {
+  //   return new Date(date).toISOString();
+  // }
 
   return moment(date)
     .tz(tz)

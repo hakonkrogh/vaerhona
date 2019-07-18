@@ -1,16 +1,37 @@
-import Document, { Head, Main, NextScript } from "next/document";
-import { ServerStyleSheet } from "styled-components";
+import Document, { Head, Main, NextScript } from 'next/document';
+import { ServerStyleSheet } from 'styled-components';
 
-import serverConfig from "../server/config";
+import serverConfig from '../config';
 
-import { GlobalStyle } from "ui";
+import { GlobalStyle } from 'ui';
 
 export default class MyDocument extends Document {
-  render() {
+  static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet();
-    const main = sheet.collectStyles(<Main />);
-    const styleTags = sheet.getStyleElement();
+    const originalRenderPage = ctx.renderPage;
 
+    try {
+      ctx.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: App => props => sheet.collectStyles(<App {...props} />)
+        });
+
+      const initialProps = await Document.getInitialProps(ctx);
+      return {
+        ...initialProps,
+        styles: (
+          <>
+            {initialProps.styles}
+            {sheet.getStyleElement()}
+          </>
+        )
+      };
+    } finally {
+      sheet.seal();
+    }
+  }
+
+  render() {
     return (
       <html lang="no">
         <Head>
@@ -72,10 +93,11 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           />
           <GlobalStyle />
-          {styleTags}
         </Head>
         <body style={{ margin: 0, fontFamily: `'Lato', sans-serif` }}>
-          <div className="root">{main}</div>
+          <div className="root">
+            <Main />
+          </div>
           <NextScript />
         </body>
       </html>

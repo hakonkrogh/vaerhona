@@ -1,12 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Link from "next/link";
-import upperFirst from "upper-case-first";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Link from 'next/link';
+import upperFirst from 'upper-case-first';
 
-import { timeOrDate } from "core/date";
-import SnapshotImg from "modules/snapshot-image";
+import { timeOrDate } from 'core/date';
+import SnapshotImg from 'modules/snapshot-image';
 
-import { ListItem, PlaceName, Temperature, Time, Image } from "./ui";
+import { ListItem, PlaceName, Temperature, Time, Image } from './ui';
 
 export default class PlaceListItem extends React.Component {
   static propTypes = {
@@ -19,11 +19,7 @@ export default class PlaceListItem extends React.Component {
 
     return (
       <ListItem>
-        <Link
-          as={`/${name}`}
-          href={{ pathname: "/place", query: { placeName: name } }}
-          prefetch
-        >
+        <Link as={`/p/${name}`} href="/p/[placeName]" prefetch>
           <a>
             <PlaceName>{upperFirst(name)}</PlaceName>
             <Time>{timeOrDate(snapshot.date)}</Time>

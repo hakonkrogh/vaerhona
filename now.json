@@ -1,10 +1,28 @@
 {
   "name": "Værhøna",
+  "scope": "hakonkrogh",
   "env": {
     "APP_PORT": "3000",
-    "API_URI": "@vh-api-uri",
-    "NODE_ENV": "production"
+    "API_URI": "@vh-api-uri"
   },
-  "regions": ["bru"],
-  "alias": ["xn--vrhna-sra2k.com", "www.xn--vrhna-sra2k.no"]
+  "alias": ["xn--vrhna-sra2k.com", "www.xn--vrhna-sra2k.no"],
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@now/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/veggli",
+      "status": 301,
+      "headers": { "Location": "https://værhøna.no/p/veggli" }
+    },
+    {
+      "src": "/buvassbrenna",
+      "status": 301,
+      "headers": { "Location": "https://værhøna.no/p/buvassbrenna" }
+    }
+  ]
 }

@@ -1,13 +1,9 @@
-const { ApolloServer, gql } = require('apollo-server-express');
-const {
-  GraphQLScalarType,
-  GraphQLUnionType,
-  GraphQLInt,
-  GraphQLString
-} = require('graphql');
-const { Kind } = require('graphql/language');
+import cors from 'micro-cors';
+import { ApolloServer, gql } from 'apollo-server-micro';
+import { GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
 
-const { PlaceService, SnapshotService } = require('./services');
+import { PlaceService, SnapshotService } from '../../services';
 
 const typeDefs = gql`
   scalar Date
@@ -95,6 +91,19 @@ const resolvers = {
   })
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  playground: true,
+  introspection: true
+});
 
-module.exports = app => server.applyMiddleware({ app, path: '/api/graphql' });
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
+
+export default cors()(
+  apolloServer.createHandler({ path: '/api/graphql' })
+);
