@@ -14,14 +14,22 @@
   ],
   "routes": [
     {
-      "src": "/veggli",
+      "src": "/p/veggli",
       "status": 301,
-      "headers": { "Location": "https://værhøna.no/p/veggli" }
+      "headers": { "Location": "https://værhøna.no/veggli" }
     },
     {
-      "src": "/buvassbrenna",
+      "src": "/p/buvassbrenna",
       "status": 301,
-      "headers": { "Location": "https://værhøna.no/p/buvassbrenna" }
+      "headers": { "Location": "https://værhøna.no/buvassbrenna" }
+    },
+    {
+      "src": "/",
+      "dest": "/"
+    },
+    {
+      "src": "^/([^/]+)$",
+      "dest": "/place?placeName=$1"
     }
   ]
 }
