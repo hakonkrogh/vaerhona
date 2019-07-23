@@ -1,18 +1,10 @@
 import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import upperFirst from 'upper-case-first';
+import gql from 'graphql-tag';
 
 import { graphDate } from 'core/date';
-import Layout from '../../modules/layout';
-import { SnapshotsNavigator } from '../../modules/snapshot';
-
-function bySnapshotDate(a, b) {
-  return new Date(a.date) - new Date(b.date);
-}
-
-function onlyUniqueSnapshots(value, index, self) {
-  return self.findIndex(v => v.cuid === value.cuid) === index;
-}
+import Layout from 'modules/layout';
+import { SnapshotsNavigator } from 'modules/snapshot';
 
 const QUERY_PLACE = gql`
   query PLACE(
@@ -55,6 +47,14 @@ const QUERY_PLACE = gql`
     placeName
   }
 `;
+
+function bySnapshotDate(a, b) {
+  return new Date(a.date) - new Date(b.date);
+}
+
+function onlyUniqueSnapshots(value, index, self) {
+  return self.findIndex(v => v.cuid === value.cuid) === index;
+}
 
 export default class PlacePage extends React.Component {
   static getInitialProps({ query }) {
