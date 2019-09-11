@@ -19,7 +19,7 @@ export default class PlaceListItem extends React.Component {
 
     return (
       <ListItem>
-        <Link as={`/${name}`} href={`/place?placeName=${name}`} prefetch>
+        <Link as={`/${name}`} href={`/place?placeName=${name}`}>
           <a>
             <PlaceName>{upperFirst(name)}</PlaceName>
             <Time>{timeOrDate(snapshot.date)}</Time>
