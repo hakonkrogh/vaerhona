@@ -78,9 +78,7 @@ export default class MyDocument extends Document {
 
           <script
             dangerouslySetInnerHTML={{
-              __html: `window.dataLayer = [{ environment: '${
-                serverConfig.environment
-              }' }];`
+              __html: `window.dataLayer = [{ environment: '${serverConfig.environment}' }];`
             }}
           />
           <script
@@ -89,12 +87,12 @@ export default class MyDocument extends Document {
             }}
           />
           <link
-            href="https://fonts.googleapis.com/css?family=Lato"
+            href="https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap"
             rel="stylesheet"
           />
           <GlobalStyle />
         </Head>
-        <body style={{ margin: 0, fontFamily: `'Lato', sans-serif` }}>
+        <body style={{ margin: 0, fontFamily: `'Montserrat', sans-serif` }}>
           <div className="root">
             <Main />
           </div>

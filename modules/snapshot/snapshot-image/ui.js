@@ -1,7 +1,7 @@
-import styled from "styled-components";
-import is from "styled-is";
+import styled from 'styled-components';
+import is from 'styled-is';
 
-import { responsive } from "ui";
+import { responsive } from 'ui';
 
 export const Outer = styled.div`
   flex-grow: 1;
@@ -26,7 +26,7 @@ export const DateTimeAgo = styled.div`
     text-transform: uppercase;
   }
 
-  ${is("compare")`
+  ${is('compare')`
     ${responsive.smAndLess} {
       font-size: 1.2em;
     }
@@ -49,13 +49,12 @@ export const Values = styled.div`
   color: #555;
 
   > span {
-    display: inline-block;
     margin: 0 20px;
     text-align: center;
     min-width: 80px;
   }
 
-  ${is("compare")`
+  ${is('compare')`
     ${responsive.smAndLess} {
       max-width: 50vw;
       margin-bottom: 0;
@@ -74,7 +73,7 @@ export const Images = styled.div`
   display: flex;
   justify-content: center;
 
-  ${is("compare")`
+  ${is('compare')`
     ${responsive.smAndLess} {
       flex: 0 0 auto;
       margin-bottom: 42px;

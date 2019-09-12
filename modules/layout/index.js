@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import Head from "next/head";
-import styled from "styled-components";
+import React, { Component } from 'react';
+import Head from 'next/head';
+import styled from 'styled-components';
 
-import { Spinner } from "ui";
-import Header from "../header";
+import { Spinner } from 'ui';
+import Header from '../header';
 
 const Wrapper = styled.div`
   background: #fcfcfc;
@@ -26,9 +26,9 @@ export default class Layout extends Component {
     return (
       <Wrapper>
         <Head>
-          <title>{loading ? "Henter..." : title}</title>
+          <title>{loading ? 'Henter...' : title}</title>
         </Head>
-        <Header />
+        <Header title={title} />
         {loading ? (
           <Loading>
             <Spinner size="50px" />

@@ -1,15 +1,15 @@
-import React from "react";
-import styled from "styled-components";
-import is from "styled-is";
-import TimeAgo from "react-timeago";
-import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
-import TaNo from "react-timeago/lib/language-strings/no";
+import React from 'react';
+import styled from 'styled-components';
+import is from 'styled-is';
+import TimeAgo from 'react-timeago';
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
+import TaNo from 'react-timeago/lib/language-strings/no';
 
-import { responsive } from "ui";
-import { prettyDateTime } from "core/date";
-import SnapshotImage from "modules/snapshot-image";
+import { responsive, Temperature, Humidity, Pressure } from 'ui';
+import { prettyDateTime } from 'core/date';
+import SnapshotImage from 'modules/snapshot-image';
 
-import { DateTimeAgo, DateString, Values } from "./ui";
+import { DateTimeAgo, DateString, Values } from './ui';
 
 // Set up the time ago component
 let timeAgoFormatter = buildFormatter(TaNo);
@@ -20,7 +20,7 @@ const Outer = styled.div`
   flex-direction: column;
   align-items: center;
 
-  ${is("compare")`
+  ${is('compare')`
     ${responsive.smAndLess} {
       display: block;
       font-size: .75em;
@@ -37,7 +37,7 @@ const ImgOuter = styled.div`
   flex: 1 1 auto;
   width: 100%;
 
-  ${is("compare")`
+  ${is('compare')`
     ${responsive.smAndLess} {
       display: none;
     }
@@ -67,15 +67,9 @@ export default class Image extends React.PureComponent {
           </DateTimeAgo>
           <DateString>{prettyDateTime(snapshot.date)}</DateString>
           <Values compare={compare}>
-            <span>
-              {snapshot.temperature}
-              &#8451;
-            </span>
-            <span>{snapshot.humidity}%</span>
-            <span>
-              {snapshot.pressure}
-              hPa
-            </span>
+            <Temperature {...snapshot} />
+            <Humidity {...snapshot} />
+            <Pressure {...snapshot} />
           </Values>
         </Top>
         <ImgOuter compare={compare}>

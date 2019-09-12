@@ -8,7 +8,7 @@ const tz = 'Europe/Oslo';
 export function prettyDate(date, { year = true } = {}) {
   return moment(date)
     .tz(tz)
-    .format(year ? 'L' : 'MM.DD');
+    .format(year ? 'L' : 'DD MMM');
 }
 
 export function prettyDateTime(date) {
@@ -39,6 +39,7 @@ export function timeOrDate(date) {
   if (moment().isSame(date, 'day')) {
     return prettyTime(date);
   }
+
   return prettyDate(date, { year: false });
 }
 

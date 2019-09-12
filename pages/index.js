@@ -2,7 +2,7 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import Layout from '../modules/layout';
-import { PlaceList } from '../modules/place';
+import PlaceList from '../modules/place-list';
 
 const QUERY_HOME = gql`
   {

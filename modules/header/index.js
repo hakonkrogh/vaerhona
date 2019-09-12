@@ -1,21 +1,19 @@
-import React, { PropTypes, Component } from "react";
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 
-import { IconApp } from "ui";
-import { Wrapper } from "./ui";
+import { IconApp } from 'ui';
+import { Wrapper, MainLink, Title } from './ui';
 
-export default class Header extends Component {
-  render() {
-    return (
-      <Wrapper>
-        <Link as="/" href="/index">
-          <a>
-            <IconApp size={30} />
-          </a>
-        </Link>
-        <span>{this.props.headerTitle}</span>
-        {this.props.children}
-      </Wrapper>
-    );
-  }
-}
+const Header = ({ title, children }) => (
+  <Wrapper>
+    <Link as="/" href="/index" passHref>
+      <MainLink>
+        <IconApp size={30} />
+        <Title>{title}</Title>
+      </MainLink>
+    </Link>
+    {children}
+  </Wrapper>
+);
+
+export default Header;
