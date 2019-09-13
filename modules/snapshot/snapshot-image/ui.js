@@ -38,6 +38,47 @@ export const DateString = styled.div`
   color: #888;
   text-align: center;
   margin-bottom: 15px;
+  position: relative;
+`;
+
+export const DateInputPlacer = styled.span`
+  position: relative;
+  display: inline-block;
+`;
+
+export const DateInput = styled.input.attrs(() => ({
+  type: 'date'
+}))`
+  appearance: none;
+  font-size: 1rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  border: none;
+
+  &::-webkit-calendar-picker-indicator {
+    width: 100%;
+    height: 100%;
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &::-webkit-clear-button {
+    display: none;
+  }
+
+  &::-ms-clear {
+    width: 0;
+    height: 0;
+  }
 `;
 
 export const Values = styled.div`

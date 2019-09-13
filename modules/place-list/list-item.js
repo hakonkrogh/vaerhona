@@ -3,9 +3,9 @@ import Link from 'next/link';
 import upperFirst from 'upper-case-first';
 
 import { timeOrDate } from 'core/date';
-import SnapshotImg from 'modules/snapshot-image';
+import SnapshotImage from 'modules/snapshot-image';
 
-import { ListItem, Upper, PlaceName, Time, Image } from './ui';
+import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
 
 const PlaceListItem = ({ name, mostRecentSnapshot: snapshot }) => (
   <ListItem>
@@ -17,9 +17,10 @@ const PlaceListItem = ({ name, mostRecentSnapshot: snapshot }) => (
             <Time>{timeOrDate(snapshot.date)}</Time>
           </div>
         </Upper>
-        <Image>
-          <SnapshotImg {...snapshot} />
-        </Image>
+
+        <ImageWrapper>
+          <SnapshotImage {...snapshot} />
+        </ImageWrapper>
       </a>
     </Link>
   </ListItem>

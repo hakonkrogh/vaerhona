@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, createRef, useEffect } from 'react';
 import styled from 'styled-components';
 import is from 'styled-is';
 import TimeAgo from 'react-timeago';
@@ -6,10 +6,16 @@ import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
 import TaNo from 'react-timeago/lib/language-strings/no';
 
 import { responsive, Temperature, Humidity, Pressure } from 'ui';
-import { prettyDateTime } from 'core/date';
+import { prettyDateTime, graphDate } from 'core/date';
 import SnapshotImage from 'modules/snapshot-image';
 
-import { DateTimeAgo, DateString, Values } from './ui';
+import {
+  DateTimeAgo,
+  DateString,
+  Values,
+  DateInput,
+  DateInputPlacer
+} from './ui';
 
 // Set up the time ago component
 let timeAgoFormatter = buildFormatter(TaNo);
@@ -23,7 +29,7 @@ const Outer = styled.div`
   ${is('compare')`
     ${responsive.smAndLess} {
       display: block;
-      font-size: .75em;
+      font-size: .85em;
     }
   `};
 `;
@@ -53,29 +59,75 @@ const ImgOuter = styled.div`
   }
 `;
 
-export default class Image extends React.PureComponent {
-  render() {
-    const { snapshot, compare } = this.props;
-    return (
-      <Outer compare={compare}>
-        <Top>
-          <DateTimeAgo compare={compare}>
-            <TimeAgo
-              date={new Date(snapshot.date)}
-              formatter={timeAgoFormatter}
-            />
-          </DateTimeAgo>
-          <DateString>{prettyDateTime(snapshot.date)}</DateString>
-          <Values compare={compare}>
-            <Temperature {...snapshot} />
-            <Humidity {...snapshot} />
-            <Pressure {...snapshot} />
-          </Values>
-        </Top>
-        <ImgOuter compare={compare}>
-          <SnapshotImage {...snapshot} sizes="100vw" />
-        </ImgOuter>
-      </Outer>
-    );
+const deviceDoesDateChangeOnBlur = (() => {
+  if (typeof window === 'undefined') {
+    return false;
   }
-}
+
+  return window.navigator.userAgent.includes('iPhone');
+})();
+
+const Image = ({ snapshot, compare, onDateChange }) => {
+  const dateRef = createRef();
+  const [enableDateChange, setEnableDateChange] = useState(true);
+  const [date, setDate] = useState(snapshot.date);
+  const now = new Date();
+
+  function dateChange(e) {
+    setDate(e.target.value);
+    if (!deviceDoesDateChangeOnBlur) {
+      onDateChange(e.target.value);
+    }
+  }
+
+  function dateBlur(e) {
+    if (deviceDoesDateChangeOnBlur) {
+      onDateChange(date);
+    }
+  }
+
+  useEffect(() => {
+    if (dateRef.current) {
+      if (dateRef.current.type !== 'date') {
+        setEnableDateChange(false);
+      }
+    }
+  }, [dateRef]);
+
+  return (
+    <Outer compare={compare}>
+      <Top>
+        <DateTimeAgo compare={compare}>
+          <TimeAgo
+            date={new Date(snapshot.date)}
+            formatter={timeAgoFormatter}
+          />
+        </DateTimeAgo>
+        <DateString>
+          <DateInputPlacer>
+            {prettyDateTime(snapshot.date)}
+            {enableDateChange && (
+              <DateInput
+                ref={dateRef}
+                value={graphDate(date)}
+                onChange={dateChange}
+                onBlur={dateBlur}
+                max={graphDate(now)}
+              />
+            )}
+          </DateInputPlacer>
+        </DateString>
+        <Values compare={compare}>
+          <Temperature {...snapshot} />
+          <Humidity {...snapshot} />
+          <Pressure {...snapshot} />
+        </Values>
+      </Top>
+      <ImgOuter compare={compare}>
+        <SnapshotImage {...snapshot} sizes="100vw" />
+      </ImgOuter>
+    </Outer>
+  );
+};
+
+export default Image;

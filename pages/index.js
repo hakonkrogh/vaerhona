@@ -42,7 +42,7 @@ export default class FrontPage extends React.Component {
           const places = data.places.sort(byMostRecentSnapshot);
 
           return (
-            <Layout title="Værhøna">
+            <Layout title="Værhøna" scroll>
               <PlaceList places={places} />
             </Layout>
           );

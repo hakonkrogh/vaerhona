@@ -115,6 +115,7 @@ const ButtonOuter = styled.button`
   appearance: none;
   cursor: pointer;
   text-decoration: none;
+  background: transparent;
 
   &:hover ${ButtonInner} {
     ${({ theme }) => (theme ? theme.hover : ``)};

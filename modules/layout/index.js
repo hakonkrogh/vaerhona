@@ -7,7 +7,7 @@ import Header from '../header';
 
 const Wrapper = styled.div`
   background: #fcfcfc;
-  height: 100vh;
+  height: ${p => (p.scroll ? 'auto' : '100vh')};
   display: flex;
   flex-direction: column;
 `;
@@ -21,10 +21,10 @@ export const Loading = styled.div`
 
 export default class Layout extends Component {
   render() {
-    const { loading, title } = this.props;
+    const { loading, title, scroll } = this.props;
 
     return (
-      <Wrapper>
+      <Wrapper scroll={scroll}>
         <Head>
           <title>{loading ? 'Henter...' : title}</title>
         </Head>

@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
-import { breakpoints } from 'core/ui-shared';
+import { responsive } from 'ui';
 
 export const List = styled.ul`
   display: flex;
   justify-content: center;
-  margin: 0;
-  padding: 0;
-  list-style: none;
   flex-wrap: wrap;
+  margin: 0;
+  padding: 0 0 100px;
+  list-style: none;
 `;
 
 export const ListItem = styled.li`
@@ -17,22 +17,28 @@ export const ListItem = styled.li`
   position: relative;
 
   > a {
-    display: block;
+    display: flex;
+    flex-direction: column;
     font-size: 1.2rem;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
     background: #fafafa;
     border-radius: 15px;
     overflow: hidden;
     color: inherit;
     text-decoration: none;
+    height: 250px;
+    width: 250px;
 
-    @media (min-width: ${breakpoints.mdMin}) {
+    ${responsive.mdAndMore} {
+      height: 300px;
+      width: 300px;
       font-size: 1.5rem;
     }
   }
 `;
 
 export const Upper = styled.div`
+  flex: 0 0 auto;
   margin: 15px;
   display: flex;
   justify-content: space-between;
@@ -48,7 +54,7 @@ export const PlaceName = styled.h2`
   text-overflow: ellipsis;
   overflow: hidden;
 
-  @media (min-width: ${breakpoints.mdMin}) {
+  ${responsive.mdAndMore} {
     font-size: 1.5rem;
   }
 `;
@@ -56,22 +62,25 @@ export const PlaceName = styled.h2`
 export const Time = styled.time`
   flex: 0 0 auto;
   margin-left: 15px;
+  white-space: nowrap;
 `;
 
-export const Image = styled.figure`
+export const ImageWrapper = styled.figure`
+  flex: 1 1 auto;
   display: block;
   margin: 0;
+  position: relative;
 
   img {
-    height: 250px;
-    width: 250px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
     object-fit: cover;
     display: block;
     background: #ccc;
-
-    @media (min-width: ${breakpoints.mdMin}) {
-      height: 300px;
-      width: 300px;
-    }
   }
+`;
+
+export const Test = styled.div`
+  color: red;
 `;

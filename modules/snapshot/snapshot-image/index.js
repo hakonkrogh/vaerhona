@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import keycode from "keycode";
 
 import { Button, IconArrow } from 'ui';
 
@@ -141,6 +140,10 @@ export default class SnapshotImage extends Component {
     }
   };
 
+  onDateChange = date => {
+    this.props.onDateChange(new Date(date));
+  };
+
   ss = s => new Promise(r => this.setState(s, r));
 
   render() {
@@ -160,7 +163,11 @@ export default class SnapshotImage extends Component {
         <Inner>
           <Images compare={compare}>
             {!compare ? (
-              <Image snapshot={selectedSnapshot} place={place} />
+              <Image
+                snapshot={selectedSnapshot}
+                place={place}
+                onDateChange={this.onDateChange}
+              />
             ) : (
               <>
                 <Image compare snapshot={compareSnapshot} place={place} />
