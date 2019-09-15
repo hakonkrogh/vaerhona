@@ -2,6 +2,7 @@ import fetch from 'isomorphic-unfetch';
 import querystring from 'querystring';
 
 import config from '../config';
+import { getAllPublicPlaces } from './mongo/model/snapshot-place/actions/get';
 
 const useApi = config.graphqlSource === 'api';
 
@@ -25,8 +26,7 @@ export const PlaceService = {
 
   async getPlaces() {
     if (useApi) {
-      const response = await fetch(`${config.apiUri}/place`);
-      return response.json();
+      return getAllPublicPlaces();
     }
 
     return [

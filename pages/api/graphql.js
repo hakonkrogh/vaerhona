@@ -104,6 +104,4 @@ export const config = {
   }
 };
 
-export default cors()(
-  apolloServer.createHandler({ path: '/api/graphql' })
-);
+export default cors()(apolloServer.createHandler({ path: '/api/graphql' }));
