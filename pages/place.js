@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import upperFirst from 'upper-case-first';
 import gql from 'graphql-tag';
 
+import withApolloClient from '../apollo/with-apollo-client';
 import { graphDate } from 'core/date';
 import Layout from 'modules/layout';
 import { SnapshotsNavigator } from 'modules/snapshot';
@@ -70,84 +71,78 @@ const PlacePage = ({ query }) => {
   const compareTo = new Date(to.getTime());
   compareTo.setFullYear(compareTo.getFullYear() - 1);
 
+  const { data, loading, error } = useQuery(QUERY_PLACE, {
+    variables: {
+      placeName: query.placeName,
+      limit: 24,
+      to: graphDate(to),
+      compareTo: graphDate(compareTo)
+    }
+  });
+
+  if (loading) {
+    return <Layout loading title="Henter data..." />;
+  }
+
+  if (error) {
+    return <Layout>Oisann</Layout>;
+  }
+
   function onDateChange(date) {
     setTo(date);
   }
 
-  return (
-    <Query
-      query={QUERY_PLACE}
-      fetchPolicy="network-only"
-      variables={{
-        placeName: query.placeName,
-        limit: 24,
+  const loadMoreSnapshots = ({ from, to, limit }) => {
+    let compareTo;
+    if (to) {
+      compareTo = new Date(to);
+      compareTo.setFullYear(compareTo.getFullYear() - 1);
+    }
+    let compareFrom;
+    if (from) {
+      compareFrom = new Date(from);
+      compareFrom.setFullYear(compareFrom.getFullYear() - 1);
+    }
+
+    return fetchMore({
+      variables: {
+        ...variables,
+        from: graphDate(from),
         to: graphDate(to),
-        compareTo: graphDate(compareTo)
-      }}
-    >
-      {({ loading, error, data, variables, fetchMore }) => {
-        if (loading) {
-          return <Layout loading title="Henter data..." />;
+        compareFrom: graphDate(compareFrom),
+        compareTo: graphDate(compareTo),
+        limit
+      },
+      updateQuery: (previousResult, { fetchMoreResult }) => {
+        function handleSnaps(name) {
+          return [...previousResult[name], ...fetchMoreResult[name]]
+            .filter(onlyUniqueSnapshots)
+            .sort(bySnapshotDate);
         }
 
-        if (error) {
-          return <Layout>Oisann</Layout>;
-        }
+        return Object.assign({}, previousResult, {
+          currentSnapshots: handleSnaps('currentSnapshots'),
+          compareSnapshots: handleSnaps('compareSnapshots')
+        });
+      }
+    });
+  };
 
-        const loadMoreSnapshots = ({ from, to, limit }) => {
-          let compareTo;
-          if (to) {
-            compareTo = new Date(to);
-            compareTo.setFullYear(compareTo.getFullYear() - 1);
-          }
-          let compareFrom;
-          if (from) {
-            compareFrom = new Date(from);
-            compareFrom.setFullYear(compareFrom.getFullYear() - 1);
-          }
+  const { place, currentSnapshots: snapshots, compareSnapshots } = data;
 
-          return fetchMore({
-            variables: {
-              ...variables,
-              from: graphDate(from),
-              to: graphDate(to),
-              compareFrom: graphDate(compareFrom),
-              compareTo: graphDate(compareTo),
-              limit
-            },
-            updateQuery: (previousResult, { fetchMoreResult }) => {
-              function handleSnaps(name) {
-                return [...previousResult[name], ...fetchMoreResult[name]]
-                  .filter(onlyUniqueSnapshots)
-                  .sort(bySnapshotDate);
-              }
-
-              return Object.assign({}, previousResult, {
-                currentSnapshots: handleSnaps('currentSnapshots'),
-                compareSnapshots: handleSnaps('compareSnapshots')
-              });
-            }
-          });
-        };
-
-        const { place, currentSnapshots: snapshots, compareSnapshots } = data;
-
-        return (
-          <Layout loading={loading} title={place && upperFirst(place.name)}>
-            <SnapshotsNavigator
-              place={place}
-              snapshots={snapshots}
-              compareSnapshots={compareSnapshots}
-              loadMoreSnapshots={loadMoreSnapshots}
-              onDateChange={onDateChange}
-            />
-          </Layout>
-        );
-      }}
-    </Query>
+  return (
+    <Layout loading={loading} title={place && upperFirst(place.name)}>
+      <SnapshotsNavigator
+        place={place}
+        snapshots={snapshots}
+        compareSnapshots={compareSnapshots}
+        loadMoreSnapshots={loadMoreSnapshots}
+        onDateChange={onDateChange}
+      />
+    </Layout>
   );
 };
 
 PlacePage.getInitialProps = ({ query }) => ({ query });
 
-export default PlacePage;
+export default withApolloClient(PlacePage);

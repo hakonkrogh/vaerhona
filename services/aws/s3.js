@@ -11,15 +11,13 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-const out = {};
-
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
  * @param snapshot
  * @param place
  * @returns Promise
  */
-out.saveImageFromSnapshot = function({ snapshot, place }) {
+export function saveImageFromSnapshot({ snapshot, place }) {
   if (!snapshot.image) {
     return Promise.reject({
       message: 'snapshot.image is undefined',
@@ -31,7 +29,7 @@ out.saveImageFromSnapshot = function({ snapshot, place }) {
   const imageBuffer = new Buffer.from(snapshot.image, 'base64');
 
   return uploadSingleImage({ place, snapshot, imageBuffer });
-};
+}
 
 /**
  * Stores a single image buffer to a S3 bucket
@@ -40,9 +38,9 @@ out.saveImageFromSnapshot = function({ snapshot, place }) {
  * @param imageBuffer
  * @returns Promise
  */
-function uploadSingleImage({ place, snapshot, imageBuffer }) {
+export function uploadSingleImage({ place, snapshot, imageBuffer }) {
   const { width, height, type } = imageSize(imageBuffer);
-  console.log('about to upload', width, height, type);
+
   const Metadata = {
     width: width.toString(),
     height: height.toString(),
@@ -53,7 +51,7 @@ function uploadSingleImage({ place, snapshot, imageBuffer }) {
     .upload(
       {
         Bucket: config.aws.s3BucketName,
-        Key: out.getRelativePathForImage({
+        Key: getRelativePathForImage({
           place,
           snapshot,
           legacyExtension: false
@@ -66,16 +64,14 @@ function uploadSingleImage({ place, snapshot, imageBuffer }) {
     .promise();
 }
 
-out.uploadSingleImage = uploadSingleImage;
-
 /**
  * Get a image
  * @param snapshot
  * @param place
  * @returns promise
  */
-out.getImage = function({ placeName, snapshot }) {
-  const Key = out.getRelativePathForImage({
+export function getImage({ placeName, snapshot }) {
+  const Key = getRelativePathForImage({
     placeName,
     snapshot
   });
@@ -86,12 +82,12 @@ out.getImage = function({ placeName, snapshot }) {
       Key
     })
     .promise();
-};
+}
 
-out.getAbsolutPathForImage = (...args) =>
-  `${config.imageUrlBase}/${out.getRelativePathForImage(...args)}`;
+export const getAbsolutPathForImage = (...args) =>
+  `${config.imageUrlBase}/${getRelativePathForImage(...args)}`;
 
-out.deleteObject = Key =>
+export const deleteObject = Key =>
   s3
     .deleteObject({
       Bucket: config.aws.s3BucketName,
@@ -107,10 +103,8 @@ out.deleteObject = Key =>
  * @param legacyExtension
  * @returns string
  */
-out.getRelativePathForImage = ({ place, placeName, snapshot }) => {
+export const getRelativePathForImage = ({ place, placeName, snapshot }) => {
   const date = new Date(snapshot.dateAdded);
   return `${placeName || place.name}/${date.getFullYear()}/${date.getMonth() +
     1}/${snapshot.cuid}`;
 };
-
-module.exports = out;

@@ -7,7 +7,7 @@ import SnapshotImage from 'modules/snapshot-image';
 
 import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
 
-const PlaceListItem = ({ name, mostRecentSnapshot: snapshot }) => (
+const PlaceListItem = ({ name, lastSnapshot: snapshot }) => (
   <ListItem>
     <Link as={`/${name}`} href={`/place?placeName=${name}`}>
       <a>
