@@ -71,13 +71,14 @@ const PlacePage = ({ query }) => {
   const compareTo = new Date(to.getTime());
   compareTo.setFullYear(compareTo.getFullYear() - 1);
 
-  const { data, loading, error } = useQuery(QUERY_PLACE, {
-    variables: {
-      placeName: query.placeName,
-      limit: 24,
-      to: graphDate(to),
-      compareTo: graphDate(compareTo)
-    }
+  const variables = {
+    placeName: query.placeName,
+    limit: 24,
+    to: graphDate(to),
+    compareTo: graphDate(compareTo)
+  };
+  const { data, loading, error, fetchMore } = useQuery(QUERY_PLACE, {
+    variables
   });
 
   if (loading) {
