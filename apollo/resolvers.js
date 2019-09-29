@@ -3,6 +3,7 @@ import { Kind } from 'graphql/language';
 
 import * as PlaceService from '../services/place-service';
 import * as SnapshotService from '../services/snapshot-service';
+import config from '../config';
 
 export const resolvers = {
   Query: {
@@ -26,13 +27,40 @@ export const resolvers = {
       });
     }
   },
+  MutationResponse: {
+    __resolveType(mutationResponse, context, info) {
+      return null;
+    }
+  },
+  Mutation: {
+    async addSnapshot(_, body) {
+      try {
+        const snapshot = await SnapshotService.addSnapshot(body);
+
+        return {
+          success: true,
+          message: 'Snapshot added',
+          snapshot
+        };
+      } catch (error) {
+        return {
+          success: false,
+          message: error
+        };
+      }
+    }
+  },
   Snapshot: {
     date(snapshot) {
       return new Date(snapshot.dateAdded);
     },
     image(snapshot) {
+      const baseUrl =
+        config.environment === 'development'
+          ? 'https://vaerhona-development.s3-eu-west-1.amazonaws.com'
+          : 'https://d31r10omfuzino.cloudfront.net';
       const date = new Date(snapshot.dateAdded);
-      return `https://d31r10omfuzino.cloudfront.net/${
+      return `${baseUrl}/${
         snapshot.placeName
       }/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}`;
     }
@@ -44,7 +72,7 @@ export const resolvers = {
       return new Date(value); // value from the client
     },
     serialize(value) {
-      return value.getTime(); // value sent to the client
+      return value.toISOString(); // value sent to the client
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.INT) {

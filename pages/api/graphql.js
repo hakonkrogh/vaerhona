@@ -8,7 +8,8 @@ const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
   playground: true,
-  introspection: true
+  introspection: true,
+  uploads: false
 });
 
 export const config = {

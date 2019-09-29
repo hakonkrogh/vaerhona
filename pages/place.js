@@ -58,15 +58,14 @@ function onlyUniqueSnapshots(value, index, self) {
   return self.findIndex(v => v.cuid === value.cuid) === index;
 }
 
-function getInitialTo() {
-  const now = new Date();
-  now.setDate(now.getDate() + 1);
-
-  return now;
+function getInitialToDate() {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  return date;
 }
 
 const PlacePage = ({ query }) => {
-  const [to, setTo] = useState(getInitialTo());
+  const [to, setTo] = useState(getInitialToDate());
 
   const compareTo = new Date(to.getTime());
   compareTo.setFullYear(compareTo.getFullYear() - 1);

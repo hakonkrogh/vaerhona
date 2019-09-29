@@ -32,4 +32,26 @@ export const typeDefs = gql`
       limit: Int
     ): [Snapshot]
   }
+
+  interface MutationResponse {
+    success: Boolean!
+    message: String!
+  }
+
+  type AddSnapshotMutationResponse implements MutationResponse {
+    success: Boolean!
+    message: String!
+    snapshot: Snapshot
+  }
+
+  type Mutation {
+    addSnapshot(
+      placeCuid: String!
+      date: Date
+      temperature: Float
+      pressure: Float
+      humidity: Float
+      imageBase64: String
+    ): AddSnapshotMutationResponse
+  }
 `;

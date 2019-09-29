@@ -80,7 +80,3 @@ export const ImageWrapper = styled.figure`
     background: #ccc;
   }
 `;
-
-export const Test = styled.div`
-  color: red;
-`;

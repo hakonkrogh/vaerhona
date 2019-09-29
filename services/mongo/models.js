@@ -1,28 +1,7 @@
-import { model, Schema } from 'mongoose';
+import { model } from 'mongoose';
 
-export const MODEL_NAMES = Object.freeze({
-  SNAPSHOT_PLACE: 'SnapshotPlace',
-  SNAPSHOT: 'Snapshot'
-});
-
-const snapshotPlaceSchema = new Schema({
-  cuid: { type: 'String', required: true },
-  name: { type: 'String', required: true },
-  isPublic: { type: 'Boolean', required: true, default: false },
-  firstSnapshot: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT },
-  firstSnapshotDate: { type: 'Date' },
-  lastSnapshot: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT },
-  lastSnapshotDate: { type: 'Date' }
-});
-
-const snapshotSchema = new Schema({
-  cuid: { type: 'String', required: true },
-  placeCuid: { type: 'String', required: true },
-  temperature: { type: 'Number', required: true },
-  humidity: { type: 'Number', required: true },
-  pressure: { type: 'Number', required: true },
-  dateAdded: { type: 'Date', default: Date.now, required: true }
-});
+import { MODEL_NAMES } from './utils';
+import { snapshotSchema, snapshotPlaceSchema } from './schemas';
 
 /**
  * Due to how `now dev` works, we have to declare

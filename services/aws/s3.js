@@ -17,16 +17,9 @@ const s3 = new AWS.S3();
  * @param place
  * @returns Promise
  */
-export function saveImageFromSnapshot({ snapshot, place }) {
-  if (!snapshot.image) {
-    return Promise.reject({
-      message: 'snapshot.image is undefined',
-      snapshot
-    });
-  }
-
+export function saveImageFromSnapshot({ snapshot, place, image }) {
   // Create buffer
-  const imageBuffer = new Buffer.from(snapshot.image, 'base64');
+  const imageBuffer = new Buffer.from(image, 'base64');
 
   return uploadSingleImage({ place, snapshot, imageBuffer });
 }

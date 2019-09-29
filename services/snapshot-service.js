@@ -1,21 +1,15 @@
+import generateCuid from 'cuid';
+
 import './init';
-import { snapshotModel } from './mongo/models';
+import { snapshotModel, snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
+import { saveImageFromSnapshot } from './aws/s3';
 
-export const getLatestSnapshotForPlace = async place => {
-  if (!place || !place.cuid) {
-    throw new Error('Place is not defined correctly');
-  }
+function byDateAscending(a, b) {
+  return new Date(a.dateAdded) - new Date(b.dateAdded);
+}
 
-  const snapshot = await snapshotModel
-    .findOne({ placeCuid: place.cuid })
-    .sort('-dateAdded')
-    .exec();
-
-  return normalizeAndEnrichSnapshot({ snapshot, place });
-};
-
-export const getSnapshots = async ({ limit = 10, place, from, to }) => {
+export async function getSnapshots({ limit = 10, place, from, to }) {
   const whereFilter = { placeCuid: place.cuid };
   if (from) {
     whereFilter.dateAdded = {
@@ -36,10 +30,50 @@ export const getSnapshots = async ({ limit = 10, place, from, to }) => {
     .limit(limit)
     .exec();
 
-  return snapshots.map(snapshot =>
-    normalizeAndEnrichSnapshot({
-      snapshot,
-      place
+  console.log(JSON.stringify(whereFilter, null, 3), snapshots.length);
+  return snapshots
+    .map(snapshot =>
+      normalizeAndEnrichSnapshot({
+        snapshot,
+        place
+      })
+    )
+    .sort(byDateAscending);
+}
+
+export async function addSnapshot({ placeCuid, imageBase64, ...snapshotBody }) {
+  // Get place
+  const place = await snapshotPlaceModel
+    .findOne({
+      cuid: placeCuid
     })
-  );
-};
+    .exec();
+
+  if (!place) {
+    throw new Error(`Place with cuid "${placeCuid}" not found`);
+  }
+
+  // Add snapshot
+  const snapshot = new snapshotModel({
+    placeCuid,
+    cuid: generateCuid(),
+    dateAdded: Date.now(),
+    ...snapshotBody
+  });
+
+  const saveResponse = await snapshot.save();
+
+  // Save image
+  if (imageBase64) {
+    await saveImageFromSnapshot({ place, snapshot, image: imageBase64 });
+  }
+
+  // Update the place with the last snapshot
+  await place
+    .updateOne({
+      lastSnapshot: saveResponse._id
+    })
+    .exec();
+
+  return saveResponse;
+}
