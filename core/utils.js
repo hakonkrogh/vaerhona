@@ -3,7 +3,7 @@ export const isServer =
 export const isClient = !isServer;
 
 export function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
-  if (!snapshots.length) {
+  if (!dateToBeCloseTo || !snapshots.length) {
     return;
   }
 

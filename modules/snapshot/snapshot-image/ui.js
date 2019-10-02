@@ -96,15 +96,13 @@ export const Values = styled.div`
   }
 
   ${is('compare')`
-    ${responsive.smAndLess} {
-      max-width: 50vw;
-      margin-bottom: 0;
-      font-size: 1em;
+    max-width: 50vw;
+    margin-bottom: 0;
+    font-size: 1em;
 
-      > span {
-        margin: 0;
-        min-width: 0;
-      }
+    > span {
+      margin: 0;
+      min-width: 0;
     }
   `};
 `;
@@ -115,10 +113,8 @@ export const Images = styled.div`
   justify-content: center;
 
   ${is('compare')`
-    ${responsive.smAndLess} {
-      flex: 0 0 auto;
-      margin-bottom: 42px;
-    }
+    flex: 0 0 auto;
+    margin-bottom: 42px;
   `};
 `;
 

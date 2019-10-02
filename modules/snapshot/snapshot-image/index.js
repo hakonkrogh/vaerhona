@@ -7,22 +7,7 @@ import { Outer, Inner, Images, Bottom } from './ui';
 import Image from './image';
 import SplitImage from './split-image';
 
-function getCompareSnapshot(currentSnapshot, compareSnapshots) {
-  const dateToBeCloseTo = new Date(currentSnapshot.date);
-  dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
-
-  return getClosestSnapshot({ dateToBeCloseTo, snapshots: compareSnapshots });
-}
-
 export default class SnapshotImage extends Component {
-  static getDerivedStateFromProps(nextProps) {
-    return {
-      compareSnapshot: getCompareSnapshot(
-        nextProps.currentSnapshot,
-        nextProps.compareSnapshots
-      )
-    };
-  }
   state = {
     loadingDir: 0
   };
@@ -115,8 +100,8 @@ export default class SnapshotImage extends Component {
   ss = s => new Promise(r => this.setState(s, r));
 
   render() {
-    const { place, compare, currentSnapshot } = this.props;
-    const { compareSnapshot, loadingDir } = this.state;
+    const { place, compare, currentSnapshot, compareSnapshot } = this.props;
+    const { loadingDir } = this.state;
 
     if (!currentSnapshot) {
       return (

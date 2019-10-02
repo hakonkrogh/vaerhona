@@ -77,9 +77,6 @@ export function getImage({ placeName, snapshot }) {
     .promise();
 }
 
-export const getAbsolutPathForImage = (...args) =>
-  `${config.imageUrlBase}/${getRelativePathForImage(...args)}`;
-
 export const deleteObject = Key =>
   s3
     .deleteObject({

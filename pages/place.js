@@ -68,6 +68,13 @@ function getInitialToDate() {
   return date;
 }
 
+function getCompareSnapshot(currentSnapshot, compareSnapshots) {
+  const dateToBeCloseTo = new Date(currentSnapshot.date);
+  dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
+
+  return getClosestSnapshot({ dateToBeCloseTo, snapshots: compareSnapshots });
+}
+
 let dateChangePending;
 
 const PlacePage = ({ query }) => {
@@ -98,9 +105,14 @@ const PlacePage = ({ query }) => {
 
     // Select the current snapshot from the new date range
     if (dateChangePending) {
-      setCurrentSnapshot(
-        getClosestSnapshot({ dateToBeClosestTo: dateChangePending, snapshots })
-      );
+      const newCurrent = getClosestSnapshot({
+        dateToBeClosestTo: dateChangePending,
+        snapshots
+      });
+
+      if (newCurrent) {
+        setCurrentSnapshot(newCurrent);
+      }
       dateChangePending = false;
     }
   }, [data]);
@@ -163,16 +175,19 @@ const PlacePage = ({ query }) => {
     });
   };
 
+  const compareSnapshot = getCompareSnapshot(currentSnapshot, compareSnapshots);
+
   return (
     <Layout loading={loading} title={place && upperFirst(place.name)}>
       <SnapshotsNavigator
         place={place}
         snapshots={snapshots}
+        currentSnapshot={currentSnapshot}
+        setCurrentSnapshot={setCurrentSnapshot}
+        compareSnapshot={compareSnapshot}
         compareSnapshots={compareSnapshots}
         loadMoreSnapshots={loadMoreSnapshots}
         onDateChange={onDateChange}
-        currentSnapshot={currentSnapshot}
-        setCurrentSnapshot={setCurrentSnapshot}
       />
     </Layout>
   );

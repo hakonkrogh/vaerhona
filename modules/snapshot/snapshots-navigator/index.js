@@ -1,30 +1,30 @@
-import React, { Component } from "react";
-import Switch from "react-switch";
+import React, { Component } from 'react';
+import Switch from 'react-switch';
 
 // Import Components
-import Icon from "../icon";
-import SnapshotImage from "../snapshot-image";
-import SnapshotGraph from "../snapshot-graph";
+import Icon from '../icon';
+import SnapshotImage from '../snapshot-image';
+import SnapshotGraph from '../snapshot-graph';
 
 // Import ui
-import { IconCompare } from "ui";
-import { Outer, Inner, IconMenu, SwitchOuter } from "./ui";
+import { IconCompare } from 'ui';
+import { Outer, Inner, IconMenu, SwitchOuter } from './ui';
 
 export default class SnapshotsNavigator extends Component {
   state = {
-    selected: "image",
+    selected: 'image',
     compare: false
   };
 
   changeToImage = () => {
     this.setState({
-      selected: "image"
+      selected: 'image'
     });
   };
 
   changeToGraph = () => {
     this.setState({
-      selected: "graph"
+      selected: 'graph'
     });
   };
 
@@ -39,7 +39,7 @@ export default class SnapshotsNavigator extends Component {
     const { selected, compare } = this.state;
 
     switch (selected) {
-      case "graph":
+      case 'graph':
         child = <SnapshotGraph {...this.props} compare={compare} />;
         break;
 
@@ -52,12 +52,12 @@ export default class SnapshotsNavigator extends Component {
         <Inner>{child}</Inner>
         <IconMenu>
           <Icon
-            selected={selected === "image"}
+            selected={selected === 'image'}
             type="image"
             onClick={this.changeToImage}
           />
           <Icon
-            selected={selected === "graph"}
+            selected={selected === 'graph'}
             type="graph"
             onClick={this.changeToGraph}
           />

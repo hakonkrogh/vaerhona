@@ -3,7 +3,7 @@ import { Kind } from 'graphql/language';
 
 import * as PlaceService from '../services/place-service';
 import * as SnapshotService from '../services/snapshot-service';
-import config from '../config';
+import config from '../services/config';
 
 export const resolvers = {
   Query: {

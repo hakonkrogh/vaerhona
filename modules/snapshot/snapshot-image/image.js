@@ -66,21 +66,33 @@ const deviceDoesDateChangeOnBlur = (() => {
 })();
 
 const Image = ({ place, snapshot, compare, onDateChange }) => {
+  if (!snapshot) {
+    return <Outer />;
+  }
+
   const dateRef = createRef();
   const [enableDateChange, setEnableDateChange] = useState(true);
   const [date, setDate] = useState(snapshot.date);
   const now = new Date();
 
+  function executeDateChange(dateValue) {
+    const now = new Date();
+    const d = new Date(dateValue);
+    d.setHours(now.getHours());
+
+    onDateChange(d);
+  }
+
   function dateChange(e) {
     setDate(e.target.value);
     if (!deviceDoesDateChangeOnBlur) {
-      onDateChange(e.target.value);
+      executeDateChange(e.target.value);
     }
   }
 
   function dateBlur(e) {
     if (deviceDoesDateChangeOnBlur) {
-      onDateChange(date);
+      executeDateChange(date);
     }
   }
 

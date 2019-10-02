@@ -13,8 +13,7 @@ const config = {
   aws: {
     s3BucketName: '',
     region: ''
-  },
-  imageUrlBase: ''
+  }
 };
 
 const resourceNames = {
@@ -30,8 +29,6 @@ config.mongo.url = config.mongo.url.replace(
 
 config.aws.s3BucketName = resourceNames[config.environment];
 config.aws.region = process.env.VH_AWS_REGION;
-
-config.imageUrlBase = `https://${config.aws.s3BucketName}.s3-${config.aws.region}.amazonaws.com`;
 
 config.PROTECTED_ROOT_NAMES = ['api', 'static', 'admin'];
 
