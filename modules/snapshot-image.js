@@ -2,10 +2,10 @@ import React from 'react';
 
 import { prettyDateTime } from 'core/date';
 
-// All the possible image variations
+// All the possible image variations in S3
 const imageSizeVariations = [100, 320, 640, 1024, 1280];
 
-const SnapshotImage = ({ date, placeName, image, sizes, ...rest }) => {
+const SnapshotImage = ({ date, placeName, image, ...rest }) => {
   const props = {
     alt: `Bilde fra ${placeName} tatt ${prettyDateTime(date)}`,
     ...rest
@@ -16,7 +16,7 @@ const SnapshotImage = ({ date, placeName, image, sizes, ...rest }) => {
     .map(size => `${image}/${size}_r ${size}w`)
     .join(', ');
 
-  return <img sizes={sizes} {...props} />;
+  return <img {...props} />;
 };
 
 export default SnapshotImage;

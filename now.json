@@ -2,8 +2,10 @@
   "name": "Værhøna",
   "scope": "hakonkrogh",
   "env": {
-    "APP_PORT": "3000",
-    "API_URI": "@vh-api-uri"
+    "MONGO_DB_URI": "@vh-mongo-db-uri",
+    "VH_AWS_ACCESS_KEY_ID": "@vh-aws-access-key-id",
+    "VH_AWS_SECRET_ACCESS_KEY": "@vh-aws-secret-access-key",
+    "VH_AWS_REGION": "eu-west-1"
   },
   "version": 2,
   "builds": [

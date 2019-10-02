@@ -1,27 +1,22 @@
-import React from "react";
-import styled from "styled-components";
-import is from "styled-is";
+import React from 'react';
+import styled from 'styled-components';
+import is from 'styled-is';
 
-import { isClient } from "core/utils";
+import { isClient } from 'core/utils';
 
 var Hammer;
 if (isClient) {
-  Hammer = require("hammerjs");
+  Hammer = require('hammerjs');
 }
 
-import SnapshotImage from "modules/snapshot-image";
-import { responsive } from "ui";
+import SnapshotImage from 'modules/snapshot-image';
 
 export const Outer = styled.div`
-  display: none;
-
-  ${responsive.smAndLess} {
-    display: block;
-    flex: 1 1 auto;
-    position: relative;
-    width: 100vw;
-    overflow: hidden;
-  }
+  display: block;
+  flex: 1 1 auto;
+  position: relative;
+  width: 100vw;
+  overflow: hidden;
 `;
 
 export const Img = styled.figure`
@@ -45,7 +40,7 @@ export const Img = styled.figure`
     object-position: center;
   }
 
-  ${is("right")`
+  ${is('right')`
     left: auto;
     right: 0;
 
@@ -66,7 +61,7 @@ export const Handle = styled.div`
   cursor: ew-resize;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 18px;
@@ -87,7 +82,7 @@ export default class SplitImage extends React.Component {
         mc: new Hammer.Manager(this.outer)
       };
 
-      this.hammer.mc.on("hammer.input", this.onDrag);
+      this.hammer.mc.on('hammer.input', this.onDrag);
     }
   }
 

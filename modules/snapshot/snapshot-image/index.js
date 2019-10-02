@@ -1,70 +1,39 @@
 import React, { Component } from 'react';
 
 import { Button, IconArrow } from 'ui';
+import { getClosestSnapshot } from 'core/utils';
 
 import { Outer, Inner, Images, Bottom } from './ui';
 import Image from './image';
 import SplitImage from './split-image';
 
-function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
-  if (!snapshots.length) {
-    return;
-  }
+function getCompareSnapshot(currentSnapshot, compareSnapshots) {
+  const dateToBeCloseTo = new Date(currentSnapshot.date);
+  dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
 
-  let closest = snapshots[0];
-  for (let i = 1; i < snapshots.length; i++) {
-    const s = snapshots[i];
-
-    if (
-      Math.abs(new Date(s.date) - dateToBeCloseTo) <
-      Math.abs(new Date(closest.date) - dateToBeCloseTo)
-    ) {
-      closest = s;
-    }
-  }
-
-  return closest;
+  return getClosestSnapshot({ dateToBeCloseTo, snapshots: compareSnapshots });
 }
 
 export default class SnapshotImage extends Component {
-  constructor(props) {
-    super(props);
-
-    const { snapshots = [], compareSnapshots = [] } = props;
-    this.state = {
-      selectedSnapshot: snapshots[snapshots.length - 1],
-      compareSnapshot: compareSnapshots[compareSnapshots.length - 1],
-      loadingDir: 0
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      compareSnapshot: getCompareSnapshot(
+        nextProps.currentSnapshot,
+        nextProps.compareSnapshots
+      )
     };
   }
-
-  componentWillMount() {
-    const { selectedSnapshot, compareSnapshot } = this.state;
-    const s = this.getCompareSnapshot(selectedSnapshot);
-
-    if (compareSnapshot && s.cuid !== compareSnapshot.cuid) {
-      this.ss({
-        compareSnapshot: s
-      });
-    }
-  }
+  state = {
+    loadingDir: 0
+  };
 
   getCurrentIndex = () =>
     this.props.snapshots.findIndex(
-      s => s.cuid === this.state.selectedSnapshot.cuid
+      s => s.cuid === this.props.currentSnapshot.cuid
     );
 
-  getCompareSnapshot = selectedSnapshot => {
-    const { compareSnapshots } = this.props;
-
-    const dateToBeCloseTo = new Date(selectedSnapshot.date);
-    dateToBeCloseTo.setFullYear(dateToBeCloseTo.getFullYear() - 1);
-
-    return getClosestSnapshot({ dateToBeCloseTo, snapshots: compareSnapshots });
-  };
-
   go = (dir, comingFromDataLoad) => {
-    const { snapshots } = this.props;
+    const { snapshots, setCurrentSnapshot } = this.props;
 
     const currentIndex = this.getCurrentIndex();
 
@@ -89,10 +58,7 @@ export default class SnapshotImage extends Component {
 
     const newSnapshot = snapshots[newIndex];
     if (newSnapshot) {
-      return this.setState({
-        selectedSnapshot: newSnapshot,
-        compareSnapshot: this.getCompareSnapshot(newSnapshot)
-      });
+      return void setCurrentSnapshot(newSnapshot);
     }
 
     if (!comingFromDataLoad) {
@@ -119,11 +85,11 @@ export default class SnapshotImage extends Component {
       if (dir < 0) {
         // Load older
         const [first] = snapshots;
-        to = new Date(first.date).getTime();
+        to = new Date(first.date).toISOString();
       } else {
         // Load newer
         const last = snapshots[snapshots.length - 1];
-        from = new Date(last.date).getTime();
+        from = new Date(last.date).toISOString();
       }
 
       try {
@@ -141,16 +107,18 @@ export default class SnapshotImage extends Component {
   };
 
   onDateChange = date => {
-    this.props.onDateChange(new Date(date));
+    this.changeToSpecificDate = new Date(date);
+
+    this.props.onDateChange(this.changeToSpecificDate);
   };
 
   ss = s => new Promise(r => this.setState(s, r));
 
   render() {
-    const { place, compare } = this.props;
-    const { selectedSnapshot, compareSnapshot, loadingDir } = this.state;
+    const { place, compare, currentSnapshot } = this.props;
+    const { compareSnapshot, loadingDir } = this.state;
 
-    if (!selectedSnapshot) {
+    if (!currentSnapshot) {
       return (
         <Outer>
           <Inner>No snapshots found for {place.name}</Inner>
@@ -164,20 +132,20 @@ export default class SnapshotImage extends Component {
           <Images compare={compare}>
             {!compare ? (
               <Image
-                snapshot={selectedSnapshot}
+                snapshot={currentSnapshot}
                 place={place}
                 onDateChange={this.onDateChange}
               />
             ) : (
               <>
                 <Image compare snapshot={compareSnapshot} place={place} />
-                <Image compare snapshot={selectedSnapshot} place={place} />
+                <Image compare snapshot={currentSnapshot} place={place} />
               </>
             )}
           </Images>
           {compare && (
             <SplitImage
-              snapshot={selectedSnapshot}
+              snapshot={currentSnapshot}
               compareSnapshot={compareSnapshot}
             />
           )}

@@ -44,9 +44,7 @@ const ImgOuter = styled.div`
   width: 100%;
 
   ${is('compare')`
-    ${responsive.smAndLess} {
       display: none;
-    }
   `};
 
   > img {
@@ -67,7 +65,7 @@ const deviceDoesDateChangeOnBlur = (() => {
   return window.navigator.userAgent.includes('iPhone');
 })();
 
-const Image = ({ snapshot, compare, onDateChange }) => {
+const Image = ({ place, snapshot, compare, onDateChange }) => {
   const dateRef = createRef();
   const [enableDateChange, setEnableDateChange] = useState(true);
   const [date, setDate] = useState(snapshot.date);
@@ -94,6 +92,8 @@ const Image = ({ snapshot, compare, onDateChange }) => {
     }
   }, [dateRef]);
 
+  const minDate = place.firstSnapshot && place.firstSnapshot.date;
+
   return (
     <Outer compare={compare}>
       <Top>
@@ -112,6 +112,7 @@ const Image = ({ snapshot, compare, onDateChange }) => {
                 value={graphDate(date)}
                 onChange={dateChange}
                 onBlur={dateBlur}
+                min={graphDate(minDate)}
                 max={graphDate(now)}
               />
             )}

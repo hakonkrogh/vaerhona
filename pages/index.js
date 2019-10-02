@@ -1,5 +1,7 @@
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+
+import withApolloClient from '../apollo/with-apollo-client';
 
 import Layout from '../modules/layout';
 import PlaceList from '../modules/place-list';
@@ -9,7 +11,7 @@ const QUERY_HOME = gql`
     places {
       name
       cuid
-      mostRecentSnapshot {
+      lastSnapshot {
         cuid
         date
         temperature
@@ -20,34 +22,26 @@ const QUERY_HOME = gql`
   }
 `;
 
-function byMostRecentSnapshot(a, b) {
-  return (
-    new Date(b.mostRecentSnapshot.date) - new Date(a.mostRecentSnapshot.date)
-  );
-}
+const FrontPage = () => {
+  const { data, loading, error } = useQuery(QUERY_HOME);
 
-export default class FrontPage extends React.Component {
-  render() {
-    return (
-      <Query query={QUERY_HOME} variables={{}}>
-        {({ data, loading, error }) => {
-          if (loading) {
-            return <Layout loading={loading} title="Værhøna" />;
-          }
-
-          if (error || !data.places) {
-            return 'Oh no.';
-          }
-
-          const places = data.places.sort(byMostRecentSnapshot);
-
-          return (
-            <Layout title="Værhøna" scroll>
-              <PlaceList places={places} />
-            </Layout>
-          );
-        }}
-      </Query>
-    );
+  if (loading) {
+    return <Layout loading={loading} title="Værhøna" />;
   }
-}
+
+  if (error) {
+    return 'Oh no.';
+  }
+
+  if (!data.places) {
+    return 'no places';
+  }
+
+  return (
+    <Layout title="Værhøna" scroll>
+      <PlaceList places={data.places} />
+    </Layout>
+  );
+};
+
+export default withApolloClient(FrontPage);

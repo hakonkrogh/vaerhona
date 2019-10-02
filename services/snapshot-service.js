@@ -1,56 +1,78 @@
-import fetch from 'isomorphic-unfetch';
-import querystring from 'querystring';
+import generateCuid from 'cuid';
 
-import config from '../config';
+import './init';
+import { snapshotModel, snapshotPlaceModel } from './mongo/models';
+import { normalizeAndEnrichSnapshot } from './utils';
+import { saveImageFromSnapshot } from './aws/s3';
 
-const useApi = config.graphqlSource === 'api';
+function byDateAscending(a, b) {
+  return new Date(a.dateAdded) - new Date(b.dateAdded);
+}
 
-export const SnapshotService = {
-  async getSnapshots({ limit = 10, placeName, ...rest }) {
-    if (useApi) {
-      const response = await fetch(
-        `${config.apiUri}/snapshot/?${querystring.stringify({
-          limit,
-          placeName,
-          ...rest
-        })}`
-      );
-
-      const snapshots = await response.json();
-      if (!Array.isArray(snapshots)) {
-        return [];
-      }
-
-      return snapshots.map(s => ({
-        ...s,
-        placeName
-      }));
+export async function getSnapshots({ limit = 10, place, from, to }) {
+  const whereFilter = { placeCuid: place.cuid };
+  if (from) {
+    whereFilter.dateAdded = {
+      $gte: from
+    };
+    if (to) {
+      whereFilter.dateAdded.$lte = to;
     }
-
-    return [
-      {
-        cuid: 'test',
-        temperature: 1,
-        pressure: 1,
-        humidity: 1,
-        placeName
-      }
-    ];
-  },
-
-  async getSnapshotImage({ id, webp }) {
-    const response = await fetch(
-      `${config.apiUri}/snapshot/${id}/image?webp=${webp}`
-    );
-    const buffer = await response.buffer();
-
-    return {
-      buffer,
-      headers: {
-        'Content-type': response.headers.get('content-type'),
-        'Cache-control': response.headers.get('cache-control'),
-        Etag: response.headers.get('Etag')
-      }
+  } else if (to) {
+    whereFilter.dateAdded = {
+      $lte: to
     };
   }
-};
+
+  const snapshots = await snapshotModel
+    .find(whereFilter)
+    .sort('-dateAdded')
+    .limit(limit)
+    .exec();
+
+  return snapshots
+    .map(snapshot =>
+      normalizeAndEnrichSnapshot({
+        snapshot,
+        place
+      })
+    )
+    .sort(byDateAscending);
+}
+
+export async function addSnapshot({ placeCuid, imageBase64, ...snapshotBody }) {
+  // Get place
+  const place = await snapshotPlaceModel
+    .findOne({
+      cuid: placeCuid
+    })
+    .exec();
+
+  if (!place) {
+    throw new Error(`Place with cuid "${placeCuid}" not found`);
+  }
+
+  // Add snapshot
+  const snapshot = new snapshotModel({
+    placeCuid,
+    cuid: generateCuid(),
+    dateAdded: Date.now(),
+    ...snapshotBody
+  });
+
+  const saveResponse = await snapshot.save();
+
+  // Save image
+  if (imageBase64) {
+    await saveImageFromSnapshot({ place, snapshot, image: imageBase64 });
+  }
+
+  // Update the place with the last snapshot
+  await place
+    .updateOne({
+      lastSnapshot: saveResponse._id
+    })
+    .exec();
+
+  return saveResponse;
+}
