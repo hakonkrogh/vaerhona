@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import upperFirst from 'upper-case-first';
 import gql from 'graphql-tag';
 
-import withApolloClient from '../apollo/with-apollo-client';
 import { graphDate } from 'core/date';
+import { getClosestSnapshot } from 'core/utils';
+import withApolloClient from '../apollo/with-apollo-client';
 import Layout from 'modules/layout';
 import { SnapshotsNavigator } from 'modules/snapshot';
 
@@ -18,6 +19,9 @@ const QUERY_PLACE = gql`
   ) {
     place(name: $placeName) {
       name
+      firstSnapshot {
+        date
+      }
     }
 
     currentSnapshots: snapshots(
@@ -64,15 +68,19 @@ function getInitialToDate() {
   return date;
 }
 
+let dateChangePending;
+
 const PlacePage = ({ query }) => {
   const [to, setTo] = useState(getInitialToDate());
+  const [limit, setLimit] = useState(24);
+  const [currentSnapshot, setCurrentSnapshot] = useState(null);
 
   const compareTo = new Date(to.getTime());
   compareTo.setFullYear(compareTo.getFullYear() - 1);
 
   const variables = {
     placeName: query.placeName,
-    limit: 24,
+    limit,
     to: graphDate(to),
     compareTo: graphDate(compareTo)
   };
@@ -80,7 +88,24 @@ const PlacePage = ({ query }) => {
     variables
   });
 
-  if (loading) {
+  const { place, currentSnapshots: snapshots, compareSnapshots } = data || {};
+
+  useEffect(() => {
+    // Set initial current snapshot
+    if (!currentSnapshot && snapshots) {
+      setCurrentSnapshot(snapshots[snapshots.length - 1]);
+    }
+
+    // Select the current snapshot from the new date range
+    if (dateChangePending) {
+      setCurrentSnapshot(
+        getClosestSnapshot({ dateToBeClosestTo: dateChangePending, snapshots })
+      );
+      dateChangePending = false;
+    }
+  }, [data]);
+
+  if (loading || !currentSnapshot) {
     return <Layout loading title="Henter data..." />;
   }
 
@@ -89,7 +114,12 @@ const PlacePage = ({ query }) => {
   }
 
   function onDateChange(date) {
+    dateChangePending = new Date(date.getTime());
+
+    // Load the day, the prev and the next
+    date.setDate(date.getDate() + 1);
     setTo(date);
+    setLimit(72);
   }
 
   const loadMoreSnapshots = ({ from, to, limit }) => {
@@ -115,9 +145,14 @@ const PlacePage = ({ query }) => {
       },
       updateQuery: (previousResult, { fetchMoreResult }) => {
         function handleSnaps(name) {
-          return [...previousResult[name], ...fetchMoreResult[name]]
-            .filter(onlyUniqueSnapshots)
-            .sort(bySnapshotDate);
+          let arr;
+          if (dateChangePending) {
+            arr = fetchMoreResult[name];
+          } else {
+            arr = [...previousResult[name], ...fetchMoreResult[name]];
+          }
+
+          return arr.filter(onlyUniqueSnapshots).sort(bySnapshotDate);
         }
 
         return Object.assign({}, previousResult, {
@@ -128,8 +163,6 @@ const PlacePage = ({ query }) => {
     });
   };
 
-  const { place, currentSnapshots: snapshots, compareSnapshots } = data;
-
   return (
     <Layout loading={loading} title={place && upperFirst(place.name)}>
       <SnapshotsNavigator
@@ -138,6 +171,8 @@ const PlacePage = ({ query }) => {
         compareSnapshots={compareSnapshots}
         loadMoreSnapshots={loadMoreSnapshots}
         onDateChange={onDateChange}
+        currentSnapshot={currentSnapshot}
+        setCurrentSnapshot={setCurrentSnapshot}
       />
     </Layout>
   );

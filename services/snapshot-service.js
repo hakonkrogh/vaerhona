@@ -30,7 +30,6 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
     .limit(limit)
     .exec();
 
-  console.log(JSON.stringify(whereFilter, null, 3), snapshots.length);
   return snapshots
     .map(snapshot =>
       normalizeAndEnrichSnapshot({
