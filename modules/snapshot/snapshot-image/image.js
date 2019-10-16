@@ -66,7 +66,7 @@ const deviceDoesDateChangeOnBlur = (() => {
 })();
 
 const Image = ({ place, snapshot, compare, onDateChange }) => {
-  if (!snapshot) {
+  if (!snapshot || !place) {
     return <Outer />;
   }
 

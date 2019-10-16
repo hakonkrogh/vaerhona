@@ -1,8 +1,6 @@
 import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
-import serverConfig from '../config';
-
 import { GlobalStyle } from 'ui';
 
 export default class MyDocument extends Document {
@@ -78,7 +76,7 @@ export default class MyDocument extends Document {
 
           <script
             dangerouslySetInnerHTML={{
-              __html: `window.dataLayer = [{ environment: '${serverConfig.environment}' }];`
+              __html: `window.dataLayer = [{ environment: '${process.env.NODE_ENV}' }];`
             }}
           />
           <script

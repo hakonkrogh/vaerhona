@@ -104,9 +104,9 @@ const PlacePage = ({ query }) => {
     }
 
     // Select the current snapshot from the new date range
-    if (dateChangePending) {
+    if (!loading && !error && dateChangePending) {
       const newCurrent = getClosestSnapshot({
-        dateToBeClosestTo: dateChangePending,
+        dateToBeCloseTo: dateChangePending,
         snapshots
       });
 
@@ -132,6 +132,7 @@ const PlacePage = ({ query }) => {
     date.setDate(date.getDate() + 1);
     setTo(date);
     setLimit(72);
+    setCurrentSnapshot(null);
   }
 
   const loadMoreSnapshots = ({ from, to, limit }) => {
