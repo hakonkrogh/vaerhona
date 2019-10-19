@@ -27,9 +27,9 @@ export const Humidity = ({ humidity }) => (
   </Sensor>
 );
 
-export const Pressure = ({ humidity }) => (
+export const Pressure = ({ pressure }) => (
   <Sensor>
-    {humidity}
+    {pressure}
     <Unit>hPa</Unit>
   </Sensor>
 );
