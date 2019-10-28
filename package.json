@@ -35,7 +35,7 @@
     "micro-cors": "^0.1.1",
     "moment-timezone": "^0.5.26",
     "mongoose": "^5.7.1",
-    "next": "^9.0.6",
+    "next": "^9.1.1",
     "path-match": "^1.2.4",
     "polished": "^3.4.1",
     "prop-types": "^15.7.2",
