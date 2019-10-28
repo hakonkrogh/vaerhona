@@ -1,4 +1,5 @@
 import cors from 'micro-cors';
+import { send } from 'micro';
 import { ApolloServer } from 'apollo-server-micro';
 
 import { typeDefs } from '../../apollo/type-defs';
@@ -18,4 +19,12 @@ export const config = {
   }
 };
 
-export default cors()(apolloServer.createHandler({ path: '/api/graphql' }));
+const apolloHandler = apolloServer.createHandler({ path: '/api/graphql' });
+
+export default cors()((req, res) => {
+  if (req.method === 'OPTIONS') {
+    return send(res, 200);
+  }
+
+  return apolloHandler(req, res);
+});
