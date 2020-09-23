@@ -2,18 +2,6 @@
   "presets": ["next/babel"],
   "plugins": [
     [
-      "module-resolver",
-      {
-        "root": ["./"],
-        "alias": {
-          "lib": "./lib",
-          "modules": "./modules",
-          "core": "./core",
-          "ui": "./ui"
-        }
-      }
-    ],
-    [
       "styled-components",
       {
         "displayName": true,

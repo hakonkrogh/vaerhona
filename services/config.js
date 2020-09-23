@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 if (!process.env.MONGO_DB_URI) {
   throw Error('process.env.MONGO_DB_URI is not set');
 }
@@ -28,7 +26,7 @@ const resourceNames = {
 // );
 
 config.aws.s3BucketName = resourceNames[config.environment];
-config.aws.region = process.env.VH_AWS_REGION;
+config.aws.region = 'eu-west-1';
 
 config.PROTECTED_ROOT_NAMES = ['api', 'static', 'admin'];
 

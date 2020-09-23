@@ -6,7 +6,7 @@ import config from '../config';
 AWS.config.update({
   accessKeyId: process.env.VH_AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.VH_AWS_SECRET_ACCESS_KEY,
-  region: process.env.VH_AWS_REGION
+  region: 'eu-west-1',
 });
 
 const s3 = new AWS.S3();
@@ -37,7 +37,7 @@ export function uploadSingleImage({ place, snapshot, imageBuffer }) {
   const Metadata = {
     width: width.toString(),
     height: height.toString(),
-    type
+    type,
   };
 
   return s3
@@ -47,10 +47,10 @@ export function uploadSingleImage({ place, snapshot, imageBuffer }) {
         Key: getRelativePathForImage({
           place,
           snapshot,
-          legacyExtension: false
+          legacyExtension: false,
         }),
         Body: imageBuffer,
-        Metadata
+        Metadata,
       },
       {}
     )
@@ -66,22 +66,22 @@ export function uploadSingleImage({ place, snapshot, imageBuffer }) {
 export function getImage({ placeName, snapshot }) {
   const Key = getRelativePathForImage({
     placeName,
-    snapshot
+    snapshot,
   });
 
   return s3
     .getObject({
       Bucket: config.aws.s3BucketName,
-      Key
+      Key,
     })
     .promise();
 }
 
-export const deleteObject = Key =>
+export const deleteObject = (Key) =>
   s3
     .deleteObject({
       Bucket: config.aws.s3BucketName,
-      Key
+      Key,
     })
     .promise();
 
@@ -95,6 +95,7 @@ export const deleteObject = Key =>
  */
 export const getRelativePathForImage = ({ place, placeName, snapshot }) => {
   const date = new Date(snapshot.dateAdded);
-  return `${placeName || place.name}/${date.getFullYear()}/${date.getMonth() +
-    1}/${snapshot.cuid}`;
+  return `${placeName || place.name}/${date.getFullYear()}/${
+    date.getMonth() + 1
+  }/${snapshot.cuid}`;
 };
