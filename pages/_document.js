@@ -88,9 +88,7 @@ export default class MyDocument extends Document {
           <GlobalStyle />
         </Head>
         <body style={{ margin: 0, fontFamily: `'Montserrat', sans-serif` }}>
-          <div className="root">
-            <Main />
-          </div>
+          <Main />
           <NextScript />
         </body>
       </Html>
