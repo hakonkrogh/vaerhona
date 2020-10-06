@@ -8,7 +8,7 @@ function create(initialState) {
     connectToDevTools: process.browser,
     ssrMode: !process.browser,
     link: createIsomorphLink(),
-    cache: new InMemoryCache().restore(initialState)
+    cache: new InMemoryCache().restore(initialState),
   });
 }
 
@@ -34,7 +34,7 @@ function createIsomorphLink() {
     const { HttpLink } = require('apollo-link-http');
     return new HttpLink({
       uri: '/api/graphql',
-      credentials: 'same-origin'
+      credentials: 'same-origin',
     });
   }
 }

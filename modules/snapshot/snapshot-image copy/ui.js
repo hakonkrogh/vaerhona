@@ -47,7 +47,7 @@ export const DateInputPlacer = styled.span`
 `;
 
 export const DateInput = styled.input.attrs(() => ({
-  type: 'date'
+  type: 'date',
 }))`
   appearance: none;
   font-size: 1rem;

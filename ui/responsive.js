@@ -9,5 +9,5 @@ export const responsive = {
   md: `@media (min-width: ${screen.mdMin}px) and (max-width: ${screen.mdMax}px)`,
   mdAndLess: `@media (max-width: ${screen.mdMax}px)`,
   mdAndMore: `@media (min-width: ${screen.mdMin}px)`,
-  lg: `@media (min-width: ${screen.lgMin}px)`
+  lg: `@media (min-width: ${screen.lgMin}px)`,
 };

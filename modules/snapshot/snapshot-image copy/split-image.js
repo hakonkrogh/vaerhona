@@ -73,20 +73,20 @@ export const Handle = styled.div`
 
 export default class SplitImage extends React.Component {
   state = {
-    pos: 0.5
+    pos: 0.5,
   };
 
   componentDidMount() {
     if (this.outer) {
       this.hammer = {
-        mc: new Hammer.Manager(this.outer)
+        mc: new Hammer.Manager(this.outer),
       };
 
       this.hammer.mc.on('hammer.input', this.onDrag);
     }
   }
 
-  onDrag = event => {
+  onDrag = (event) => {
     if (event.pointers.length === 1) {
       event.srcEvent.preventDefault();
       event.srcEvent.stopPropagation();
@@ -100,12 +100,12 @@ export default class SplitImage extends React.Component {
       }
 
       this.setState({
-        pos
+        pos,
       });
     }
   };
 
-  getOuterRef = el => (this.outer = el);
+  getOuterRef = (el) => (this.outer = el);
 
   render() {
     const { snapshot, compareSnapshot } = this.props;

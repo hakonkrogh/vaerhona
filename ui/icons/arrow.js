@@ -1,9 +1,9 @@
-import React from "react";
-import styled from "styled-components";
-import is from "styled-is";
+import React from 'react';
+import styled from 'styled-components';
+import is from 'styled-is';
 
 const Svg = styled.svg`
-  ${is("left")`
+  ${is('left')`
     transform: rotate(180deg);
   `};
 `;

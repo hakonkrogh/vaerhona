@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Switch from 'react-switch';
 
 // Import Components
-import Icon from '../icon';
+import Icon from '../../snapshots-navigator/icon';
 import SnapshotImage from '../snapshot-image';
 import SnapshotGraph from '../snapshot-graph';
 
@@ -13,24 +13,24 @@ import { Outer, Inner, IconMenu, SwitchOuter } from './ui';
 export default class SnapshotsNavigator extends Component {
   state = {
     selected: 'image',
-    compare: false
+    compare: false,
   };
 
   changeToImage = () => {
     this.setState({
-      selected: 'image'
+      selected: 'image',
     });
   };
 
   changeToGraph = () => {
     this.setState({
-      selected: 'graph'
+      selected: 'graph',
     });
   };
 
-  onCompareChange = compare => {
+  onCompareChange = (compare) => {
     this.setState({
-      compare
+      compare,
     });
   };
 

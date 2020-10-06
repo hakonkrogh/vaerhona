@@ -9,12 +9,12 @@ import SplitImage from './split-image';
 
 export default class SnapshotImage extends Component {
   state = {
-    loadingDir: 0
+    loadingDir: 0,
   };
 
   getCurrentIndex = () =>
     this.props.snapshots.findIndex(
-      s => s.cuid === this.props.currentSnapshot.cuid
+      (s) => s.cuid === this.props.currentSnapshot.cuid
     );
 
   go = (dir, comingFromDataLoad) => {
@@ -28,9 +28,9 @@ export default class SnapshotImage extends Component {
       currentDate.setHours(currentDate.getHours() + dir);
       const snapshot = getClosestSnapshot({
         dateToBeCloseTo: currentDate,
-        snapshots
+        snapshots,
       });
-      newIndex = snapshots.findIndex(s => s === snapshot);
+      newIndex = snapshots.findIndex((s) => s === snapshot);
     }
 
     if (comingFromDataLoad) {
@@ -56,10 +56,10 @@ export default class SnapshotImage extends Component {
   goBackOneDay = () => this.go(-24);
   goForwardOneDay = () => this.go(24);
 
-  loadMoreSnapshots = async dir => {
+  loadMoreSnapshots = async (dir) => {
     if (this.state.loadingDir === 0) {
       await this.ss({
-        loadingDir: dir
+        loadingDir: dir,
       });
 
       let from;
@@ -84,20 +84,20 @@ export default class SnapshotImage extends Component {
       }
 
       await this.ss({
-        loadingDir: 0
+        loadingDir: 0,
       });
 
       this.go(dir, true);
     }
   };
 
-  onDateChange = date => {
+  onDateChange = (date) => {
     this.changeToSpecificDate = new Date(date);
 
     this.props.onDateChange(this.changeToSpecificDate);
   };
 
-  ss = s => new Promise(r => this.setState(s, r));
+  ss = (s) => new Promise((r) => this.setState(s, r));
 
   render() {
     const { place, compare, currentSnapshot, compareSnapshot } = this.props;

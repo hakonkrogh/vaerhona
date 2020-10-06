@@ -9,7 +9,7 @@ export const snapshotPlaceSchema = new Schema({
   firstSnapshot: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT },
   firstSnapshotDate: { type: 'Date' },
   lastSnapshot: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT },
-  lastSnapshotDate: { type: 'Date' }
+  lastSnapshotDate: { type: 'Date' },
 });
 
 export const snapshotSchema = new Schema({
@@ -18,5 +18,5 @@ export const snapshotSchema = new Schema({
   temperature: { type: 'Number', required: true },
   humidity: { type: 'Number', required: true },
   pressure: { type: 'Number', required: true },
-  dateAdded: { type: 'Date', default: Date.now, required: true }
+  dateAdded: { type: 'Date', default: Date.now, required: true },
 });

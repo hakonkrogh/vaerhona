@@ -21,12 +21,12 @@ const themes = {
     disabled: `
       background: #aaa;
       color: #333;
-    `
+    `,
   },
   clean: {
     default: ``,
     hover: ``,
-    disabled: ``
+    disabled: ``,
   },
   danger: {
     default: `
@@ -41,8 +41,8 @@ const themes = {
     disabled: `
       background: #aaa;
       color: #333;
-    `
-  }
+    `,
+  },
 };
 
 function getTheme(rest) {
@@ -59,23 +59,23 @@ function getTheme(rest) {
 const sizes = {
   tiny: {
     padding: '0px 1px',
-    minWidth: '0'
+    minWidth: '0',
   },
   small: {
     padding: '5px 10px',
-    minWidth: '0'
+    minWidth: '0',
   },
   medium: {
-    padding: '10px 15px'
+    padding: '10px 15px',
   },
   large: {
     padding: '0px 1px',
-    minWidth: '0'
+    minWidth: '0',
   },
   xlarge: {
     padding: '0px 1px',
-    minWidth: '0'
-  }
+    minWidth: '0',
+  },
 };
 
 function getSize({ tiny, small, large, xlarge }) {
@@ -98,17 +98,17 @@ const ButtonInner = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: ${p => p.size.minWidth};
-  padding: ${p => p.size.padding};
-  padding: ${p => p.size.padding};
-  font-size: ${p => p.size.fontSize || 'inherit'};
+  min-width: ${(p) => p.size.minWidth};
+  padding: ${(p) => p.size.padding};
+  padding: ${(p) => p.size.padding};
+  font-size: ${(p) => p.size.fontSize || 'inherit'};
   transition: background-color 100ms;
   position: relative;
-  ${p => (p.theme ? p.theme.default : '')};
+  ${(p) => (p.theme ? p.theme.default : '')};
 `;
 
 const ButtonOuter = styled.button`
-  display: ${p => (p.block ? 'block' : 'inline-block')};
+  display: ${(p) => (p.block ? 'block' : 'inline-block')};
   border-radius: 0;
   border: none;
   padding: 0;

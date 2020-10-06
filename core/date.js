@@ -12,27 +12,19 @@ export function prettyDate(date, { year = true } = {}) {
 }
 
 export function prettyDateTime(date) {
-  return moment(date)
-    .tz(tz)
-    .format('llll');
+  return moment(date).tz(tz).format('llll');
 }
 
 export function prettyYearMonth(date) {
-  return moment(date)
-    .tz(tz)
-    .format('MMM YYYY');
+  return moment(date).tz(tz).format('MMM YYYY');
 }
 
 export function chartDate(date) {
-  return moment(date)
-    .tz(tz)
-    .format('Do MMM HH');
+  return moment(date).tz(tz).format('Do MMM HH');
 }
 
 export function prettyTime(date) {
-  return moment(date)
-    .tz(tz)
-    .format('LT');
+  return moment(date).tz(tz).format('LT');
 }
 
 export function timeOrDate(date) {
@@ -56,7 +48,5 @@ export function graphDate(date) {
   //   return new Date(date).toISOString();
   // }
 
-  return moment(date)
-    .tz(tz)
-    .format('YYYY-MM-DD');
+  return moment(date).tz(tz).format('YYYY-MM-DD');
 }

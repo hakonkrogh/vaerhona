@@ -10,13 +10,13 @@ const apolloServer = new ApolloServer({
   resolvers,
   playground: true,
   introspection: true,
-  uploads: false
+  uploads: false,
 });
 
 export const config = {
   api: {
-    bodyParser: false
-  }
+    bodyParser: false,
+  },
 };
 
 const apolloHandler = apolloServer.createHandler({ path: '/api/graphql' });

@@ -14,7 +14,7 @@ import {
   DateString,
   Values,
   DateInput,
-  DateInputPlacer
+  DateInputPlacer,
 } from './ui';
 
 // Set up the time ago component

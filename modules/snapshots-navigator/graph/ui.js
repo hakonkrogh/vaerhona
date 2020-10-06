@@ -15,7 +15,7 @@ export const Inner = styled.div`
   position: relative;
   margin: 20px 20px 10px;
   box-sizing: border-box;
-  
+
   max-height: none !important;
   width: auto !important;
 `;
