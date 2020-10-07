@@ -2,6 +2,10 @@ export const isServer =
   typeof document === 'undefined' && typeof window === 'undefined';
 export const isClient = !isServer;
 
+export function hoursBetweenDates(a, b) {
+  return Math.abs(a - b) / 60 / 60 / 1000;
+}
+
 export function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
   if (!dateToBeCloseTo || !snapshots.length) {
     return;

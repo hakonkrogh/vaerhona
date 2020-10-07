@@ -24,11 +24,13 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
     };
   }
 
-  const snapshots = await snapshotModel
-    .find(whereFilter)
-    .sort('-dateAdded')
-    .limit(limit)
-    .exec();
+  const inst = snapshotModel.find(whereFilter).limit(limit);
+
+  if (to && !from) {
+    inst.sort('-dateAdded');
+  }
+
+  const snapshots = await inst.exec();
 
   return snapshots
     .map((snapshot) =>

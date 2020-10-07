@@ -3,7 +3,7 @@ import produce from 'immer';
 import { useQuery } from 'urql';
 
 import { Button, IconArrow } from 'ui';
-import { getClosestSnapshot } from 'core/utils';
+import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
 import { PLACE_SNAPSHOTS } from 'modules/queries';
 
 import { Outer, Inner, Images, Bottom } from './ui';
@@ -11,11 +11,11 @@ import Image from './image';
 import SplitImage from './split-image';
 
 const initialState = {
-  activeNavigation: null,
+  pendingNavigation: null,
   query: {
     from: null,
     to: new Date(),
-    limit: 24 * 7,
+    limit: 25 * 2,
   },
 };
 
@@ -24,17 +24,18 @@ const reducer = produce((draft, { action, ...rest }) => {
     case 'get-more': {
       const { snapshots, snapshotsToMove } = rest;
 
-      draft.activeNavigation = snapshotsToMove;
+      draft.pendingNavigation = snapshotsToMove;
       if (snapshotsToMove < 0) {
+        draft.query.from = null;
         draft.query.to = snapshots[0].date;
       } else {
-        draft.query.to = null;
         draft.query.from = snapshots[snapshots.length - 1].date;
+        draft.query.to = null;
       }
       break;
     }
     case 'got-more': {
-      draft.activeNavigation = null;
+      draft.pendingNavigation = null;
       break;
     }
     default: {
@@ -49,12 +50,12 @@ export default function SnapshotImage({
   setCurrentSnapshot,
   compare,
 }) {
-  const [{ activeNavigation, query }, dispatch] = useReducer(
+  const [{ pendingNavigation, query }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
-  const [{ data: { snapshots } = {}, fetching }] = useQuery({
+  const [{ data: { snapshots } = {} }, fetching] = useQuery({
     query: PLACE_SNAPSHOTS,
     variables: {
       ...query,
@@ -62,52 +63,86 @@ export default function SnapshotImage({
     },
   });
 
+  const getNextSnapshot = useCallback(
+    ({ snapshotsToMove }) => {
+      if (Math.abs(snapshotsToMove) === 1) {
+        const index = snapshots.findIndex(
+          (s) => s.cuid === currentSnapshot.cuid
+        );
+        if (snapshotsToMove === 1) {
+          return {
+            snapshot: snapshots[index + 1] || snapshots[snapshots.length - 1],
+          };
+        } else if (snapshotsToMove === -1) {
+          return { snapshot: snapshots[index - 1] || snapshots[0] };
+        }
+      } else {
+        const dateToBeCloseTo = new Date(currentSnapshot.date);
+        dateToBeCloseTo.setHours(dateToBeCloseTo.getHours() + snapshotsToMove);
+
+        const { snapshot } = getClosestSnapshot({
+          dateToBeCloseTo,
+          snapshots,
+        });
+
+        return { snapshot, dateToBeCloseTo };
+      }
+    },
+    [snapshots, currentSnapshot]
+  );
+
   // Set the new snapshot after fetching from api
   useEffect(() => {
-    if (activeNavigation && snapshots) {
-      const { index } = getClosestSnapshot({
-        dateToBeCloseTo: currentSnapshot.date,
-        snapshots,
-      });
-      let newSnapshot = snapshots[index + activeNavigation];
-      if (!newSnapshot) {
-        if (activeNavigation < 0) {
-          newSnapshot = snapshots[0];
-        } else {
-          newSnapshot = snapshots[snapshots.length + 1];
-        }
-      }
+    if (pendingNavigation && !fetching) {
+      if (!snapshots.some((s) => s.cuid === currentSnapshot.cuid)) {
+        const { snapshot } = getNextSnapshot({
+          snapshotsToMove: pendingNavigation,
+        });
 
-      if (newSnapshot) {
-        setCurrentSnapshot(newSnapshot);
+        if (snapshot) {
+          setCurrentSnapshot(snapshot);
+        }
       }
 
       dispatch({ action: 'got-more' });
     }
-  }, [activeNavigation, snapshots, setCurrentSnapshot, currentSnapshot]);
+  }, [
+    snapshots,
+    fetching,
+    currentSnapshot,
+    getNextSnapshot,
+    pendingNavigation,
+    setCurrentSnapshot,
+  ]);
 
   function buttonProps(snapshotsToMove) {
+    const loading = pendingNavigation === snapshotsToMove;
+
     return {
       clean: true,
       onClick: () => {
-        const newSnapshot =
-          snapshots[
-            snapshots.findIndex((s) => s.cuid === currentSnapshot.cuid) +
-              snapshotsToMove
-          ];
+        const { snapshot, dateToBeCloseTo } = getNextSnapshot({
+          snapshotsToMove,
+        });
 
-        if (newSnapshot) {
-          setCurrentSnapshot(newSnapshot);
+        // Check if we did not move enough
+        if (
+          snapshot.cuid === currentSnapshot.cuid ||
+          hoursBetweenDates(new Date(snapshot.date), dateToBeCloseTo) > 1
+        ) {
+          if (dateToBeCloseTo < new Date()) {
+            dispatch({
+              action: 'get-more',
+              snapshotsToMove,
+              snapshots,
+            });
+          }
         } else {
-          dispatch({
-            action: 'get-more',
-            snapshotsToMove,
-            snapshots,
-          });
+          setCurrentSnapshot(snapshot);
         }
       },
-      disabled: !snapshots || fetching,
-      loading: fetching && activeNavigation === snapshotsToMove,
+      disabled: !loading && !snapshots,
+      loading,
     };
   }
 
