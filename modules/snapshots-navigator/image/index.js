@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer, useRef } from 'react';
 import produce from 'immer';
 import { useQuery } from 'urql';
 
@@ -15,7 +15,7 @@ const initialState = {
   query: {
     from: null,
     to: new Date(),
-    limit: 25 * 2,
+    limit: 24 * 7,
   },
 };
 
@@ -25,6 +25,7 @@ const reducer = produce((draft, { action, ...rest }) => {
       const { snapshots, snapshotsToMove } = rest;
 
       draft.pendingNavigation = snapshotsToMove;
+      draft.firstSnapshotCuid = snapshots[0].cuid;
       if (snapshotsToMove < 0) {
         draft.query.from = null;
         draft.query.to = snapshots[0].date;
@@ -50,12 +51,12 @@ export default function SnapshotImage({
   setCurrentSnapshot,
   compare,
 }) {
-  const [{ pendingNavigation, query }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [
+    { pendingNavigation, firstSnapshotCuid, query },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
-  const [{ data: { snapshots } = {} }, fetching] = useQuery({
+  const [{ data: { snapshots } = {} }] = useQuery({
     query: PLACE_SNAPSHOTS,
     variables: {
       ...query,
@@ -91,25 +92,20 @@ export default function SnapshotImage({
     [snapshots, currentSnapshot]
   );
 
-  // Set the new snapshot after fetching from api
   useEffect(() => {
-    if (pendingNavigation && !fetching) {
-      if (!snapshots.some((s) => s.cuid === currentSnapshot.cuid)) {
-        const { snapshot } = getNextSnapshot({
-          snapshotsToMove: pendingNavigation,
-        });
+    if (snapshots?.[0]?.cuid !== firstSnapshotCuid && pendingNavigation) {
+      const { snapshot } = getNextSnapshot({
+        snapshotsToMove: pendingNavigation,
+      });
 
-        if (snapshot) {
-          setCurrentSnapshot(snapshot);
-        }
+      if (snapshot) {
+        setCurrentSnapshot(snapshot);
       }
-
       dispatch({ action: 'got-more' });
     }
   }, [
+    firstSnapshotCuid,
     snapshots,
-    fetching,
-    currentSnapshot,
     getNextSnapshot,
     pendingNavigation,
     setCurrentSnapshot,
@@ -130,21 +126,25 @@ export default function SnapshotImage({
           snapshot.cuid === currentSnapshot.cuid ||
           hoursBetweenDates(new Date(snapshot.date), dateToBeCloseTo) > 1
         ) {
-          if (dateToBeCloseTo < new Date()) {
+          if (!dateToBeCloseTo || dateToBeCloseTo < new Date()) {
             dispatch({
               action: 'get-more',
               snapshotsToMove,
               snapshots,
             });
+            return;
           }
-        } else {
-          setCurrentSnapshot(snapshot);
         }
+
+        setCurrentSnapshot(snapshot);
       },
       disabled: !loading && !snapshots,
       loading,
     };
   }
+
+  const currentIsNow =
+    new Date() - new Date(currentSnapshot.date) < 60 * 60 * 1000;
 
   return (
     <Outer>
@@ -167,10 +167,10 @@ export default function SnapshotImage({
             </Button>
           </span>
           <span>
-            <Button {...buttonProps(1)}>
+            <Button {...buttonProps(1)} disabled={currentIsNow}>
               <IconArrow />
             </Button>
-            <Button {...buttonProps(24)}>
+            <Button {...buttonProps(24)} disabled={currentIsNow}>
               <IconArrow />
               <IconArrow />
             </Button>
