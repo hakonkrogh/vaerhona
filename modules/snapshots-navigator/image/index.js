@@ -121,19 +121,17 @@ export default function SnapshotImage({
           snapshotsToMove,
         });
 
-        // Check if we did not move enough
+        // Check if we moved enough
         if (
           snapshot.cuid === currentSnapshot.cuid ||
           hoursBetweenDates(new Date(snapshot.date), dateToBeCloseTo) > 1
         ) {
-          if (!dateToBeCloseTo || dateToBeCloseTo < new Date()) {
-            dispatch({
-              action: 'get-more',
-              snapshotsToMove,
-              snapshots,
-            });
-            return;
-          }
+          dispatch({
+            action: 'get-more',
+            snapshotsToMove,
+            snapshots,
+          });
+          return;
         }
 
         setCurrentSnapshot(snapshot);
@@ -143,8 +141,8 @@ export default function SnapshotImage({
     };
   }
 
-  const currentIsNow =
-    new Date() - new Date(currentSnapshot.date) < 60 * 60 * 1000;
+  const canMoveForward =
+    new Date(currentSnapshot.date) >= new Date(place.lastSnapshot.date);
 
   return (
     <Outer>
@@ -167,10 +165,10 @@ export default function SnapshotImage({
             </Button>
           </span>
           <span>
-            <Button {...buttonProps(1)} disabled={currentIsNow}>
+            <Button {...buttonProps(1)} disabled={canMoveForward}>
               <IconArrow />
             </Button>
-            <Button {...buttonProps(24)} disabled={currentIsNow}>
+            <Button {...buttonProps(24)} disabled={canMoveForward}>
               <IconArrow />
               <IconArrow />
             </Button>

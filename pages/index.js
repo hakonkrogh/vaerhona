@@ -1,10 +1,10 @@
-import { useQuery } from 'urql';
+import { isServer, useRefreshQuery } from 'core/utils';
 
 import Layout from 'modules/layout';
 import PlaceList from 'modules/place-list';
 
 export default function FrontPage() {
-  const [result] = useQuery({
+  const [{ data, fetching, error }] = useRefreshQuery({
     query: `
     {
       places {
@@ -20,10 +20,8 @@ export default function FrontPage() {
       }
     }
   `,
-    pause: typeof 'window' === 'undefined',
+    pause: isServer,
   });
-
-  const { data, fetching, error } = result;
 
   if (!data || fetching) {
     return <Layout loading title="Værhøna" />;

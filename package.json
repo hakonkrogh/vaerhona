@@ -13,6 +13,7 @@
     "@apollo/react-hooks": "^3.1.1",
     "@apollo/react-ssr": "^3.1.1",
     "@babel/core": "^7.5.5",
+    "@urql/exchange-refocus": "^0.1.0",
     "apollo-boost": "^0.4.4",
     "apollo-cache-inmemory": "^1.6.3",
     "apollo-client": "^2.6.4",

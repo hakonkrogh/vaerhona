@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import upperFirst from 'upper-case-first';
-import { useQuery } from 'urql';
 
+import { isServer, useRefreshQuery } from 'core/utils';
 import Layout from 'modules/layout';
 import { SnapshotsNavigator } from 'modules/snapshots-navigator';
 import { PLACE } from 'modules/queries';
 
-const isServer = typeof 'window' === 'undefined';
-
 export default function PlacePage({ placeName }) {
-  const [{ data: { place } = {}, fetching } = {}] = useQuery({
+  const [{ data: { place } = {}, fetching } = {}] = useRefreshQuery({
     query: PLACE,
     variables: { placeName },
     pause: isServer,
