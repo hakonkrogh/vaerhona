@@ -65,11 +65,7 @@ const deviceDoesDateChangeOnBlur = (() => {
   return window.navigator.userAgent.includes('iPhone');
 })();
 
-const Image = ({ place, snapshot, compare, onDateChange }) => {
-  if (!snapshot || !place) {
-    return <Outer />;
-  }
-
+export default function Image({ place, snapshot, compare, onDateChange }) {
   const dateRef = createRef();
   const [enableDateChange, setEnableDateChange] = useState(true);
   const [date, setDate] = useState(snapshot.date);
@@ -90,7 +86,7 @@ const Image = ({ place, snapshot, compare, onDateChange }) => {
     }
   }
 
-  function dateBlur(e) {
+  function dateBlur() {
     if (deviceDoesDateChangeOnBlur) {
       executeDateChange(date);
     }
@@ -141,6 +137,4 @@ const Image = ({ place, snapshot, compare, onDateChange }) => {
       </ImgOuter>
     </Outer>
   );
-};
-
-export default Image;
+}

@@ -10,18 +10,29 @@ export const Outer = styled.div`
 export const Inner = styled.div`
   flex-grow: 1;
   display: flex;
-  ${(p) => p.center && 'justify-content: center;'} ${(p) =>
-    p.center && 'align-items: center;'};
+  ${(p) =>
+    p.center &&
+    `
+    justify-content: center;
+    align-items: center;
+    `};
 `;
 
 export const IconMenu = styled.div`
-  padding: 0 20px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: var(--icon-menu-height);
+  width: 100%;
+`;
+
+export const IconMenuInner = styled.div`
   display: flex;
   justify-content: center;
   height: 40px;
+  padding: 0 20px;
   box-sizing: border-box;
   border-top: 1px solid #ccc;
-  flex-shrink: 0;
   position: relative;
 
   > div {

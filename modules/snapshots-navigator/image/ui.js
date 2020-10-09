@@ -9,6 +9,8 @@ export const Outer = styled.div`
   flex-direction: column;
   justify-content: space-between;
   padding-top: 10px;
+
+  --navigation-buttons-height: 65px;
 `;
 
 export const Inner = styled.div`
@@ -111,6 +113,9 @@ export const Images = styled.div`
   flex: 1 1 auto;
   display: flex;
   justify-content: center;
+  margin-bottom: calc(
+    var(--icon-menu-height) + var(--navigation-buttons-height) + 15px
+  );
 
   ${is('compare')`
     flex: 0 0 auto;
@@ -119,12 +124,25 @@ export const Images = styled.div`
 `;
 
 export const Bottom = styled.div`
-  flex: 0 0 65px;
+  height: var(--navigation-buttons-height);
+  position: fixed;
+  bottom: var(--icon-menu-height);
+  left: 0;
+  width: 100%;
+
+  &::after {
+    content: var(--icon-menu-height);
+  }
+`;
+
+export const BottomInner = styled.div`
   display: flex;
   justify-content: space-between;
+  max-width: 500px;
+  margin: 0 auto;
 
   > span {
-    flex: 0 0 50%;
+    width: 50%;
     display: flex;
 
     > button {

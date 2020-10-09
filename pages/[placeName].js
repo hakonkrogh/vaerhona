@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import upperFirst from 'upper-case-first';
 
 import { isServer, useRefreshQuery } from 'core/utils';

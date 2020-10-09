@@ -7,6 +7,7 @@ import {
 } from 'urql';
 import { refocusExchange } from '@urql/exchange-refocus';
 
+import { GlobalStyle } from 'ui';
 import { isClient } from 'core/utils';
 
 const client = createClient({
@@ -19,6 +20,7 @@ const client = createClient({
 export default function App({ Component, pageProps }) {
   return (
     <Provider value={client}>
+      <GlobalStyle />
       <Component {...pageProps} />
     </Provider>
   );

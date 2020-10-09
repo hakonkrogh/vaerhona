@@ -1,8 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
-import { GlobalStyle } from 'ui';
-
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet();
@@ -85,7 +83,6 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap"
             rel="stylesheet"
           />
-          <GlobalStyle />
         </Head>
         <body style={{ margin: 0, fontFamily: `'Montserrat', sans-serif` }}>
           <Main />
