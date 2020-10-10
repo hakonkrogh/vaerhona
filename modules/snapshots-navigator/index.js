@@ -28,7 +28,7 @@ export function SnapshotsNavigator({ place }) {
         {view === 'image' && <SnapshotImage {...sharedProps} />}
         {view === 'graph' && <SnapshotGraph {...sharedProps} />}
       </Inner>
-      <IconMenu>
+      {/* <IconMenu>
         <IconMenuInner>
           <Icon
             selected={view === 'image'}
@@ -63,7 +63,7 @@ export function SnapshotsNavigator({ place }) {
             </label>
           </SwitchOuter>
         </IconMenuInner>
-      </IconMenu>
+      </IconMenu> */}
     </Outer>
   );
 }

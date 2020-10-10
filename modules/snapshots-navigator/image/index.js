@@ -1,14 +1,10 @@
-import React, { useEffect, useCallback, useReducer, useState } from 'react';
-import produce from 'immer';
-import { useQuery } from 'urql';
+import React, { useState } from 'react';
 
 import { Button, IconArrow } from 'ui';
-import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
-import { PLACE_SNAPSHOTS } from 'modules/queries';
 
-import { Outer, Inner, Images, Bottom, BottomInner } from './ui';
+import { Outer, Bottom, BottomInner } from './ui';
 import SliceOfTime from './slice-of-time';
-import SplitImage from './split-image';
+import Metadata from './metadata';
 
 export default function SnapshotImage({
   place,
@@ -18,6 +14,10 @@ export default function SnapshotImage({
 }) {
   const [action, setAction] = useState(null);
   const [buttonLoading, setButtonLoading] = useState(null);
+
+  function onDateChange(newDate) {
+    console.log({ newDate });
+  }
 
   function buttonProps(snapshotsToMove) {
     let disabled =
@@ -43,43 +43,46 @@ export default function SnapshotImage({
 
   return (
     <Outer>
-      <Inner>
-        <Images>
-          {!compare ? (
-            <SliceOfTime
-              action={action}
-              place={place}
-              currentSnapshot={currentSnapshot}
-              setCurrentSnapshot={setCurrentSnapshot}
-              setLoading={setButtonLoading}
-            />
-          ) : (
-            'todo compare...'
-          )}
-        </Images>
-        <Bottom>
-          <BottomInner>
-            <span>
-              <Button {...buttonProps(-24)}>
-                <IconArrow left />
-                <IconArrow left />
-              </Button>
-              <Button {...buttonProps(-1)}>
-                <IconArrow left />
-              </Button>
-            </span>
-            <span>
-              <Button {...buttonProps(1)}>
-                <IconArrow />
-              </Button>
-              <Button {...buttonProps(24)}>
-                <IconArrow />
-                <IconArrow />
-              </Button>
-            </span>
-          </BottomInner>
-        </Bottom>
-      </Inner>
+      {!compare ? (
+        <>
+          <SliceOfTime
+            action={action}
+            place={place}
+            currentSnapshot={currentSnapshot}
+            setCurrentSnapshot={setCurrentSnapshot}
+            setLoading={setButtonLoading}
+          />
+          <Metadata
+            place={place}
+            snapshot={currentSnapshot}
+            onDateChange={onDateChange}
+          />
+        </>
+      ) : (
+        'todo compare...'
+      )}
+      <Bottom>
+        <BottomInner>
+          <span>
+            <Button {...buttonProps(-24)}>
+              <IconArrow left />
+              <IconArrow left />
+            </Button>
+            <Button {...buttonProps(-1)}>
+              <IconArrow left />
+            </Button>
+          </span>
+          <span>
+            <Button {...buttonProps(1)}>
+              <IconArrow />
+            </Button>
+            <Button {...buttonProps(24)}>
+              <IconArrow />
+              <IconArrow />
+            </Button>
+          </span>
+        </BottomInner>
+      </Bottom>
     </Outer>
   );
 }

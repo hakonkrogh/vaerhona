@@ -13,7 +13,6 @@ export const Outer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-top: 10px;
 `;
 
 export const Inner = styled.div`

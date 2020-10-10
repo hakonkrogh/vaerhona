@@ -1,51 +1,12 @@
-import React, { useState, createRef, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import is from 'styled-is';
-import TimeAgo from 'react-timeago';
-import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
-import TaNo from 'react-timeago/lib/language-strings/no';
 
-import { responsive, Temperature, Humidity, Pressure } from 'ui';
-import { prettyDateTime, graphDate } from 'core/date';
 import SnapshotImage from 'modules/snapshot-image';
-
-import {
-  DateTimeAgo,
-  DateString,
-  Values,
-  DateInput,
-  DateInputPlacer,
-} from './ui';
-
-// Set up the time ago component
-let timeAgoFormatter = buildFormatter(TaNo);
+import { responsive } from 'ui';
 
 const Outer = styled.div`
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  ${is('compare')`
-    ${responsive.smAndLess} {
-      display: block;
-      font-size: .85em;
-    }
-  `};
-`;
-
-const Top = styled.div`
-  flex: 0 0 auto;
-`;
-
-const ImgOuter = styled.div`
   position: relative;
-  flex: 1 1 auto;
-  width: 100%;
-
-  ${is('compare')`
-      display: none;
-  `};
+  padding-top: 100%;
 
   > img {
     position: absolute;
@@ -53,88 +14,21 @@ const ImgOuter = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+  }
+
+  ${responsive.smAndMore} {
+    padding-top: 56.25%;
+    > img {
+      object-fit: contain;
+    }
   }
 `;
 
-const deviceDoesDateChangeOnBlur = (() => {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return window.navigator.userAgent.includes('iPhone');
-})();
-
-export default function Image({ place, snapshot, compare, onDateChange }) {
-  const dateRef = createRef();
-  const [enableDateChange, setEnableDateChange] = useState(true);
-  const [date, setDate] = useState(snapshot.date);
-  const now = new Date();
-
-  function executeDateChange(dateValue) {
-    const now = new Date();
-    const d = new Date(dateValue);
-    d.setHours(now.getHours());
-
-    onDateChange(d);
-  }
-
-  function dateChange(e) {
-    setDate(e.target.value);
-    if (!deviceDoesDateChangeOnBlur) {
-      executeDateChange(e.target.value);
-    }
-  }
-
-  function dateBlur() {
-    if (deviceDoesDateChangeOnBlur) {
-      executeDateChange(date);
-    }
-  }
-
-  useEffect(() => {
-    if (dateRef.current) {
-      if (dateRef.current.type !== 'date') {
-        setEnableDateChange(false);
-      }
-    }
-  }, [dateRef]);
-
-  const minDate = place.firstSnapshot && place.firstSnapshot.date;
-
+export default function Image({ snapshot }) {
   return (
-    <Outer compare={compare}>
-      <Top>
-        <DateTimeAgo compare={compare}>
-          <TimeAgo
-            date={new Date(snapshot.date)}
-            formatter={timeAgoFormatter}
-          />
-        </DateTimeAgo>
-        <DateString>
-          <DateInputPlacer>
-            {prettyDateTime(snapshot.date)}
-            {enableDateChange && (
-              <DateInput
-                ref={dateRef}
-                value={graphDate(date)}
-                onChange={dateChange}
-                onBlur={dateBlur}
-                min={graphDate(minDate)}
-                max={graphDate(now)}
-              />
-            )}
-          </DateInputPlacer>
-        </DateString>
-        <Values compare={compare}>
-          <Temperature {...snapshot} />
-          <Humidity {...snapshot} />
-          <Pressure {...snapshot} />
-        </Values>
-      </Top>
-      <ImgOuter compare={compare}>
-        <SnapshotImage {...snapshot} sizes="100vw" />
-      </ImgOuter>
+    <Outer>
+      <SnapshotImage {...snapshot} sizes="100vw" />
     </Outer>
   );
 }
