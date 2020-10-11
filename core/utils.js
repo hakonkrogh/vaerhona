@@ -9,15 +9,13 @@ export function hoursBetweenDates(a, b) {
   return Math.abs(a - b) / 60 / 60 / 1000;
 }
 
-export function getClosestSnapshot({ dateToBeCloseTo, snapshots }) {
-  if (!dateToBeCloseTo || !snapshots.length) {
+export function getClosestSnapshot({ desiredDate, snapshots }) {
+  if (!desiredDate || !snapshots.length) {
     return;
   }
 
   const date =
-    typeof dateToBeCloseTo === 'string'
-      ? new Date(dateToBeCloseTo)
-      : dateToBeCloseTo;
+    typeof desiredDate === 'string' ? new Date(desiredDate) : desiredDate;
 
   let closest = snapshots[0];
   let index = -1;

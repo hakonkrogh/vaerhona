@@ -24,7 +24,11 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
     };
   }
 
-  const inst = snapshotModel.find(whereFilter).limit(limit);
+  const inst = snapshotModel.find(whereFilter);
+
+  if (!to || !from) {
+    inst.limit(limit);
+  }
 
   if (to && !from) {
     inst.sort('-dateAdded');

@@ -5,17 +5,16 @@ import styled from 'styled-components';
 
 import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
 import { PLACE_SNAPSHOTS } from 'modules/queries';
+import SnapshotImage from 'modules/snapshot-image';
 
-import Image from './image';
-
-export const Outer = styled.div`
+const Outer = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 `;
 
-export const Inner = styled.div`
+const Inner = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -32,8 +31,29 @@ const initialState = {
 
 const reducer = produce((draft, { action, ...rest }) => {
   switch (action) {
+    case 'clear-command': {
+      draft.nextCommand = null;
+      draft.pendingNavigation = null;
+      break;
+    }
+    case 'command': {
+      draft.nextCommand = rest.command;
+      draft.pendingNavigation = null;
+      break;
+    }
     case 'get-more': {
-      const { snapshots, snapshotsToMove } = rest;
+      const { snapshots, snapshotsToMove, desiredDate } = rest;
+
+      if (desiredDate) {
+        const from = new Date(desiredDate.getTime());
+        const to = new Date(desiredDate.getTime());
+        from.setDate(from.getDate() - 3);
+        to.setDate(to.getDate() + 3);
+        draft.query.from = from.toString();
+        draft.query.to = to.toString();
+        draft.pendingDate = desiredDate;
+        break;
+      }
 
       draft.pendingNavigation = snapshotsToMove;
       draft.firstSnapshotCuid = snapshots[0].cuid;
@@ -58,14 +78,13 @@ const reducer = produce((draft, { action, ...rest }) => {
 
 export default function SliceOfTime({
   place,
-  action,
-  actionRespond,
+  command,
   setLoading,
   currentSnapshot,
   setCurrentSnapshot,
 }) {
   const [
-    { pendingNavigation, firstSnapshotCuid, query },
+    { nextCommand, pendingNavigation, pendingDate, firstSnapshotCuid, query },
     dispatch,
   ] = useReducer(reducer, initialState);
 
@@ -78,8 +97,15 @@ export default function SliceOfTime({
   });
 
   const getNextSnapshot = useCallback(
-    ({ snapshotsToMove }) => {
-      if (Math.abs(snapshotsToMove) === 1) {
+    ({ snapshotsToMove, desiredDate: desiredDateFromCommand }) => {
+      if (desiredDateFromCommand) {
+        const { snapshot } = getClosestSnapshot({
+          desiredDate: desiredDateFromCommand,
+          snapshots,
+        });
+
+        return { snapshot, desiredDate: desiredDateFromCommand };
+      } else if (Math.abs(snapshotsToMove) === 1) {
         const index = snapshots.findIndex(
           (s) => s.cuid === currentSnapshot.cuid
         );
@@ -91,42 +117,52 @@ export default function SliceOfTime({
           return { snapshot: snapshots[index - 1] || snapshots[0] };
         }
       } else {
-        const dateToBeCloseTo = new Date(currentSnapshot.date);
-        dateToBeCloseTo.setHours(dateToBeCloseTo.getHours() + snapshotsToMove);
+        const desiredDate = new Date(currentSnapshot.date);
+        desiredDate.setHours(desiredDate.getHours() + snapshotsToMove);
 
         const { snapshot } = getClosestSnapshot({
-          dateToBeCloseTo,
+          desiredDate,
           snapshots,
         });
 
-        return { snapshot, dateToBeCloseTo };
+        return { snapshot, desiredDate };
       }
     },
     [snapshots, currentSnapshot]
   );
 
+  // Parent notification of loading
   useEffect(() => {
     setLoading?.(pendingNavigation);
   }, [setLoading, pendingNavigation]);
 
-  // Listen for parent actions
+  // Listen for parent commands
   useEffect(() => {
-    if (action) {
-      const { snapshotsToMove, respond } = action;
-      if (snapshotsToMove) {
-        respond?.();
+    if (command) {
+      dispatch({ action: 'command', command });
+    }
+  }, [command]);
 
-        const { snapshot, dateToBeCloseTo } = getNextSnapshot({
+  // Act on command
+  useEffect(() => {
+    if (nextCommand) {
+      dispatch({ action: 'clear-command' });
+      const { snapshotsToMove, nextDesiredDate } = nextCommand;
+
+      if (snapshotsToMove || nextDesiredDate) {
+        const { snapshot, desiredDate } = getNextSnapshot({
           snapshotsToMove,
+          desiredDate: nextDesiredDate,
         });
 
         // Check if we moved enough
         if (
           snapshot.cuid === currentSnapshot.cuid ||
-          hoursBetweenDates(new Date(snapshot.date), dateToBeCloseTo) > 1
+          hoursBetweenDates(new Date(snapshot.date), desiredDate) > 1
         ) {
           dispatch({
             action: 'get-more',
+            desiredDate,
             snapshotsToMove,
             snapshots,
           });
@@ -137,8 +173,7 @@ export default function SliceOfTime({
       }
     }
   }, [
-    action,
-    actionRespond,
+    nextCommand,
     currentSnapshot.cuid,
     getNextSnapshot,
     setCurrentSnapshot,
@@ -147,9 +182,13 @@ export default function SliceOfTime({
 
   // Act on new data
   useEffect(() => {
-    if (snapshots?.[0]?.cuid !== firstSnapshotCuid && pendingNavigation) {
+    if (
+      snapshots?.[0]?.cuid !== firstSnapshotCuid &&
+      (pendingNavigation || pendingDate)
+    ) {
       const { snapshot } = getNextSnapshot({
         snapshotsToMove: pendingNavigation,
+        desiredDate: pendingDate,
       });
 
       if (snapshot) {
@@ -162,16 +201,17 @@ export default function SliceOfTime({
     snapshots,
     getNextSnapshot,
     pendingNavigation,
+    pendingDate,
     setCurrentSnapshot,
   ]);
 
   return (
     <Outer>
       <Inner>
-        <Image
-          snapshot={currentSnapshot}
-          place={place}
-          onDateChange={() => {}}
+        <SnapshotImage
+          {...currentSnapshot}
+          placeName={place.name}
+          sizes="100vw"
         />
       </Inner>
     </Outer>

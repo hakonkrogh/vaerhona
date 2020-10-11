@@ -27,7 +27,7 @@ export default class SnapshotImage extends Component {
       const currentDate = new Date(snapshots[currentIndex].date);
       currentDate.setHours(currentDate.getHours() + dir);
       const snapshot = getClosestSnapshot({
-        dateToBeCloseTo: currentDate,
+        desiredDate: currentDate,
         snapshots,
       });
       newIndex = snapshots.findIndex((s) => s === snapshot);

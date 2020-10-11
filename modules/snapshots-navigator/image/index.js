@@ -5,6 +5,7 @@ import { Button, IconArrow } from 'ui';
 import { Outer, Bottom, BottomInner } from './ui';
 import SliceOfTime from './slice-of-time';
 import Metadata from './metadata';
+import DateVisualiser from './date';
 
 export default function SnapshotImage({
   place,
@@ -12,11 +13,14 @@ export default function SnapshotImage({
   setCurrentSnapshot,
   compare,
 }) {
-  const [action, setAction] = useState(null);
+  const [command, setCommand] = useState(null);
   const [buttonLoading, setButtonLoading] = useState(null);
 
   function onDateChange(newDate) {
-    console.log({ newDate });
+    setCommand({
+      d: Date.now(),
+      nextDesiredDate: newDate,
+    });
   }
 
   function buttonProps(snapshotsToMove) {
@@ -29,10 +33,9 @@ export default function SnapshotImage({
       clean: true,
       onClick: () => {
         if (!compare) {
-          setAction({
+          setCommand({
             d: Date.now(),
             snapshotsToMove,
-            respond: () => setAction(null),
           });
         }
       },
@@ -45,18 +48,21 @@ export default function SnapshotImage({
     <Outer>
       {!compare ? (
         <>
+          {currentSnapshot && (
+            <DateVisualiser
+              place={place}
+              snapshot={currentSnapshot}
+              onDateChange={onDateChange}
+            />
+          )}
           <SliceOfTime
-            action={action}
+            command={command}
             place={place}
             currentSnapshot={currentSnapshot}
             setCurrentSnapshot={setCurrentSnapshot}
             setLoading={setButtonLoading}
           />
-          <Metadata
-            place={place}
-            snapshot={currentSnapshot}
-            onDateChange={onDateChange}
-          />
+          <Metadata place={place} snapshot={currentSnapshot} />
         </>
       ) : (
         'todo compare...'
