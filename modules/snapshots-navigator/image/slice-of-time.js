@@ -4,20 +4,15 @@ import { useQuery } from 'urql';
 import styled from 'styled-components';
 
 import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
+import { graphDate } from 'core/date';
 import { PLACE_SNAPSHOTS } from 'modules/queries';
 import SnapshotImage from 'modules/snapshot-image';
 
 const Outer = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const Inner = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+  text-align: center;
+  img {
+    max-height: 80vh;
+  }
 `;
 
 const initialState = {
@@ -34,29 +29,33 @@ const reducer = produce((draft, { action, ...rest }) => {
     case 'clear-command': {
       draft.nextCommand = null;
       draft.pendingNavigation = null;
+      draft.pendingDate = null;
       break;
     }
     case 'command': {
       draft.nextCommand = rest.command;
       draft.pendingNavigation = null;
+      draft.pendingDate = null;
       break;
     }
     case 'get-more': {
       const { snapshots, snapshotsToMove, desiredDate } = rest;
+
+      draft.firstSnapshotCuid = snapshots?.[0]?.cuid;
 
       if (desiredDate) {
         const from = new Date(desiredDate.getTime());
         const to = new Date(desiredDate.getTime());
         from.setDate(from.getDate() - 3);
         to.setDate(to.getDate() + 3);
-        draft.query.from = from.toString();
-        draft.query.to = to.toString();
+        draft.query.from = graphDate(from);
+        draft.query.to = graphDate(to);
         draft.pendingDate = desiredDate;
         break;
       }
 
       draft.pendingNavigation = snapshotsToMove;
-      draft.firstSnapshotCuid = snapshots[0].cuid;
+
       if (snapshotsToMove < 0) {
         draft.query.from = null;
         draft.query.to = snapshots[0].date;
@@ -68,6 +67,9 @@ const reducer = produce((draft, { action, ...rest }) => {
     }
     case 'got-more': {
       draft.pendingNavigation = null;
+      draft.pendingDate = null;
+
+      draft.localSnapshot = rest.nextLocalSnapshot;
       break;
     }
     default: {
@@ -80,13 +82,23 @@ export default function SliceOfTime({
   place,
   command,
   setLoading,
-  currentSnapshot,
-  setCurrentSnapshot,
+  date,
+  snapshot: snapshotFromParent,
+  setSnapshot,
 }) {
   const [
-    { nextCommand, pendingNavigation, pendingDate, firstSnapshotCuid, query },
+    {
+      nextCommand,
+      pendingNavigation,
+      pendingDate,
+      firstSnapshotCuid,
+      query,
+      localSnapshot,
+    },
     dispatch,
   ] = useReducer(reducer, initialState);
+
+  const snapshot = localSnapshot || snapshotFromParent;
 
   const [{ data: { snapshots } = {} }] = useQuery({
     query: PLACE_SNAPSHOTS,
@@ -98,38 +110,55 @@ export default function SliceOfTime({
 
   const getNextSnapshot = useCallback(
     ({ snapshotsToMove, desiredDate: desiredDateFromCommand }) => {
+      if (!snapshots) {
+        return {};
+      }
+
       if (desiredDateFromCommand) {
-        const { snapshot } = getClosestSnapshot({
+        const closest = getClosestSnapshot({
           desiredDate: desiredDateFromCommand,
           snapshots,
         });
 
-        return { snapshot, desiredDate: desiredDateFromCommand };
-      } else if (Math.abs(snapshotsToMove) === 1) {
-        const index = snapshots.findIndex(
-          (s) => s.cuid === currentSnapshot.cuid
-        );
-        if (snapshotsToMove === 1) {
-          return {
-            snapshot: snapshots[index + 1] || snapshots[snapshots.length - 1],
-          };
-        } else if (snapshotsToMove === -1) {
-          return { snapshot: snapshots[index - 1] || snapshots[0] };
-        }
+        return {
+          snapshot: closest.snapshot,
+          desiredDate: desiredDateFromCommand,
+        };
       } else {
-        const desiredDate = new Date(currentSnapshot.date);
-        desiredDate.setHours(desiredDate.getHours() + snapshotsToMove);
+        if (!snapshot) {
+          return {};
+        }
+        if (Math.abs(snapshotsToMove) === 1) {
+          const index = snapshots?.findIndex((s) => s.cuid === snapshot.cuid);
+          if (snapshotsToMove === 1) {
+            return {
+              snapshot: snapshots[index + 1] || snapshots[snapshots.length - 1],
+            };
+          } else if (snapshotsToMove === -1) {
+            return { snapshot: snapshots[index - 1] || snapshots[0] };
+          }
+        } else {
+          const desiredDate = new Date(snapshot.date);
+          desiredDate.setHours(desiredDate.getHours() + snapshotsToMove);
 
-        const { snapshot } = getClosestSnapshot({
-          desiredDate,
-          snapshots,
-        });
+          const closest = getClosestSnapshot({
+            desiredDate,
+            snapshots,
+          });
 
-        return { snapshot, desiredDate };
+          return { snapshot: closest.snapshot, desiredDate };
+        }
       }
     },
-    [snapshots, currentSnapshot]
+    [snapshots, snapshot]
   );
+
+  // Act on date from parent
+  useEffect(() => {
+    if (date) {
+      dispatch({ action: 'command', command: { nextDesiredDate: date } });
+    }
+  }, [date]);
 
   // Parent notification of loading
   useEffect(() => {
@@ -150,51 +179,58 @@ export default function SliceOfTime({
       const { snapshotsToMove, nextDesiredDate } = nextCommand;
 
       if (snapshotsToMove || nextDesiredDate) {
-        const { snapshot, desiredDate } = getNextSnapshot({
+        const next = getNextSnapshot({
           snapshotsToMove,
           desiredDate: nextDesiredDate,
         });
 
         // Check if we moved enough
         if (
-          snapshot.cuid === currentSnapshot.cuid ||
-          hoursBetweenDates(new Date(snapshot.date), desiredDate) > 1
+          !next.snapshot ||
+          !snapshot ||
+          snapshot?.cuid === next.snapshot?.cuid ||
+          hoursBetweenDates(new Date(snapshot.date), nextDesiredDate) > 1
         ) {
           dispatch({
             action: 'get-more',
-            desiredDate,
+            desiredDate: nextDesiredDate,
             snapshotsToMove,
             snapshots,
           });
           return;
         }
 
-        setCurrentSnapshot(snapshot);
+        if (setSnapshot) {
+          if (next.snapshot) {
+            setSnapshot?.(next.snapshot);
+          }
+        } else {
+          dispatch({ action: 'got-more', nextLocalSnapshot: next.snapshot });
+        }
       }
     }
-  }, [
-    nextCommand,
-    currentSnapshot.cuid,
-    getNextSnapshot,
-    setCurrentSnapshot,
-    snapshots,
-  ]);
+  }, [nextCommand, snapshot, snapshots, getNextSnapshot, setSnapshot]);
 
   // Act on new data
   useEffect(() => {
+    const newFirstSnapshotCuid = snapshots?.[0]?.cuid;
     if (
-      snapshots?.[0]?.cuid !== firstSnapshotCuid &&
+      newFirstSnapshotCuid !== firstSnapshotCuid &&
       (pendingNavigation || pendingDate)
     ) {
-      const { snapshot } = getNextSnapshot({
+      const next = getNextSnapshot({
         snapshotsToMove: pendingNavigation,
         desiredDate: pendingDate,
       });
 
-      if (snapshot) {
-        setCurrentSnapshot(snapshot);
+      if (setSnapshot) {
+        if (next.snapshot) {
+          setSnapshot?.(next.snapshot);
+        }
+        dispatch({ action: 'got-more' });
+      } else {
+        dispatch({ action: 'got-more', nextLocalSnapshot: next.snapshot });
       }
-      dispatch({ action: 'got-more' });
     }
   }, [
     firstSnapshotCuid,
@@ -202,18 +238,16 @@ export default function SliceOfTime({
     getNextSnapshot,
     pendingNavigation,
     pendingDate,
-    setCurrentSnapshot,
+    setSnapshot,
   ]);
+
+  if (!snapshot) {
+    return null;
+  }
 
   return (
     <Outer>
-      <Inner>
-        <SnapshotImage
-          {...currentSnapshot}
-          placeName={place.name}
-          sizes="100vw"
-        />
-      </Inner>
+      <SnapshotImage {...snapshot} placeName={place.name} sizes="100vw" />
     </Outer>
   );
 }

@@ -9,9 +9,9 @@ export function hoursBetweenDates(a, b) {
   return Math.abs(a - b) / 60 / 60 / 1000;
 }
 
-export function getClosestSnapshot({ desiredDate, snapshots }) {
+export function getClosestSnapshot({ desiredDate, snapshots = [] }) {
   if (!desiredDate || !snapshots.length) {
-    return;
+    return {};
   }
 
   const date =

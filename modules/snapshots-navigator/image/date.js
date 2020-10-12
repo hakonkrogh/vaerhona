@@ -89,8 +89,6 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
     const d = new Date(dateValue);
     d.setHours(new Date(snapshot.date).getHours());
 
-    console.log('new date', d);
-
     onDateChange?.(d);
   }
 

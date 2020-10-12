@@ -44,6 +44,9 @@ export default function SnapshotImage({
     };
   }
 
+  const compareDate = new Date(currentSnapshot.date);
+  compareDate.setFullYear(compareDate.getFullYear() - 1);
+
   return (
     <Outer>
       {!compare ? (
@@ -58,10 +61,11 @@ export default function SnapshotImage({
           <SliceOfTime
             command={command}
             place={place}
-            currentSnapshot={currentSnapshot}
-            setCurrentSnapshot={setCurrentSnapshot}
+            snapshot={currentSnapshot}
+            setSnapshot={setCurrentSnapshot}
             setLoading={setButtonLoading}
           />
+          {/* <SliceOfTime command={command} place={place} date={compareDate} /> */}
           <Metadata place={place} snapshot={currentSnapshot} />
         </>
       ) : (
