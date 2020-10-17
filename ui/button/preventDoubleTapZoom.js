@@ -27,7 +27,7 @@ export default function preventDoubleTapZoom(event) {
   ) {
     event.preventDefault();
     // Trigger a fake click for the tap we just prevented
-    event.target.click();
+    event.target?.click();
   }
   lastClientX = clientX;
   lastClientY = clientY;

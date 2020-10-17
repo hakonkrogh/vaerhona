@@ -15,7 +15,7 @@ function parsePlace(place) {
 export const getPlace = async ({ placeName, populateSnapshotFields }) => {
   const place = await snapshotPlaceModel
     .findOne({
-      name: placeName
+      name: placeName,
     })
     .populate(
       populateSnapshotFields ? ['firstSnapshot', 'lastSnapshot'] : undefined
@@ -30,13 +30,13 @@ export const getTopPublicPlaces = async ({ limit }) => {
     .find({
       isPublic: true,
       lastSnapshot: {
-        $ne: null
-      }
+        $ne: null,
+      },
     })
     .populate(['firstSnapshot', 'lastSnapshot'])
     .limit(limit)
     .sort({
-      'lastSnapshot.dateAdded': 'desc'
+      'lastSnapshot.dateAdded': 'desc',
     })
     .exec();
 

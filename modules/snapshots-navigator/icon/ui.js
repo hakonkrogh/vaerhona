@@ -32,6 +32,6 @@ export const ImageCompare = styled.span`
     left: calc(50% - 1px);
     width: 2px;
     height: calc(100% + 2px);
-    background: ${p => p.color};
+    background: ${(p) => p.color};
   }
 `;

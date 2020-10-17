@@ -6,6 +6,6 @@ export const normalizeAndEnrichSnapshot = ({ snapshot, place }) => {
     dateAdded: snapshot.dateAdded,
     temperature: Math.round(snapshot.temperature * 10) / 10,
     humidity: Math.round(snapshot.humidity * 10) / 10,
-    pressure: Math.round(snapshot.pressure * 10) / 10
+    pressure: Math.round(snapshot.pressure * 10) / 10,
   };
 };

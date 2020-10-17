@@ -1,32 +1,30 @@
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+import { isServer, useRefreshQuery } from 'core/utils';
 
-import withApolloClient from '../apollo/with-apollo-client';
+import Layout from 'modules/layout';
+import PlaceList from 'modules/place-list';
 
-import Layout from '../modules/layout';
-import PlaceList from '../modules/place-list';
-
-const QUERY_HOME = gql`
-  {
-    places {
-      name
-      cuid
-      lastSnapshot {
+export default function FrontPage() {
+  const [{ data, fetching, error }] = useRefreshQuery({
+    query: `
+    {
+      places {
+        name
         cuid
-        date
-        temperature
-        image
-        placeName
+        lastSnapshot {
+          cuid
+          date
+          temperature
+          image
+          placeName
+        }
       }
     }
-  }
-`;
+  `,
+    pause: isServer,
+  });
 
-const FrontPage = () => {
-  const { data, loading, error } = useQuery(QUERY_HOME);
-
-  if (loading) {
-    return <Layout loading={loading} title="Værhøna" />;
+  if (!data || fetching) {
+    return <Layout loading title="Værhøna" />;
   }
 
   if (error) {
@@ -42,6 +40,4 @@ const FrontPage = () => {
       <PlaceList places={data.places} />
     </Layout>
   );
-};
-
-export default withApolloClient(FrontPage);
+}

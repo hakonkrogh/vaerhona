@@ -1,5 +1,5 @@
-import React from "react";
-import styled, { keyframes } from "styled-components";
+import React from 'react';
+import styled, { keyframes } from 'styled-components';
 
 const animation = keyframes`
   0%, 40%, 100% {
@@ -21,9 +21,9 @@ const Outer = styled.span`
 
 const Spinner = styled.span`
   display: flex;
-  width: ${p => (p.size === "small" ? "20px" : "30px")};
-  height: ${p => (p.size === "small" ? "17px" : "27px")};
-  color: ${p => p.color || "#00628b"};
+  width: ${(p) => (p.size === 'small' ? '20px' : '30px')};
+  height: ${(p) => (p.size === 'small' ? '17px' : '27px')};
+  color: ${(p) => p.color || '#00628b'};
   margin-bottom: 10px;
 `;
 

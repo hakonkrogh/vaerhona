@@ -13,28 +13,34 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
   const whereFilter = { placeCuid: place.cuid };
   if (from) {
     whereFilter.dateAdded = {
-      $gte: from
+      $gte: from,
     };
     if (to) {
       whereFilter.dateAdded.$lte = to;
     }
   } else if (to) {
     whereFilter.dateAdded = {
-      $lte: to
+      $lte: to,
     };
   }
 
-  const snapshots = await snapshotModel
-    .find(whereFilter)
-    .sort('-dateAdded')
-    .limit(limit)
-    .exec();
+  const inst = snapshotModel.find(whereFilter);
+
+  if (!to || !from) {
+    inst.limit(limit);
+  }
+
+  if (to && !from) {
+    inst.sort('-dateAdded');
+  }
+
+  const snapshots = await inst.exec();
 
   return snapshots
-    .map(snapshot =>
+    .map((snapshot) =>
       normalizeAndEnrichSnapshot({
         snapshot,
-        place
+        place,
       })
     )
     .sort(byDateAscending);
@@ -44,7 +50,7 @@ export async function addSnapshot({ placeCuid, imageBase64, ...snapshotBody }) {
   // Get place
   const place = await snapshotPlaceModel
     .findOne({
-      cuid: placeCuid
+      cuid: placeCuid,
     })
     .exec();
 
@@ -57,7 +63,7 @@ export async function addSnapshot({ placeCuid, imageBase64, ...snapshotBody }) {
     placeCuid,
     cuid: generateCuid(),
     dateAdded: Date.now(),
-    ...snapshotBody
+    ...snapshotBody,
   });
 
   const saveResponse = await snapshot.save();
@@ -70,7 +76,7 @@ export async function addSnapshot({ placeCuid, imageBase64, ...snapshotBody }) {
   // Update the place with the last snapshot
   await place
     .updateOne({
-      lastSnapshot: saveResponse._id
+      lastSnapshot: saveResponse._id,
     })
     .exec();
 

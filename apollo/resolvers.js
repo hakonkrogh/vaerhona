@@ -13,24 +13,24 @@ export const resolvers = {
     place(_, { name: placeName }) {
       return PlaceService.getPlace({
         placeName,
-        populateSnapshotFields: true
+        populateSnapshotFields: true,
       });
     },
     async snapshots(_, { place: placeName, ...rest }) {
       const place = await PlaceService.getPlace({
-        placeName
+        placeName,
       });
 
       return SnapshotService.getSnapshots({
         place,
-        ...rest
+        ...rest,
       });
-    }
+    },
   },
   MutationResponse: {
     __resolveType(mutationResponse, context, info) {
       return null;
-    }
+    },
   },
   Mutation: {
     async addSnapshot(_, body) {
@@ -40,15 +40,15 @@ export const resolvers = {
         return {
           success: true,
           message: 'Snapshot added',
-          snapshot
+          snapshot,
         };
       } catch (error) {
         return {
           success: false,
-          message: error
+          message: error,
         };
       }
-    }
+    },
   },
   Snapshot: {
     date(snapshot) {
@@ -60,10 +60,10 @@ export const resolvers = {
           ? 'https://vaerhona-development.s3-eu-west-1.amazonaws.com'
           : 'https://d31r10omfuzino.cloudfront.net';
       const date = new Date(snapshot.dateAdded);
-      return `${baseUrl}/${
-        snapshot.placeName
-      }/${date.getFullYear()}/${date.getMonth() + 1}/${snapshot.cuid}`;
-    }
+      return `${baseUrl}/${snapshot.placeName}/${date.getFullYear()}/${
+        date.getMonth() + 1
+      }/${snapshot.cuid}`;
+    },
   },
   Date: new GraphQLScalarType({
     name: 'Date',
@@ -79,6 +79,6 @@ export const resolvers = {
         return parseInt(ast.value, 10); // ast value is always in string format
       }
       return null;
-    }
-  })
+    },
+  }),
 };

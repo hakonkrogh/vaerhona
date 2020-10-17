@@ -1,9 +1,9 @@
-import PropTypes from "prop-types";
-import styled, { keyframes } from "styled-components";
+import PropTypes from 'prop-types';
+import styled, { keyframes } from 'styled-components';
 
 function speedSwitch({ speed }) {
-  if (speed === "fast") return 600;
-  if (speed === "slow") return 900;
+  if (speed === 'fast') return 600;
+  if (speed === 'slow') return 900;
   return 750;
 }
 
@@ -21,10 +21,10 @@ const Svg = styled.svg`
 `;
 
 export const Spinner = ({
-  color = "currentColor",
+  color = 'currentColor',
   gap = 4,
   thickness = 3,
-  size = "1em",
+  size = '1em',
   ...props
 }) => (
   <Svg
@@ -56,6 +56,6 @@ Spinner.propTypes = {
   color: PropTypes.string,
   thickness: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8]),
   gap: PropTypes.oneOf([1, 2, 3, 4, 5]),
-  speed: PropTypes.oneOf(["fast", "slow"]),
-  size: PropTypes.string
+  speed: PropTypes.oneOf(['fast', 'slow']),
+  size: PropTypes.string,
 };

@@ -6,12 +6,4 @@ import Picture from './picture';
 import Statistics from './statistics';
 import Thermometer from './thermometer';
 
-export {
-    App,
-    AppCircle,
-    Compass,
-    Droplets,
-    Picture,
-    Statistics,
-    Thermometer
-};
+export { App, AppCircle, Compass, Droplets, Picture, Statistics, Thermometer };

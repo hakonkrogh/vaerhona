@@ -6,14 +6,14 @@ import ListItem from './list-item';
 
 const PlaceList = ({ places }) => (
   <List>
-    {places.map(p => (
+    {places.map((p) => (
       <ListItem {...p} key={p.cuid} />
     ))}
   </List>
 );
 
 PlaceList.propTypes = {
-  places: PropTypes.array
+  places: PropTypes.array,
 };
 
 export default PlaceList;

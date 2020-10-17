@@ -4,5 +4,5 @@ export const breakpoints = {
   smMin: '600px',
   smMax: '767px',
   mdMin: '768px',
-  mdMax: '1023px'
+  mdMax: '1023px',
 };

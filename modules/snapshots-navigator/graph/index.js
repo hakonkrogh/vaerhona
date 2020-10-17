@@ -16,20 +16,20 @@ const snapshotProperties = [
     type: 'temperature',
     icon: 'thermometer',
     label: 'Temperatur',
-    valueType: 'C'
+    valueType: 'C',
   },
   {
     type: 'humidity',
     icon: 'droplets',
     label: 'Luftfuktighet',
-    valueType: '%'
+    valueType: '%',
   },
   {
     type: 'pressure',
     icon: 'compass',
     label: 'Trykk',
-    valueType: 'hPa'
-  }
+    valueType: 'hPa',
+  },
 ];
 
 const setColors = ['rgba(129, 165, 148, .5)', 'rgba(72, 120, 220, .5)'];
@@ -39,7 +39,7 @@ export default class SnapshotGraph extends Component {
     super(props);
 
     this.state = {
-      selectedProperty: snapshotProperties[0]
+      selectedProperty: snapshotProperties[0],
     };
   }
 
@@ -67,7 +67,7 @@ export default class SnapshotGraph extends Component {
     const { snapshots, compareSnapshots, compare } = this.props;
 
     function handleArr({ month, date, hours }, arr, returnArr) {
-      const snapshot = arr.find(s => {
+      const snapshot = arr.find((s) => {
         const sD = new Date(s.date);
 
         // Month, date and hour need to match
@@ -88,11 +88,11 @@ export default class SnapshotGraph extends Component {
     const returnSnapshots = [];
     const returnCompareSnapshots = [];
 
-    dates.forEach(date => {
+    dates.forEach((date) => {
       const d = {
         month: date.getMonth(),
         date: date.getDate(),
-        hours: date.getHours()
+        hours: date.getHours(),
       };
 
       handleArr(d, snapshots, returnSnapshots);
@@ -125,7 +125,7 @@ export default class SnapshotGraph extends Component {
 
     return [
       getYearFromSnapshots(compareSnapshots),
-      getYearFromSnapshots(snapshots)
+      getYearFromSnapshots(snapshots),
     ];
   }
 
@@ -138,7 +138,7 @@ export default class SnapshotGraph extends Component {
     this.loadChartTimeout = setTimeout(this.loadChart, 100);
   }
 
-  getColor = index => {
+  getColor = (index) => {
     const { compare } = this.props;
 
     if (!compare) {
@@ -166,7 +166,7 @@ export default class SnapshotGraph extends Component {
         label: legends[i],
         data: d,
         fill: false,
-        borderColor: this.getColor(i)
+        borderColor: this.getColor(i),
       }));
 
       if (this.myLineChart) {
@@ -178,22 +178,22 @@ export default class SnapshotGraph extends Component {
           type: 'line',
           data: {
             labels: dates.labels,
-            datasets
+            datasets,
           },
           options: {
             maintainAspectRatio: false,
             title: {
               display: false,
-              position: 'bottom'
+              position: 'bottom',
             },
             legend: {
               position: 'bottom',
               fillStyle: 'red',
               labels: {
-                boxWidth: 20
-              }
-            }
-          }
+                boxWidth: 20,
+              },
+            },
+          },
         });
       }
     }
@@ -201,7 +201,7 @@ export default class SnapshotGraph extends Component {
 
   changeSelectedProperty(newProperty) {
     this.setState({
-      selectedProperty: newProperty
+      selectedProperty: newProperty,
     });
   }
 
@@ -209,10 +209,10 @@ export default class SnapshotGraph extends Component {
     return (
       <Outer>
         <Inner>
-          <Canvas ref={x => (this.canvas = x)} />
+          <Canvas ref={(x) => (this.canvas = x)} />
         </Inner>
         <PropChooser>
-          {snapshotProperties.map(prop => (
+          {snapshotProperties.map((prop) => (
             <Icon
               selected={this.state.selectedProperty.type === prop.type}
               key={prop.type}

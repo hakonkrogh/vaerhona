@@ -24,5 +24,5 @@ export const screen = {
   },
   get lgMin() {
     return this.lg;
-  }
+  },
 };

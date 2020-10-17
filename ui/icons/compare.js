@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export const IconCompare = ({ size = 24 }) => {
   return (

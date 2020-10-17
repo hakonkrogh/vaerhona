@@ -7,13 +7,10 @@ import Header from '../header';
 
 const Wrapper = styled.div`
   background: #fcfcfc;
-  height: ${p => (p.scroll ? 'auto' : '100vh')};
-  display: flex;
-  flex-direction: column;
 `;
 
 export const Loading = styled.div`
-  flex: 1 1 auto;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
