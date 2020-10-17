@@ -1,69 +1,55 @@
-import React, { useState } from 'react';
-import Switch from 'react-switch';
+import React, { useState, useEffect } from 'react';
 
-import Icon from './icon';
 import SnapshotImage from './image';
-import SnapshotGraph from './graph';
+// import SnapshotGraph from './graph';
 
-import { IconCompare } from 'ui';
-import { Outer, Inner, IconMenu, SwitchOuter, IconMenuInner } from './ui';
-
-const currentYear = new Date().getFullYear();
+const oneYear = 1000 * 60 * 60 * 24 * 365;
 
 export function SnapshotsNavigator({ place }) {
   const [currentSnapshot, setCurrentSnapshot] = useState(place.lastSnapshot);
-  const [view, setView] = useState('image');
+  // const [view, setView] = useState('image');
   const [compare, setCompare] = useState(false);
+  const [compareDates, setCompareDates] = useState([]);
+
+  const view = 'image';
+  const canCompare =
+    new Date(currentSnapshot.date) - new Date(place.firstSnapshot.date) >
+    oneYear;
+
+  useEffect(() => {
+    if (compare) {
+      const { firstSnapshot } = place;
+      const firstDate = new Date(firstSnapshot.date);
+      // const lastDate = new Date(lastSnapshot.date);
+      const currentDate = new Date(currentSnapshot.date);
+
+      const dates = [];
+
+      // Exclude the most recent
+      currentDate.setFullYear(currentDate.getFullYear() - 1);
+      do {
+        if (currentDate > firstDate) {
+          dates.push(new Date(currentDate.getTime()));
+        }
+        currentDate.setFullYear(currentDate.getFullYear() - 1);
+      } while (currentDate > firstDate);
+      setCompareDates(dates);
+    }
+  }, [compare, place, currentSnapshot, setCompareDates]);
 
   const sharedProps = {
     place,
     currentSnapshot,
     setCurrentSnapshot,
+    canCompare,
     compare,
+    setCompare,
+    compareDates,
   };
 
-  return (
-    <Outer>
-      <Inner>
-        {view === 'image' && <SnapshotImage {...sharedProps} />}
-        {view === 'graph' && <SnapshotGraph {...sharedProps} />}
-      </Inner>
-      {/* <IconMenu>
-        <IconMenuInner>
-          <Icon
-            selected={view === 'image'}
-            type="image"
-            onClick={() => setView('image')}
-          />
-          <Icon
-            selected={view === 'graph'}
-            type="graph"
-            onClick={() => setView('graph')}
-          />
+  if (view === 'image') {
+    return <SnapshotImage {...sharedProps} />;
+  }
 
-          <SwitchOuter>
-            <label htmlFor="compare-switch">
-              <Switch
-                checked={compare}
-                id="compare-switch"
-                onChange={() =>
-                  setCompare(compare ? null : [currentYear, currentYear - 1])
-                }
-                onColor="#b7ccc2"
-                onHandleColor="#81a594"
-                handleDiameter={20}
-                uncheckedIcon={false}
-                checkedIcon={false}
-                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                height={20}
-                width={36}
-                aria-label="Sammenlign med året før"
-              />
-              <IconCompare />
-            </label>
-          </SwitchOuter>
-        </IconMenuInner>
-      </IconMenu> */}
-    </Outer>
-  );
+  return <div>todo graph</div>;
 }

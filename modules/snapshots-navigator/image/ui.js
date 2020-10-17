@@ -1,29 +1,27 @@
 import styled from 'styled-components';
-import is from 'styled-is';
 
 export const Outer = styled.div`
-  flex-grow: 1;
-
   --navigation-buttons-height: 65px;
+  padding-bottom: var(--navigation-buttons-height);
 `;
 
-export const Images = styled.div`
-  flex: 1 1 auto;
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--navigation-buttons-height);
+export const CompareList = styled.ul`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
 
-  ${is('compare')`
-    flex: 0 0 auto;
-    margin-bottom: 42px;
-  `};
+  > li {
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 export const Bottom = styled.div`
   height: var(--navigation-buttons-height);
   position: fixed;
   background: #fff;
-  /* bottom: var(--icon-menu-height); */
   bottom: 0;
   left: 0;
   width: 100%;
@@ -40,8 +38,9 @@ export const BottomInner = styled.div`
   margin: 0 auto;
 
   > span {
-    width: 50%;
+    flex: 1 1 50%;
     display: flex;
+    justify-content: center;
 
     > button {
       flex: 1 1 50%;
@@ -65,6 +64,32 @@ export const BottomInner = styled.div`
       svg:not(:first-child) {
         margin-left: -10px;
       }
+    }
+  }
+`;
+
+export const SwitchOuter = styled.div`
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+
+  input {
+    appearance: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-right: 10px;
+      position: relative;
+      top: 2px;
     }
   }
 `;

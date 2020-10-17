@@ -3,21 +3,24 @@ import styled from 'styled-components';
 import { responsive } from 'ui';
 
 export const List = styled.ul`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 15px;
-  margin: 15px;
-  padding: 0 0 100px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0 15px 100px;
   list-style: none;
+  max-width: 700px;
 `;
 
 export const ListItem = styled.li`
-  margin: 0;
+  margin: 15px;
   padding: 0;
   position: relative;
 
   > a {
     display: flex;
+    width: 300px;
+    height: 300px;
     flex-direction: column;
     font-size: 1rem;
     box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.25);
@@ -27,13 +30,6 @@ export const ListItem = styled.li`
     color: inherit;
     text-decoration: none;
     margin: 0 auto;
-    height: 50vw;
-
-    ${responsive.mdAndMore} {
-      height: 300px;
-      width: 300px;
-      font-size: 1.5rem;
-    }
   }
 `;
 
