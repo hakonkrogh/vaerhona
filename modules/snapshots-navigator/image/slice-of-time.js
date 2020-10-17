@@ -2,7 +2,6 @@ import React, { useEffect, useCallback, useReducer } from 'react';
 import produce from 'immer';
 import { useQuery } from 'urql';
 import styled from 'styled-components';
-import is from 'styled-is';
 
 import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
 import { graphDate } from 'core/date';
@@ -11,13 +10,21 @@ import SnapshotImage from 'modules/snapshot-image';
 
 const Outer = styled.div`
   text-align: center;
+  padding-top: 75vw;
+  max-height: 80vh;
+  position: relative;
 
-  ${is('$placeholder')`
-    padding-top: ${(9 / 16) * 100}%;
-  `};
+  @media (min-width: 700px) {
+    padding-top: ${700 * 0.75}px;
+  }
 
   img {
-    max-height: 80vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 `;
 
