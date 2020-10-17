@@ -6,8 +6,7 @@ export const Outer = styled.div`
 `;
 
 export const CompareList = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: block;
   margin: 0;
   padding: 0;
   list-style: none;

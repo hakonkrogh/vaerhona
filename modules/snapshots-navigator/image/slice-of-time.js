@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useReducer } from 'react';
 import produce from 'immer';
 import { useQuery } from 'urql';
 import styled from 'styled-components';
+import is from 'styled-is';
 
 import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
 import { graphDate } from 'core/date';
@@ -10,6 +11,11 @@ import SnapshotImage from 'modules/snapshot-image';
 
 const Outer = styled.div`
   text-align: center;
+
+  ${is('$placeholder')`
+    padding-top: ${(9 / 16) * 100}%;
+  `};
+
   img {
     max-height: 80vh;
   }
@@ -242,7 +248,7 @@ export default function SliceOfTime({
   ]);
 
   if (!snapshot) {
-    return null;
+    return <Outer $placeholder />;
   }
 
   return (
