@@ -88,7 +88,7 @@ const reducer = produce((draft, { action, ...rest }) => {
 
       if (snapshotsToMove < 0) {
         draft.query.from = null;
-        draft.query.to = snapshots[0].date;
+        draft.query.to = snapshots[0]?.date || new Date().toISOString();
       } else {
         draft.query.from = snapshots[snapshots.length - 1].date;
         draft.query.to = null;
