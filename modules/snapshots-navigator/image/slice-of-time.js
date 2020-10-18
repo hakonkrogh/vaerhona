@@ -199,8 +199,6 @@ export default function SliceOfTime({
     [snapshots, snapshot]
   );
 
-  console.log({ snapshots });
-
   // Act on date from parent
   useEffect(() => {
     if (date) {

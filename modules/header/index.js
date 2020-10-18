@@ -6,7 +6,7 @@ import { Wrapper, MainLink, Title } from './ui';
 
 const Header = ({ title, children }) => (
   <Wrapper>
-    <Link as="/" href="/index" passHref>
+    <Link href="/" passHref>
       <MainLink>
         <IconApp size={30} />
         <Title>{title}</Title>
