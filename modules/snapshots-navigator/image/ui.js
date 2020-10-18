@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Outer = styled.div`
   --navigation-buttons-height: 65px;
-  padding-bottom: var(--navigation-buttons-height);
+  padding-bottom: calc(var(--navigation-buttons-height) + 15px);
 `;
 
 export const CompareList = styled.ul`

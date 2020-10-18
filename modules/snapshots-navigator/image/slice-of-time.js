@@ -7,6 +7,7 @@ import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
 import { graphDate } from 'core/date';
 import { PLACE_SNAPSHOTS } from 'modules/queries';
 import SnapshotImage from 'modules/snapshot-image';
+import { Spinner } from 'ui';
 
 const Outer = styled.div`
   text-align: center;
@@ -18,6 +19,7 @@ const Outer = styled.div`
     padding-top: ${700 * 0.75}px;
   }
 
+  .loader,
   img {
     position: absolute;
     top: 0;
@@ -25,6 +27,18 @@ const Outer = styled.div`
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+
+  .loader {
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (min-width: 700px) {
+      width: 700px;
+      margin-left: calc((100vw - 700px) / 2);
+    }
   }
 `;
 
@@ -43,18 +57,20 @@ const reducer = produce((draft, { action, ...rest }) => {
       draft.nextCommand = null;
       draft.pendingNavigation = null;
       draft.pendingDate = null;
+      draft.pendingDateOnSnapshotChange = null;
       break;
     }
     case 'command': {
       draft.nextCommand = rest.command;
       draft.pendingNavigation = null;
       draft.pendingDate = null;
+      draft.pendingDateOnSnapshotChange = null;
       break;
     }
     case 'get-more': {
       const { snapshots, snapshotsToMove, desiredDate } = rest;
 
-      draft.firstSnapshotCuid = snapshots?.[0]?.cuid;
+      draft.lastSnapshotsDate = draft.snapshotsDate;
 
       if (desiredDate) {
         const from = new Date(desiredDate.getTime());
@@ -63,7 +79,7 @@ const reducer = produce((draft, { action, ...rest }) => {
         to.setDate(to.getDate() + 3);
         draft.query.from = graphDate(from);
         draft.query.to = graphDate(to);
-        draft.pendingDate = desiredDate;
+        draft.pendingDateOnSnapshotChange = desiredDate;
         break;
       }
 
@@ -81,8 +97,16 @@ const reducer = produce((draft, { action, ...rest }) => {
     case 'got-more': {
       draft.pendingNavigation = null;
       draft.pendingDate = null;
+      draft.pendingDateOnSnapshotChange = null;
 
       draft.localSnapshot = rest.nextLocalSnapshot;
+      break;
+    }
+    case 'snapshots': {
+      draft.snapshots = (draft.snapshots || []).concat(rest.snapshots);
+      draft.snapshotsDate = new Date();
+      draft.pendingDate = draft.pendingDateOnSnapshotChange;
+      draft.pendingDateOnSnapshotChange = null;
       break;
     }
     default: {
@@ -104,7 +128,9 @@ export default function SliceOfTime({
       nextCommand,
       pendingNavigation,
       pendingDate,
-      firstSnapshotCuid,
+      snapshots,
+      snapshotsDate,
+      lastSnapshotsDate,
       query,
       localSnapshot,
     },
@@ -113,13 +139,19 @@ export default function SliceOfTime({
 
   const snapshot = localSnapshot || snapshotFromParent;
 
-  const [{ data: { snapshots } = {} }] = useQuery({
+  const [{ data = {} }] = useQuery({
     query: PLACE_SNAPSHOTS,
     variables: {
       ...query,
       placeName: place.name,
     },
   });
+
+  useEffect(() => {
+    if (data.snapshots) {
+      dispatch({ action: 'snapshots', ...data });
+    }
+  }, [data]);
 
   const getNextSnapshot = useCallback(
     ({ snapshotsToMove, desiredDate: desiredDateFromCommand }) => {
@@ -202,7 +234,7 @@ export default function SliceOfTime({
           !next.snapshot ||
           !snapshot ||
           snapshot?.cuid === next.snapshot?.cuid ||
-          hoursBetweenDates(new Date(snapshot.date), nextDesiredDate) > 1
+          hoursBetweenDates(new Date(next.snapshot.date), nextDesiredDate) > 1
         ) {
           dispatch({
             action: 'get-more',
@@ -215,7 +247,7 @@ export default function SliceOfTime({
 
         if (setSnapshot) {
           if (next.snapshot) {
-            setSnapshot?.(next.snapshot);
+            setSnapshot(next.snapshot);
           }
         } else {
           dispatch({ action: 'got-more', nextLocalSnapshot: next.snapshot });
@@ -226,9 +258,8 @@ export default function SliceOfTime({
 
   // Act on new data
   useEffect(() => {
-    const newFirstSnapshotCuid = snapshots?.[0]?.cuid;
     if (
-      newFirstSnapshotCuid !== firstSnapshotCuid &&
+      lastSnapshotsDate !== snapshotsDate &&
       (pendingNavigation || pendingDate)
     ) {
       const next = getNextSnapshot({
@@ -238,7 +269,7 @@ export default function SliceOfTime({
 
       if (setSnapshot) {
         if (next.snapshot) {
-          setSnapshot?.(next.snapshot);
+          setSnapshot(next.snapshot);
         }
         dispatch({ action: 'got-more' });
       } else {
@@ -246,8 +277,9 @@ export default function SliceOfTime({
       }
     }
   }, [
-    firstSnapshotCuid,
+    lastSnapshotsDate,
     snapshots,
+    snapshotsDate,
     getNextSnapshot,
     pendingNavigation,
     pendingDate,
@@ -255,7 +287,13 @@ export default function SliceOfTime({
   ]);
 
   if (!snapshot) {
-    return <Outer $placeholder />;
+    return (
+      <Outer>
+        <div className="loader">
+          <Spinner size="30px" />
+        </div>
+      </Outer>
+    );
   }
 
   return (
