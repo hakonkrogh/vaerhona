@@ -44,6 +44,7 @@ const Outer = styled.div`
 
 const initialState = {
   pendingNavigation: null,
+  snapshots: [],
   query: {
     from: null,
     to: new Date(),
@@ -197,6 +198,8 @@ export default function SliceOfTime({
     },
     [snapshots, snapshot]
   );
+
+  console.log({ snapshots });
 
   // Act on date from parent
   useEffect(() => {

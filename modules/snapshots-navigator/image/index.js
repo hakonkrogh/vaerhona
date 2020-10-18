@@ -69,8 +69,8 @@ export default function SnapshotImage({
       {!compare && <Metadata place={place} snapshot={currentSnapshot} />}
       {compare && (
         <CompareList>
-          {compareDates.map((date) => (
-            <li key={date}>
+          {compareDates.map((date, index) => (
+            <li key={index}>
               <div style={{ margin: '30px 0 15px', textAlign: 'center' }}>
                 {date.getFullYear()}
               </div>
