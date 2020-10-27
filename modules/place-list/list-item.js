@@ -9,7 +9,7 @@ import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
 
 const PlaceListItem = ({ name, lastSnapshot: snapshot }) => (
   <ListItem>
-    <Link as={`/${name}`} href={`/place?placeName=${name}`}>
+    <Link href={`/${name}`}>
       <a>
         <Upper>
           <PlaceName>{upperFirst(name)}</PlaceName>
