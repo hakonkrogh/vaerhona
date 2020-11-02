@@ -19,9 +19,10 @@ export const ListItem = styled.li`
 
   > a {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     width: 300px;
     height: 300px;
-    flex-direction: column;
     font-size: 1rem;
     box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.25);
     background: #fafafa;
@@ -62,7 +63,7 @@ export const Time = styled.time`
 `;
 
 export const ImageWrapper = styled.figure`
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   display: block;
   margin: 0;
   position: relative;

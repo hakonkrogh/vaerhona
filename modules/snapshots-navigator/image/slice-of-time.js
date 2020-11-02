@@ -10,24 +10,9 @@ import SnapshotImage from 'modules/snapshot-image';
 import { Spinner } from 'ui';
 
 const Outer = styled.div`
-  text-align: center;
-  padding-top: 75vw;
-  max-height: 80vh;
   position: relative;
-
-  @media (min-width: 700px) {
-    padding-top: ${700 * 0.75}px;
-  }
-
-  .loader,
-  img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+  max-width: 700px;
+  margin: 0 auto;
 
   .loader {
     background: #eee;
@@ -40,6 +25,12 @@ const Outer = styled.div`
       margin-left: calc((100vw - 700px) / 2);
     }
   }
+`;
+
+const ImageWrap = styled.div`
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
 `;
 
 const initialState = {
@@ -299,7 +290,14 @@ export default function SliceOfTime({
 
   return (
     <Outer>
-      <SnapshotImage {...snapshot} placeName={place.name} sizes="100vw" />
+      <ImageWrap>
+        <SnapshotImage
+          key={snapshot.cuid}
+          {...snapshot}
+          placeName={place.name}
+          sizes="100vw"
+        />
+      </ImageWrap>
     </Outer>
   );
 }
