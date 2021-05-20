@@ -12,14 +12,12 @@ function parsePlace(place) {
   return place;
 }
 
-export const getPlace = async ({ placeName, populateSnapshotFields }) => {
+export const getPlace = async ({ placeName }) => {
   const place = await snapshotPlaceModel
     .findOne({
       name: placeName,
     })
-    .populate(
-      populateSnapshotFields ? ['firstSnapshot', 'lastSnapshot'] : undefined
-    )
+    .populate(['firstSnapshot', 'lastSnapshot'])
     .exec();
 
   return parsePlace(place);

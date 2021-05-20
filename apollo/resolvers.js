@@ -13,7 +13,6 @@ export const resolvers = {
     place(_, { name: placeName }) {
       return PlaceService.getPlace({
         placeName,
-        populateSnapshotFields: true,
       });
     },
     async snapshots(_, { place: placeName, ...rest }) {
