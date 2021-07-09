@@ -32,9 +32,10 @@ export const resolvers = {
     },
   },
   Mutation: {
+    snapshot: () => ({}),
     async addSnapshot(_, body) {
       try {
-        const snapshot = await SnapshotService.addSnapshot(body);
+        const snapshot = await SnapshotService.addSnapshotLegacy(body);
 
         return {
           success: true,
@@ -47,6 +48,17 @@ export const resolvers = {
           message: error,
         };
       }
+    },
+  },
+  SnapshotMutations: {
+    async add(_, { input }) {
+      const snapshot = await SnapshotService.addSnapshot(input);
+
+      return {
+        success: true,
+        message: 'Snapshot added',
+        snapshot,
+      };
     },
   },
   Snapshot: {

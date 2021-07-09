@@ -46,7 +46,58 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
     .sort(byDateAscending);
 }
 
-export async function addSnapshot({ placeCuid, imageBase64, ...snapshotBody }) {
+export async function addSnapshot({ boxId, image, ...snapshotBody }) {
+  // Get place
+  let place = await snapshotPlaceModel
+    .findOne({
+      boxId,
+    })
+    .exec();
+
+  // Fallback to test place if box is not paired
+  if (!place) {
+    place = await snapshotPlaceModel
+      .findOne({
+        name: 'test',
+      })
+      .exec();
+  }
+
+  if (!place) {
+    throw new Error('Place 404');
+  }
+
+  // Add snapshot
+  const snapshot = new snapshotModel({
+    place: place._id,
+    placeCuid: place.cuid,
+    cuid: generateCuid(),
+    dateAdded: Date.now(),
+    ...snapshotBody,
+  });
+
+  const saveResponse = await snapshot.save();
+
+  // Save image
+  if (image) {
+    await saveImageFromSnapshot({ place, snapshot, image });
+  }
+
+  // Update the place with the last snapshot
+  await place
+    .updateOne({
+      lastSnapshot: saveResponse._id,
+    })
+    .exec();
+
+  return saveResponse;
+}
+
+export async function addSnapshotLegacy({
+  placeCuid,
+  imageBase64,
+  ...snapshotBody
+}) {
   // Get place
   const place = await snapshotPlaceModel
     .findOne({

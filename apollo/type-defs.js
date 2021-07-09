@@ -44,7 +44,21 @@ export const typeDefs = gql`
     snapshot: Snapshot
   }
 
+  type SnapshotMutations {
+    add(input: AddSnapshotMutationInput!): AddSnapshotMutationResponse!
+  }
+
+  input AddSnapshotMutationInput {
+    boxId: String!
+    date: Date
+    temperature: Float
+    pressure: Float
+    humidity: Float
+    image: String
+  }
+
   type Mutation {
+    snapshot: SnapshotMutations!
     addSnapshot(
       placeCuid: String!
       date: Date

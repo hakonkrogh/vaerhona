@@ -4,6 +4,7 @@
   },
   "scripts": {
     "dev": "next",
+    "dev:inspect": "NODE_OPTIONS='--inspect' next",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -33,7 +34,7 @@
     "micro-cors": "^0.1.1",
     "moment-timezone": "^0.5.26",
     "mongoose": "^5.12.10",
-    "next": "^11.0.0",
+    "next": "^11.0.1",
     "polished": "^3.6.7",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",

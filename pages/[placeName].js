@@ -24,7 +24,7 @@ export default function PlacePage({ placeName }) {
 
 export function getStaticPaths() {
   return {
-    paths: ['/veggli', '/buvassbrenna', '/myking'],
+    paths: ['/veggli', '/buvassbrenna', '/myking', '/test'],
     fallback: false,
   };
 }

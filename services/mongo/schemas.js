@@ -5,6 +5,7 @@ import { MODEL_NAMES } from './utils';
 export const snapshotPlaceSchema = new Schema({
   cuid: { type: 'String', required: true },
   name: { type: 'String', required: true },
+  boxId: { type: 'String', required: true },
   isPublic: { type: 'Boolean', required: true, default: false },
   firstSnapshot: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT },
   firstSnapshotDate: { type: 'Date' },
@@ -14,9 +15,10 @@ export const snapshotPlaceSchema = new Schema({
 
 export const snapshotSchema = new Schema({
   cuid: { type: 'String', required: true },
+  place: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT_PLACE },
   placeCuid: { type: 'String', required: true },
   temperature: { type: 'Number', required: true },
   humidity: { type: 'Number', required: true },
-  pressure: { type: 'Number', required: true },
+  pressure: { type: 'Number', required: false },
   dateAdded: { type: 'Date', default: Date.now, required: true },
 });
