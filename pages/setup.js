@@ -24,7 +24,7 @@ export default function Setup() {
   async function connect() {
     device = await navigator.bluetooth.requestDevice({
       // acceptAllDevices: true,
-      // optionalServices: [primaryServiceUuid],
+      optionalServices: [primaryServiceUuid],
       filters: [{ name: 'Vaerhona' }],
     });
     console.log({ device });
