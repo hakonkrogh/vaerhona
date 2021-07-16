@@ -32,7 +32,7 @@ export const resolvers = {
     },
   },
   Mutation: {
-    snapshot: () => ({}),
+    snapshots: () => ({}),
     async addSnapshot(_, body) {
       try {
         const snapshot = await SnapshotService.addSnapshotLegacy(body);
@@ -52,13 +52,20 @@ export const resolvers = {
   },
   SnapshotMutations: {
     async add(_, { input }) {
-      const snapshot = await SnapshotService.addSnapshot(input);
+      try {
+        const snapshot = await SnapshotService.addSnapshot(input);
 
-      return {
-        success: true,
-        message: 'Snapshot added',
-        snapshot,
-      };
+        return {
+          success: true,
+          message: 'Snapshot added',
+          snapshot,
+        };
+      } catch (e) {
+        console.log(e);
+        return {
+          success: false,
+        };
+      }
     },
   },
   Snapshot: {

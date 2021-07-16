@@ -47,6 +47,7 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
 }
 
 export async function addSnapshot({ boxId, image, ...snapshotBody }) {
+  debugger;
   // Get place
   let place = await snapshotPlaceModel
     .findOne({
@@ -74,6 +75,8 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     cuid: generateCuid(),
     dateAdded: Date.now(),
     ...snapshotBody,
+    temperature: snapshotBody.temperature.toFixed(2),
+    humidity: snapshotBody.humidity.toFixed(2),
   });
 
   const saveResponse = await snapshot.save();
