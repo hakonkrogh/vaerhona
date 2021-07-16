@@ -92,6 +92,14 @@ export default function Setup() {
           {sensorValues && <pre>{JSON.stringify(sensorValues, null, 1)}</pre>}
           <div>
             <button onClick={() => send({ action: 'reboot' })}>Reboot</button>
+            <button onClick={() => send({ action: 'shutdown' })}>
+              Shutdown
+            </button>
+          </div>
+          <div>
+            <button onClick={() => send({ action: 'take-snapshot' })}>
+              Take snapshot
+            </button>
           </div>
           <div>
             <button onClick={() => send({ action: 'firmware-update' })}>
