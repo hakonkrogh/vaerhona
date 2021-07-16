@@ -127,6 +127,14 @@ export default function Setup() {
                 <Button
                   size="xs"
                   variant="light"
+                  onClick={() => send({ action: 'firmware-update' })}
+                >
+                  Oppdater fastvare
+                </Button>
+
+                <Button
+                  size="xs"
+                  variant="light"
                   onClick={() => send({ action: 'reboot' })}
                 >
                   Start på nytt
@@ -146,10 +154,14 @@ export default function Setup() {
           <Group
             position="center"
             spacing="xl"
-            style={{ padding: '16px', fontSize: 50 }}
+            style={{ padding: '50px', fontSize: 50 }}
           >
             <Temperature {...sensorValues} />
-            <Divider orientation="vertical" margins="xs" />
+            <Divider
+              orientation="vertical"
+              margins="sm"
+              style={{ margin: '0 50px' }}
+            />
             <Humidity {...sensorValues} />
           </Group>
           <Divider />
@@ -190,16 +202,6 @@ export default function Setup() {
                 <Button type="submit">Oppdater</Button>
               </form>
             )}
-          </Group>
-          <Divider />
-          <Group style={{ padding: '16px 0' }}>
-            <Button
-              size="xs"
-              variant="light"
-              onClick={() => send({ action: 'firmware-update' })}
-            >
-              Oppdater fastvare
-            </Button>
           </Group>
         </div>
       )}
