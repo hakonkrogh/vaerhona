@@ -24,7 +24,7 @@ export default function Metadata({ snapshot }) {
     <Values>
       <Temperature {...snapshot} />
       <Humidity {...snapshot} />
-      <Pressure {...snapshot} />
+      {/* <Pressure {...snapshot} /> */}
     </Values>
   );
 }

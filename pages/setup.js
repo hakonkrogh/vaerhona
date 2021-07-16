@@ -1,4 +1,14 @@
 import { useState } from 'react';
+import {
+  Button,
+  Container,
+  Divider,
+  Group,
+  InputWrapper,
+  Input,
+} from '@mantine/core';
+
+import { Temperature, Humidity } from 'ui';
 
 const primaryServiceUuid = '601202ac-16d1-4f74-819d-85788a5ad77a';
 
@@ -11,6 +21,10 @@ export default function Setup() {
   const [isConnected, setIsConnected] = useState(false);
   const [sensorValues, setSensorValues] = useState(null);
   const [wifiSettings, setWifiSettings] = useState(null);
+
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
   function onDisconnected() {
     device = null;
@@ -79,59 +93,116 @@ export default function Setup() {
   }
 
   return (
-    <div>
+    <Container size="sm">
       {!isConnected ? (
-        <button type="button" onClick={connect}>
-          Connect
-        </button>
+        <div
+          style={{
+            display: 'flex',
+            minHeight: '80vh',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Button type="button" onClick={connect}>
+            Søk etter en Værhøne
+          </Button>
+        </div>
       ) : (
         <div>
-          <button type="button" onClick={() => device.gatt.disconnect()}>
-            Disconnect
-          </button>
-          {sensorValues && <pre>{JSON.stringify(sensorValues, null, 1)}</pre>}
-          <div>
-            <button onClick={() => send({ action: 'reboot' })}>Reboot</button>
-            <button onClick={() => send({ action: 'shutdown' })}>
-              Shutdown
-            </button>
-          </div>
-          <div>
-            <button onClick={() => send({ action: 'take-snapshot' })}>
-              Take snapshot
-            </button>
-          </div>
-          <div>
-            <button onClick={() => send({ action: 'firmware-update' })}>
-              Update firmware
-            </button>
-          </div>
-          <div>
-            Wifi:
+          <Group position="apart" spacing="sm" style={{ margin: '8px 0' }}>
+            <Button onClick={() => send({ action: 'take-snapshot' })}>
+              Ta bilde
+            </Button>
+            <div>
+              <Group position="apart" spacing="md">
+                <Button
+                  size="xs"
+                  variant="light"
+                  type="button"
+                  onClick={() => device.gatt.disconnect()}
+                >
+                  Koble fra
+                </Button>
+
+                <Button
+                  size="xs"
+                  variant="light"
+                  onClick={() => send({ action: 'reboot' })}
+                >
+                  Start på nytt
+                </Button>
+
+                <Button
+                  size="xs"
+                  variant="light"
+                  onClick={() => send({ action: 'shutdown' })}
+                >
+                  Skru av
+                </Button>
+              </Group>
+            </div>
+          </Group>
+          <Divider />
+          <Group
+            position="center"
+            spacing="xl"
+            style={{ padding: '16px', fontSize: 50 }}
+          >
+            <Temperature {...sensorValues} />
+            <Divider orientation="vertical" margins="xs" />
+            <Humidity {...sensorValues} />
+          </Group>
+          <Divider />
+          <Group style={{ padding: '16px 0' }}>
             {!wifiSettings ? (
-              <button
+              <Button
+                variant="light"
                 onClick={() =>
                   send({
                     action: 'get-wifi',
                   })
                 }
               >
-                Get WIFI settings
-              </button>
+                Endre wifi
+              </Button>
             ) : (
               <form onSubmit={onWifiSettingsUpdateSubmit}>
-                <div>
-                  SSID: <input name="ssid" defaultValue={wifiSettings.ssid} />
-                </div>
-                <div>
-                  PSK: <input name="psk" defaultValue={wifiSettings.psk} />
-                </div>
-                <button type="submit">Update</button>
+                <InputWrapper
+                  id="ssid"
+                  required
+                  label="Navn på wifi"
+                  style={{ marginBottom: 16 }}
+                >
+                  <Input
+                    id="ssid"
+                    name="ssid"
+                    defaultValue={wifiSettings.ssid}
+                  />
+                </InputWrapper>
+                <InputWrapper
+                  id="ssid"
+                  required
+                  label="Passordet for wifi"
+                  style={{ marginBottom: 16 }}
+                >
+                  <Input id="psk" name="psk" defaultValue={wifiSettings.psk} />
+                </InputWrapper>
+                <Button type="submit">Oppdater</Button>
               </form>
             )}
-          </div>
+          </Group>
+          <Divider />
+          <Group style={{ padding: '16px 0' }}>
+            <Button
+              size="xs"
+              variant="light"
+              onClick={() => send({ action: 'firmware-update' })}
+            >
+              Oppdater fastvare
+            </Button>
+          </Group>
         </div>
       )}
-    </div>
+    </Container>
   );
 }

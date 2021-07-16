@@ -24,12 +24,12 @@ const snapshotProperties = [
     label: 'Luftfuktighet',
     valueType: '%',
   },
-  {
-    type: 'pressure',
-    icon: 'compass',
-    label: 'Trykk',
-    valueType: 'hPa',
-  },
+  // {
+  //   type: 'pressure',
+  //   icon: 'compass',
+  //   label: 'Trykk',
+  //   valueType: 'hPa',
+  // },
 ];
 
 const setColors = ['rgba(129, 165, 148, .5)', 'rgba(72, 120, 220, .5)'];
