@@ -15,6 +15,7 @@ export const snapshotPlaceSchema = new Schema({
 
 export const snapshotSchema = new Schema({
   cuid: { type: 'String', required: true },
+  boxId: { type: String, required: false },
   place: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT_PLACE },
   placeCuid: { type: 'String', required: true },
   temperature: { type: 'Number', required: true },

@@ -47,7 +47,6 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
 }
 
 export async function addSnapshot({ boxId, image, ...snapshotBody }) {
-  debugger;
   // Get place
   let place = await snapshotPlaceModel
     .findOne({
@@ -56,12 +55,14 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     .exec();
 
   // Fallback to test place if box is not paired
+  let isTestPlace = false;
   if (!place) {
     place = await snapshotPlaceModel
       .findOne({
         name: 'test',
       })
       .exec();
+    isTestPlace = true;
   }
 
   if (!place) {
@@ -77,6 +78,7 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     ...snapshotBody,
     temperature: snapshotBody.temperature.toFixed(2),
     humidity: snapshotBody.humidity.toFixed(2),
+    ...(isTestPlace && { boxId }),
   });
 
   const saveResponse = await snapshot.save();
