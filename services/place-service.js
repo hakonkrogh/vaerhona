@@ -2,10 +2,10 @@ import './init';
 import { snapshotPlaceModel } from './mongo/models';
 
 function parsePlace(place) {
-  if (place.firstSnapshot) {
+  if (place?.firstSnapshot) {
     place.firstSnapshot.placeName = place.name;
   }
-  if (place.lastSnapshot) {
+  if (place?.lastSnapshot) {
     place.lastSnapshot.placeName = place.name;
   }
 
