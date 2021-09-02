@@ -53,7 +53,8 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
       boxId,
     })
     .exec();
-
+  console.log({ boxId });
+  console.log({ place });
   // Fallback to test place if box is not paired
   let isTestPlace = false;
   if (!place) {
