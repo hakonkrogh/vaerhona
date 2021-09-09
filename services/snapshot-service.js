@@ -48,6 +48,7 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
 
 export async function addSnapshot({ boxId, image, ...snapshotBody }) {
   const boxIdTrimmed = boxId.trim().replace(/\/n/g, '');
+  console.log(JSON.stringify(snapshotBody, null, 1));
 
   // Get place
   let place = await snapshotPlaceModel
@@ -55,8 +56,7 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
       boxId: boxIdTrimmed,
     })
     .exec();
-  console.log({ boxId, boxIdTrimmed });
-  console.log({ place });
+
   // Fallback to test place if box is not paired
   let isTestPlace = false;
   if (!place) {
