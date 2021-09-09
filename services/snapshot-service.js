@@ -106,6 +106,8 @@ export async function addSnapshotLegacy({
   imageBase64,
   ...snapshotBody
 }) {
+  console.log('legacy');
+  console.log({ placeCuid, snapshotBody });
   // Get place
   const place = await snapshotPlaceModel
     .findOne({
