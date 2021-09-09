@@ -16,12 +16,12 @@ const loggingPlugin = {
       console.log('Variables:');
       console.log(JSON.stringify(variables, null, 1));
 
-      return {
-        willSendResponse(context) {
-          console.log('Response:');
-          console.log(JSON.stringify(context.response.data, null, 1));
-        },
-      };
+      // return {
+      //   willSendResponse(context) {
+      //     console.log('Response:');
+      //     console.log(JSON.stringify(context.response.data, null, 1));
+      //   },
+      // };
     }
   },
 };
