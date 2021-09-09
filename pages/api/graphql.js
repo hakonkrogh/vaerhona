@@ -10,11 +10,12 @@ const loggingPlugin = {
   requestDidStart(requestContext) {
     const { query, variables } = requestContext.request;
 
-    if (!query.includes('query IntrospectionQuery')) {
-      console.log('Query:');
+    if (query.includes('mutation')) {
+      console.log('Mutation:');
       console.log(query);
       console.log('Variables:');
-      console.log(JSON.stringify(variables, null, 1));
+      const { image, imageBase64, ...rest } = variables;
+      console.log(JSON.stringify(rest, null, 1));
 
       // return {
       //   willSendResponse(context) {
