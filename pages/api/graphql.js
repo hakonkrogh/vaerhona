@@ -12,7 +12,7 @@ const loggingPlugin = {
 
     if (query.includes('mutation')) {
       console.log('Mutation:');
-      console.log(query);
+      console.log(query.substring(0, 200));
       console.log('Variables:');
       const { image, imageBase64, ...rest } = variables;
       console.log(JSON.stringify(rest, null, 1));
