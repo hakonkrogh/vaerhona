@@ -115,8 +115,13 @@ export async function addSnapshotLegacy({
     })
     .exec();
 
+  // Fallback to test place if box is not paired
   if (!place) {
-    throw new Error(`Place with cuid "${placeCuid}" not found`);
+    place = await snapshotPlaceModel
+      .findOne({
+        name: 'test',
+      })
+      .exec();
   }
 
   // Add snapshot
