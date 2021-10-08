@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styled from 'styled-components';
 import {
   Button,
   Container,
@@ -9,6 +10,10 @@ import {
 } from '@mantine/core';
 
 import { Temperature, Humidity } from 'ui';
+
+const IsOnline = styled.div`
+  margin-left: 15px;
+`;
 
 const primaryServiceUuid = '601202ac-16d1-4f74-819d-85788a5ad77a';
 
@@ -21,6 +26,7 @@ export default function Setup() {
   const [isConnected, setIsConnected] = useState(false);
   const [sensorValues, setSensorValues] = useState(null);
   const [wifiSettings, setWifiSettings] = useState(null);
+  const [isOnline, setIsOnline] = useState(null);
 
   if (typeof window === 'undefined') {
     return null;
@@ -64,6 +70,10 @@ export default function Setup() {
             setWifiSettings(value.data);
             break;
           }
+          case 'is-online': {
+            setIsOnline(value.data);
+            break;
+          }
         }
       } catch (e) {
         console.log(e);
@@ -71,6 +81,10 @@ export default function Setup() {
     };
 
     setIsConnected(true);
+
+    send({
+      action: 'get-online',
+    });
 
     device.ongattserverdisconnected = onDisconnected;
   }
@@ -167,16 +181,25 @@ export default function Setup() {
           <Divider />
           <Group style={{ padding: '16px 0' }}>
             {!wifiSettings ? (
-              <Button
-                variant="light"
-                onClick={() =>
-                  send({
-                    action: 'get-wifi',
-                  })
-                }
-              >
-                Endre wifi
-              </Button>
+              <>
+                <Button
+                  variant="light"
+                  onClick={() =>
+                    send({
+                      action: 'get-wifi',
+                    })
+                  }
+                >
+                  Endre wifi
+                </Button>
+                <IsOnline isOnline={isOnline}>
+                  {isOnline === null
+                    ? 'Sjekker nettstatus...'
+                    : isOnline
+                    ? '☑️ Er på nett'
+                    : '⚠️ Er IKKE på nett'}
+                </IsOnline>
+              </>
             ) : (
               <form onSubmit={onWifiSettingsUpdateSubmit}>
                 <InputWrapper
