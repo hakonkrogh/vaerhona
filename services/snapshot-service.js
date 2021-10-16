@@ -67,6 +67,8 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     isTestPlace = true;
   }
 
+  console.log('addSnapshot', { boxIdTrimmed, isTestPlace, place: place?._id });
+
   if (!place) {
     throw new Error('Place 404');
   }
