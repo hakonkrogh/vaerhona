@@ -15,6 +15,17 @@ const IsOnline = styled.div`
   margin-left: 15px;
 `;
 
+const BoxId = styled.div`
+  font-size: 0.7rem;
+  font-style: italic;
+  opacity: 0.6;
+  margin: 15px 0;
+
+  &::before {
+    content: 'Box id: ';
+  }
+`;
+
 const primaryServiceUuid = '601202ac-16d1-4f74-819d-85788a5ad77a';
 
 const txtD = new TextDecoder('utf-8');
@@ -27,6 +38,7 @@ export default function Setup() {
   const [sensorValues, setSensorValues] = useState(null);
   const [wifiSettings, setWifiSettings] = useState(null);
   const [isOnline, setIsOnline] = useState(null);
+  const [boxId, setBoxId] = useState(null);
 
   if (typeof window === 'undefined') {
     return null;
@@ -61,9 +73,14 @@ export default function Setup() {
     firstCharacteristic.oncharacteristicvaluechanged = function onChange(e) {
       try {
         const value = JSON.parse(txtD.decode(e.target.value));
+        console.log(value);
         switch (value.action) {
           case 'sensor-reading': {
             setSensorValues(value.data);
+            break;
+          }
+          case 'box-id': {
+            setBoxId(value.data);
             break;
           }
           case 'wifi-settings': {
@@ -226,6 +243,7 @@ export default function Setup() {
               </form>
             )}
           </Group>
+          {boxId && <BoxId>{boxId}</BoxId>}
         </div>
       )}
     </Container>
