@@ -26,6 +26,22 @@ const BoxId = styled.div`
   }
 `;
 
+const BlockingMessage = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  background: #ffffffdd;
+  padding: 10%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+`;
+
 const primaryServiceUuid = '601202ac-16d1-4f74-819d-85788a5ad77a';
 
 const txtD = new TextDecoder('utf-8');
@@ -39,6 +55,7 @@ export default function Setup() {
   const [wifiSettings, setWifiSettings] = useState(null);
   const [isOnline, setIsOnline] = useState(null);
   const [boxId, setBoxId] = useState(null);
+  const [blockingMessage, setBlockingMessage] = useState(false);
 
   if (typeof window === 'undefined') {
     return null;
@@ -107,7 +124,45 @@ export default function Setup() {
   }
 
   function send(message) {
-    firstCharacteristic.writeValue(txtE.encode(JSON.stringify(message)));
+    // firstCharacteristic.writeValue(txtE.encode(JSON.stringify(message)));
+
+    let msg = '';
+    let willRebootOrShutdown = false;
+    switch (message.action) {
+      case 'set-wifi': {
+        msg = 'Oppdaterer Wifi...';
+        willRebootOrShutdown = true;
+        break;
+      }
+      case 'take-snapshot': {
+        msg = 'Tar et bilde. Vennligst vent...';
+        break;
+      }
+      case 'firmware-update': {
+        msg =
+          'Oppdaterer fastvare. Dette kan ta flere minutter. Vennligst vent...';
+        willRebootOrShutdown = true;
+        break;
+      }
+      case 'reboot': {
+        msg = 'Starter på nytt. Vennligst vent...';
+        willRebootOrShutdown = true;
+        break;
+      }
+      case 'shutdown': {
+        msg = 'Skrur av. Vennligst vent...';
+        willRebootOrShutdown = true;
+        break;
+      }
+    }
+
+    if (msg) {
+      setBlockingMessage(msg);
+
+      if (!willRebootOrShutdown) {
+        setTimeout(() => setBlockingMessage(null), 5000);
+      }
+    }
   }
 
   function onWifiSettingsUpdateSubmit(e) {
@@ -125,6 +180,11 @@ export default function Setup() {
 
   return (
     <Container size="sm">
+      {blockingMessage ? (
+        <BlockingMessage>
+          <span>{blockingMessage}</span>
+        </BlockingMessage>
+      ) : null}
       {!isConnected ? (
         <div
           style={{
