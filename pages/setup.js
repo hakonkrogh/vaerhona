@@ -218,13 +218,13 @@ export default function Setup() {
                   Koble fra
                 </Button>
 
-                {/* <Button
+                <Button
                   size="xs"
                   variant="light"
-                  onClick={() => send({ action: 'firmware-update' })}
+                  onClick={() => send({ action: 'regenerate-boxid' })}
                 >
-                  Oppdater fastvare
-                </Button> */}
+                  Lag ny box-id
+                </Button>
 
                 <Button
                   size="xs"
