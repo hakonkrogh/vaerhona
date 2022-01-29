@@ -56,6 +56,7 @@ export default function Setup() {
   const [isOnline, setIsOnline] = useState(null);
   const [boxId, setBoxId] = useState(null);
   const [blockingMessage, setBlockingMessage] = useState(false);
+  const [changeWifi, setChangeWifi] = useState(false);
 
   if (typeof window === 'undefined') {
     return null;
@@ -124,7 +125,7 @@ export default function Setup() {
   }
 
   function send(message) {
-    // firstCharacteristic.writeValue(txtE.encode(JSON.stringify(message)));
+    firstCharacteristic.writeValue(txtE.encode(JSON.stringify(message)));
 
     let msg = '';
     let willRebootOrShutdown = false;
@@ -257,16 +258,9 @@ export default function Setup() {
           </Group>
           <Divider />
           <Group style={{ padding: '16px 0' }}>
-            {!wifiSettings ? (
+            {!changeWifi ? (
               <>
-                <Button
-                  variant="light"
-                  onClick={() =>
-                    send({
-                      action: 'get-wifi',
-                    })
-                  }
-                >
+                <Button variant="light" onClick={() => setChangeWifi(true)}>
                   Endre wifi
                 </Button>
                 <IsOnline isOnline={isOnline}>
@@ -278,7 +272,7 @@ export default function Setup() {
                 </IsOnline>
               </>
             ) : (
-              <form onSubmit={onWifiSettingsUpdateSubmit}>
+              <form onSubmit={onWifiSettingsUpdateSubmit} autoComplete="off">
                 <InputWrapper
                   id="ssid"
                   required
@@ -288,7 +282,7 @@ export default function Setup() {
                   <Input
                     id="ssid"
                     name="ssid"
-                    defaultValue={wifiSettings.ssid}
+                    defaultValue={wifiSettings?.ssid}
                   />
                 </InputWrapper>
                 <InputWrapper
@@ -297,7 +291,7 @@ export default function Setup() {
                   label="Passordet for wifi"
                   style={{ marginBottom: 16 }}
                 >
-                  <Input id="psk" name="psk" defaultValue={wifiSettings.psk} />
+                  <Input id="psk" name="psk" defaultValue={wifiSettings?.psk} />
                 </InputWrapper>
                 <Button type="submit">Oppdater</Button>
               </form>
