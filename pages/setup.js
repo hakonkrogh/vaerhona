@@ -218,13 +218,13 @@ export default function Setup() {
                   Koble fra
                 </Button>
 
-                <Button
+                {/* <Button
                   size="xs"
                   variant="light"
                   onClick={() => send({ action: 'firmware-update' })}
                 >
                   Oppdater fastvare
-                </Button>
+                </Button> */}
 
                 <Button
                   size="xs"
