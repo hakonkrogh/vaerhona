@@ -74,7 +74,7 @@ export default function Setup() {
     device = await navigator.bluetooth.requestDevice({
       // acceptAllDevices: true,
       optionalServices: [primaryServiceUuid],
-      filters: [{ name: 'Vaerhona' }],
+      filters: [{ name: 'Vaerhona' }, { name: 'raspberrypi' }],
     });
     console.log({ device });
     server = await device.gatt.connect();
