@@ -68,6 +68,8 @@ export default function Setup() {
     service = null;
     firstCharacteristic = null;
     setIsConnected(false);
+    setChangeWifi(false);
+    setBlockingMessage(false);
     alert('device disconnected');
   }
 
