@@ -108,7 +108,7 @@ export async function addSnapshotLegacy({
   ...snapshotBody
 }) {
   // Get place
-  const place = await snapshotPlaceModel
+  let place = await snapshotPlaceModel
     .findOne({
       cuid: placeCuid,
     })
