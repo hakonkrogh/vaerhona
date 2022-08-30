@@ -32,7 +32,7 @@
     "keycode": "^2.2.0",
     "micro": "^9.3.4",
     "micro-cors": "^0.1.1",
-    "moment-timezone": "^0.5.26",
+    "moment-timezone": "^0.5.35",
     "mongoose": "^5.12.10",
     "next": "^12.1.6",
     "polished": "^3.6.7",
