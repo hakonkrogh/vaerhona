@@ -1,7 +1,13 @@
 import React from 'react';
-import Image from 'next/image';
+import styled from 'styled-components';
+// import Image from 'next/image';
 
 import { prettyDateTime } from 'core/date';
+
+const StyledImage = styled.img`
+  object-fit: contain;
+  height: 66vh;
+`;
 
 const SnapshotImage = ({
   date,
@@ -12,9 +18,12 @@ const SnapshotImage = ({
   ...rest
 }) => {
   return (
-    <Image
+    <StyledImage
       alt={`Bilde fra ${placeName} tatt ${prettyDateTime(date)}`}
-      src={image}
+      src={
+        image.replace('d31r10omfuzino.cloudfront.net', 'vaerhona.imgix.net') +
+        '?auto=format,enhance'
+      }
       width={width}
       height={height}
       {...rest}

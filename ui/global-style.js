@@ -9,4 +9,8 @@ export const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
   }
+
+  img {
+    max-width: 100%;
+  }
 `;

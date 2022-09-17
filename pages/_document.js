@@ -68,6 +68,7 @@ export default class MyDocument extends Document {
             content="/static/favicons/browserconfig.xml?v=M4yo99lAWP"
           />
           <meta name="theme-color" content="#ffffff" />
+          <link rel="preconnect" href="https://vaerhona.imgix.net" />
 
           <script
             dangerouslySetInnerHTML={{

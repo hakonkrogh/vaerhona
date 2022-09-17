@@ -63,7 +63,7 @@ export const Time = styled.time`
 `;
 
 export const ImageWrapper = styled.figure`
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   display: block;
   margin: 0;
   position: relative;
