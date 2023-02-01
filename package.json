@@ -33,7 +33,7 @@
     "micro": "^9.3.4",
     "micro-cors": "^0.1.1",
     "moment-timezone": "^0.5.26",
-    "mongoose": "^5.12.10",
+    "mongoose": "^5.13.15",
     "next": "^12.1.6",
     "polished": "^3.6.7",
     "prop-types": "^15.7.2",
