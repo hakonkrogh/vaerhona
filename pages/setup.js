@@ -141,6 +141,11 @@ export default function Setup() {
         msg = 'Tar et bilde. Vennligst vent...';
         break;
       }
+      case 'os-update': {
+        msg = 'Oppdaterer OS. Dette kan ta flere minutter. Vennligst vent...';
+        willRebootOrShutdown = true;
+        break;
+      }
       case 'firmware-update': {
         msg =
           'Oppdaterer fastvare. Dette kan ta flere minutter. Vennligst vent...';
@@ -232,6 +237,14 @@ export default function Setup() {
                   onClick={() => send({ action: 'firmware-update' })}
                 >
                   Oppdater fastvare
+                </Button>
+
+                <Button
+                  size="xs"
+                  variant="light"
+                  onClick={() => send({ action: 'os-update' })}
+                >
+                  Oppdater OS
                 </Button>
 
                 <Button
