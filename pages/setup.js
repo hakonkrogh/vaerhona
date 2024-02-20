@@ -229,6 +229,14 @@ export default function Setup() {
                 <Button
                   size="xs"
                   variant="light"
+                  onClick={() => send({ action: 'firmware-update' })}
+                >
+                  Oppdater fastvare
+                </Button>
+
+                <Button
+                  size="xs"
+                  variant="light"
                   onClick={() => send({ action: 'reboot' })}
                 >
                   Start på nytt
