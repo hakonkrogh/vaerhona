@@ -187,7 +187,7 @@ export default function Setup() {
   }
 
   return (
-    <Container size="sm">
+    <Container size="sm" suppressHydrationWarning>
       {blockingMessage ? (
         <BlockingMessage>
           <span>{blockingMessage}</span>
@@ -226,7 +226,10 @@ export default function Setup() {
                 <Button
                   size="xs"
                   variant="light"
-                  onClick={() => send({ action: 'regenerate-boxid' })}
+                  onClick={() => {
+                    const id = prompt('Skriv inn box-id (tom for auto)');
+                    send({ action: 'regenerate-boxid', id });
+                  }}
                 >
                   Lag ny box-id
                 </Button>
