@@ -123,6 +123,9 @@ export async function addSnapshotLegacy({
       .exec();
   }
 
+  console.log('add snapshot legacy');
+  console.log({ placeCuid, snapshotBody })
+
   // Add snapshot
   const snapshot = new snapshotModel({
     placeCuid,
