@@ -6,17 +6,20 @@ import SnapshotImage from './image';
 const oneYear = 1000 * 60 * 60 * 24 * 365;
 
 export function SnapshotsNavigator({ place }) {
-  const [currentSnapshot, setCurrentSnapshot] = useState(place.lastSnapshot);
+  const [currentSnapshot, setCurrentSnapshot] = useState(place?.lastSnapshot);
   // const [view, setView] = useState('image');
   const [compare, setCompare] = useState(false);
   const [compareDates, setCompareDates] = useState([]);
 
   const view = 'image';
   const canCompare =
-    new Date(currentSnapshot.date) - new Date(place.firstSnapshot.date) >
+    new Date(currentSnapshot?.date) - new Date(place?.firstSnapshot.date) >
     oneYear;
 
   useEffect(() => {
+    if (!place || !currentSnapshot) {
+      return;
+    }
     if (compare) {
       const { firstSnapshot } = place;
       const firstDate = new Date(firstSnapshot.date);
@@ -36,6 +39,10 @@ export function SnapshotsNavigator({ place }) {
       setCompareDates(dates);
     }
   }, [compare, place, currentSnapshot, setCompareDates]);
+
+  if (!place || !currentSnapshot) {
+    return;
+  }
 
   const sharedProps = {
     place,
