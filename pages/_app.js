@@ -1,20 +1,21 @@
 import {
   createClient,
   Provider,
-  dedupExchange,
+  // dedupExchange,
   cacheExchange,
   fetchExchange,
 } from 'urql';
-import { refocusExchange } from '@urql/exchange-refocus';
+// import { refocusExchange } from '@urql/exchange-refocus';
 
 import { GlobalStyle } from 'ui';
 import { isClient } from 'core/utils';
 
 const client = createClient({
   url: '/api/graphql',
-  ...(isClient && {
-    exchanges: [dedupExchange, refocusExchange(), cacheExchange, fetchExchange],
-  }),
+  // ...(isClient && {
+  // exchanges: [dedupExchange, refocusExchange(), cacheExchange, fetchExchange],
+  exchanges: [cacheExchange, fetchExchange],
+  // }),
 });
 
 export default function App({ Component, pageProps }) {
