@@ -53,6 +53,7 @@ export default function Setup() {
   const [isConnected, setIsConnected] = useState(false);
   const [sensorValues, setSensorValues] = useState(null);
   const [wifiSettings, setWifiSettings] = useState(null);
+  const [supportsMultipleWifi, setSupportsMultipleWifi] = useState(false);
   const [isOnline, setIsOnline] = useState(null);
   const [boxId, setBoxId] = useState(null);
   const [blockingMessage, setBlockingMessage] = useState(false);
@@ -104,7 +105,9 @@ export default function Setup() {
             break;
           }
           case 'wifi-settings': {
-            setWifiSettings(value.data);
+            const doesMultipleWifi = Array.isArray(value.data);
+            setWifiSettings(doesMultipleWifi ? value.data : [value.data]);
+            setSupportsMultipleWifi(doesMultipleWifi);
             break;
           }
           case 'is-online': {
