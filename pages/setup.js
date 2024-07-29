@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   Button,
@@ -52,14 +52,22 @@ let device, server, service, firstCharacteristic;
 export default function Setup() {
   const [isConnected, setIsConnected] = useState(false);
   const [sensorValues, setSensorValues] = useState(null);
-  const [wifiSettings, setWifiSettings] = useState(null);
+
+  const [wifiSettings, setWifiSettings] = useState([]);
+  const [supportsMultipleWifi, setSupportsMultipleWifi] = useState(false);
+
   const [isOnline, setIsOnline] = useState(null);
   const [boxId, setBoxId] = useState(null);
   const [blockingMessage, setBlockingMessage] = useState(false);
   const [changeWifi, setChangeWifi] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  if (typeof window === 'undefined') {
-    return null;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return '...';
   }
 
   function onDisconnected() {
@@ -93,21 +101,26 @@ export default function Setup() {
     firstCharacteristic.oncharacteristicvaluechanged = function onChange(e) {
       try {
         const value = JSON.parse(txtD.decode(e.target.value));
-        console.log(value);
         switch (value.action) {
           case 'sensor-reading': {
             setSensorValues(value.data);
             break;
           }
           case 'box-id': {
+            console.log(value);
             setBoxId(value.data);
             break;
           }
           case 'wifi-settings': {
-            setWifiSettings(value.data);
+            console.log(value);
+            const doesMultipleWifi = Array.isArray(value.data);
+            setWifiSettings(doesMultipleWifi ? value.data : [value.data]);
+            setSupportsMultipleWifi(doesMultipleWifi);
+
             break;
           }
           case 'is-online': {
+            console.log(value);
             setIsOnline(value.data);
             break;
           }
@@ -176,13 +189,40 @@ export default function Setup() {
   function onWifiSettingsUpdateSubmit(e) {
     e.preventDefault();
     const vals = Object.fromEntries(new FormData(e.target));
+    const newSettings = [];
+    for (const key of Object.keys(vals)) {
+      const [index, wKey] = key.split(':::::');
+      const indx = parseInt(index);
+      if (!newSettings[indx]) {
+        newSettings[indx] = { ssid: '', psk: '' };
+      }
+      newSettings[indx][wKey] = vals[key];
+    }
+
+    const valToSend = supportsMultipleWifi ? newSettings : newSettings[0];
 
     send({
       action: 'set-wifi',
-      data: {
-        ssid: vals.ssid,
-        psk: vals.psk,
-      },
+      data: valToSend,
+    });
+  }
+
+  function removeWifi(index) {
+    setWifiSettings((s) => {
+      s[index].deleted = true;
+      return s;
+    });
+  }
+
+  function addWifi() {
+    setWifiSettings((s) => {
+      return [
+        ...s,
+        {
+          ssid: '',
+          psk: '',
+        },
+      ];
     });
   }
 
@@ -298,27 +338,42 @@ export default function Setup() {
                 </IsOnline>
               </>
             ) : (
-              <form onSubmit={onWifiSettingsUpdateSubmit} autoComplete="off">
-                <InputWrapper
-                  id="ssid"
-                  required
-                  label="Navn på wifi"
-                  style={{ marginBottom: 16 }}
-                >
-                  <Input
-                    id="ssid"
-                    name="ssid"
-                    defaultValue={wifiSettings?.ssid}
-                  />
-                </InputWrapper>
-                <InputWrapper
-                  id="ssid"
-                  required
-                  label="Passordet for wifi"
-                  style={{ marginBottom: 16 }}
-                >
-                  <Input id="psk" name="psk" defaultValue={wifiSettings?.psk} />
-                </InputWrapper>
+              <form
+                onSubmit={onWifiSettingsUpdateSubmit}
+                autoComplete="off"
+                style={{ display: 'grid', gap: '10px' }}
+              >
+                {wifiSettings.map((w, index) => (
+                  <div key={index} style={{ opacity: w.deleted ? 0.5 : 1 }}>
+                    <InputWrapper
+                      required
+                      label="Navn på wifi"
+                      style={{ marginBottom: 16 }}
+                    >
+                      <Input name={`${index}:::::ssid`} defaultValue={w.ssid} />
+                    </InputWrapper>
+                    <InputWrapper
+                      required
+                      label="Passordet for wifi"
+                      style={{ marginBottom: 16 }}
+                    >
+                      <Input name={`${index}:::::psk`} defaultValue={w.psk} />
+                    </InputWrapper>
+                    {supportsMultipleWifi &&
+                      wifiSettings.filter((s) => !s.deleted).length > 1 && (
+                        <button type="button" onClick={() => removeWifi(index)}>
+                          -
+                        </button>
+                      )}
+                  </div>
+                ))}
+
+                {supportsMultipleWifi && (
+                  <button type="button" onClick={() => addWifi()}>
+                    +
+                  </button>
+                )}
+
                 <Button type="submit">Oppdater</Button>
               </form>
             )}
