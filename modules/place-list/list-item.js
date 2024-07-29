@@ -10,18 +10,16 @@ import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
 const PlaceListItem = ({ name, lastSnapshot: snapshot }) => (
   <ListItem>
     <Link href={`/${name}`}>
-      <a>
-        <Upper>
-          <PlaceName>{upperFirst(name)}</PlaceName>
-          <div>
-            <Time>{timeOrDate(snapshot.date)}</Time>
-          </div>
-        </Upper>
+      <Upper>
+        <PlaceName>{upperFirst(name)}</PlaceName>
+        <div>
+          <Time>{timeOrDate(snapshot.date)}</Time>
+        </div>
+      </Upper>
 
-        <ImageWrapper>
-          <SnapshotImage {...snapshot} sizes="300px" />
-        </ImageWrapper>
-      </a>
+      <ImageWrapper>
+        <SnapshotImage {...snapshot} sizes="300px" />
+      </ImageWrapper>
     </Link>
   </ListItem>
 );

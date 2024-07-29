@@ -1,17 +1,14 @@
 import React from 'react';
-import Link from 'next/link';
 
 import { IconApp } from 'ui';
 import { Wrapper, MainLink, Title } from './ui';
 
 const Header = ({ title, children }) => (
   <Wrapper>
-    <Link href="/" passHref>
-      <MainLink>
-        <IconApp size={30} />
-        <Title>{title}</Title>
-      </MainLink>
-    </Link>
+    <MainLink href="/">
+      <IconApp size={30} />
+      <Title>{title}</Title>
+    </MainLink>
     {children}
   </Wrapper>
 );
