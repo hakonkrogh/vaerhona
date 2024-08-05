@@ -30,4 +30,6 @@ config.aws.region = 'eu-west-1';
 
 config.PROTECTED_ROOT_NAMES = ['api', 'static', 'admin'];
 
+console.log(config);
+
 export default config;
