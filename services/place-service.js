@@ -38,8 +38,5 @@ export const getTopPublicPlaces = async ({ limit }) => {
     })
     .exec();
 
-  const one = await snapshotPlaceModel.findOne();
-  console.log({ one });
-
   return places.map(parsePlace);
 };

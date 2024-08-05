@@ -59,6 +59,7 @@ export default function SnapshotImage({
         snapshot={currentSnapshot}
         onDateChange={onDateChange}
       />
+      {!compare && <Metadata place={place} snapshot={currentSnapshot} />}
       <SliceOfTime
         command={command}
         place={place}
@@ -66,7 +67,7 @@ export default function SnapshotImage({
         setSnapshot={setCurrentSnapshot}
         setLoading={setButtonLoading}
       />
-      {!compare && <Metadata place={place} snapshot={currentSnapshot} />}
+
       {compare && (
         <CompareList>
           {compareDates.map((date, index) => (
