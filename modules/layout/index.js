@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 `;
 
 export const Loading = styled.div`
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;

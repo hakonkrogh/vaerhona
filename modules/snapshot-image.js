@@ -6,7 +6,7 @@ import { prettyDateTime } from 'core/date';
 
 const StyledImage = styled.img`
   object-fit: contain;
-  height: 66vh;
+  height: 66dvh;
 `;
 
 const SnapshotImage = ({
