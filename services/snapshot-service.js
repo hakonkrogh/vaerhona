@@ -50,11 +50,17 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
   const boxIdTrimmed = boxId.trim().replace(/\/n/g, '');
 
   // Get place
-  let place = await snapshotPlaceModel
-    .findOne({
-      boxId: boxIdTrimmed,
-    })
-    .exec();
+  let place;
+
+  try {
+    place = await snapshotPlaceModel
+      .findOne({
+        boxId: boxIdTrimmed,
+      })
+      .exec();
+  } catch (err) {
+    console.log(err);
+  }
 
   // Fallback to test place if box is not paired
   let isTestPlace = false;
@@ -124,7 +130,7 @@ export async function addSnapshotLegacy({
   }
 
   console.log('add snapshot legacy');
-  console.log({ placeCuid, snapshotBody })
+  console.log({ placeCuid, snapshotBody });
 
   // Add snapshot
   const snapshot = new snapshotModel({
