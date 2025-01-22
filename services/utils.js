@@ -10,7 +10,7 @@ export const normalizeAndEnrichSnapshot = ({ snapshot, place }) => {
   };
 };
 
-const magicNumber = 3276.7; // Used to be 3276.7
+const magicNumber = 3270.7; // Used to be 3276.7
 export function normalizeCrazyTemperature(temperature) {
   let temp = temperature;
   if (Math.abs(temp) > 100) {
