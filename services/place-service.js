@@ -1,6 +1,6 @@
 import './init';
 import { snapshotPlaceModel } from './mongo/models';
-import { normalizeAndEnrichSnapshot, normalizeCrazyTemperature } from './utils';
+import { normalizeAndEnrichSnapshot } from './utils';
 
 function parsePlace(place) {
   if (place?.firstSnapshot) {
@@ -8,15 +8,9 @@ function parsePlace(place) {
       snapshot: place.firstSnapshot,
       place,
     });
-    place.firstSnapshot.temperature = normalizeCrazyTemperature(
-      place.firstSnapshot.temperature
-    );
   }
   if (place?.lastSnapshot) {
     place.lastSnapshot.placeName = place.name;
-    place.lastSnapshot.temperature = normalizeCrazyTemperature(
-      place.lastSnapshot.temperature
-    );
   }
 
   return place;

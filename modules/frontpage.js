@@ -27,6 +27,7 @@ export default function FrontPage() {
   }
 
   if (error) {
+    console.error(error);
     return 'Oh no.';
   }
 
