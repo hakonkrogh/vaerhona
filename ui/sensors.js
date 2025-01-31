@@ -17,9 +17,9 @@ const Unit = styled.span`
 export const Temperature = ({ temperature }) => {
   const normalised = normaliseCrazyTemperature(temperature);
   const isCrazy = Math.abs(normalised - temperature) > 1;
-  const [showCrazy, setShowCrazy] = useState(isCrazy);
+  const [showCrazy, setShowCrazy] = useState(false);
 
-  if (isCrazy && showCrazy) {
+  if (isCrazy && !showCrazy) {
     return (
       <TempSensor
         title={temperature}
@@ -54,6 +54,7 @@ function normaliseCrazyTemperature(temperature) {
     }
     temp = Math.floor(temp);
   }
+
   return Math.round(temp * 10) / 10;
 }
 
