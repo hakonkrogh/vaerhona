@@ -7,6 +7,7 @@ import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
 import { graphDate } from 'core/date';
 import { PLACE_SNAPSHOTS } from 'modules/queries';
 import SnapshotImage from 'modules/snapshot-image';
+import Metadata from './metadata';
 import { Spinner } from 'ui';
 
 const Outer = styled.div`
@@ -290,6 +291,7 @@ export default function SliceOfTime({
 
   return (
     <Outer>
+      <Metadata place={place} snapshot={snapshot} />
       <ImageWrap>
         <SnapshotImage
           key={snapshot.cuid}

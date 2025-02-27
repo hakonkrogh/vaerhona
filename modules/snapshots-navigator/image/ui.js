@@ -12,7 +12,7 @@ export const CompareList = styled.ul`
   list-style: none;
 
   > li {
-    margin: 0;
+    margin: 0 0 60px;
     padding: 0;
   }
 `;

@@ -5,7 +5,6 @@ import { Button, IconArrow, IconCompare } from 'ui';
 
 import { Outer, Bottom, BottomInner, SwitchOuter, CompareList } from './ui';
 import SliceOfTime from './slice-of-time';
-import Metadata from './metadata';
 import DateVisualiser from './date';
 
 export default function SnapshotImage({
@@ -59,7 +58,7 @@ export default function SnapshotImage({
         snapshot={currentSnapshot}
         onDateChange={onDateChange}
       />
-      {!compare && <Metadata place={place} snapshot={currentSnapshot} />}
+
       <SliceOfTime
         command={command}
         place={place}
