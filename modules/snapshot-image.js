@@ -6,11 +6,8 @@ import { prettyDateTime } from 'core/date';
 
 const StyledImage = styled(Image)`
   object-fit: contain;
-  height: 33dvh;
-
-  @media (min-width: 700px) {
-    height: 66dvh;
-  }
+  width: 100%;
+  height: auto;
 `;
 
 const SnapshotImage = ({
