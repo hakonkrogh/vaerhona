@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Image from 'next/image';
+import Image from 'next/image';
 
 import { prettyDateTime } from 'core/date';
 
-const StyledImage = styled.img`
+const StyledImage = styled(Image)`
   object-fit: contain;
   height: 66dvh;
 `;
@@ -20,10 +20,11 @@ const SnapshotImage = ({
   return (
     <StyledImage
       alt={`Bilde fra ${placeName} tatt ${prettyDateTime(date)}`}
-      src={
-        image.replace('d31r10omfuzino.cloudfront.net', 'vaerhona.imgix.net') +
-        '?auto=format,enhance'
-      }
+      src={image}
+      // src={
+      //   image.replace('d31r10omfuzino.cloudfront.net', 'vaerhona.imgix.net') +
+      //   '?auto=format,enhance'
+      // }
       width={width}
       height={height}
       {...rest}

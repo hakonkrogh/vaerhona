@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import is, { isNot } from 'styled-is';
-import { lighten } from 'polished';
 
 import { Spinner } from '../spinner';
 
@@ -36,7 +35,7 @@ const themes = {
       text-align: center;
     `,
     hover: `
-      background: ${lighten(0.05, 'red')};
+      background: #ff2c2c;
     `,
     disabled: `
       background: #aaa;
