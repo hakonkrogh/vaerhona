@@ -22,7 +22,7 @@ const Outer = styled.div`
 
     @media (min-width: 700px) {
       width: 700px;
-      margin-left: calc((100vw - 700px) / 2);
+      aspect-ratio: 16 / 9;
     }
   }
 `;
