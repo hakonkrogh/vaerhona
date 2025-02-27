@@ -19,10 +19,10 @@ const Outer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 16 / 9;
 
     @media (min-width: 700px) {
       width: 700px;
-      aspect-ratio: 16 / 9;
     }
   }
 `;
