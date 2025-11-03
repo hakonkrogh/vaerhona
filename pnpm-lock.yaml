@@ -59,6 +59,9 @@ importers:
       graphql:
         specifier: ^14.4.2
         version: 14.7.0
+      graphql-tag:
+        specifier: ^2.12.6
+        version: 2.12.6(graphql@14.7.0)
       image-size:
         specifier: ^0.7.4
         version: 0.7.5
