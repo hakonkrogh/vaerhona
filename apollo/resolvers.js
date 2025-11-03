@@ -76,7 +76,7 @@ export const resolvers = {
       const baseUrl =
         config.environment === 'development'
           ? 'https://vaerhona-development.s3-eu-west-1.amazonaws.com'
-          : 'https://d31r10omfuzino.cloudfront.net';
+          : 'https://vaerhona.s3-eu-west-1.amazonaws.com';
       const date = new Date(snapshot.dateAdded);
       return `${baseUrl}/${snapshot.placeName}/${date.getFullYear()}/${
         date.getMonth() + 1
