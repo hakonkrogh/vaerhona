@@ -50,10 +50,10 @@ const DateInput = styled.input.attrs(() => ({
   appearance: none;
   font-size: 1rem;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: calc(0px - 1em);
+  left: calc(0px - 1em);
+  width: calc(100% + 2em);
+  height: calc(100% + 2em);
   z-index: 1;
   opacity: 0;
   border: none;
@@ -121,18 +121,20 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
         <TimeAgo date={new Date(snapshot.date)} formatter={timeAgoFormatter} />
       </DateTimeAgo>
       <DateString>
-        <DateInputPlacer>{prettyDateTime(snapshot.date)}</DateInputPlacer>
+        <DateInputPlacer>
+          {prettyDateTime(snapshot.date)}
+          {enableDateChange && (
+            <DateInput
+              ref={dateRef}
+              value={graphDate(date)}
+              onChange={dateChange}
+              onBlur={dateBlur}
+              min={graphDate(minDate)}
+              max={graphDate(new Date())}
+            />
+          )}
+        </DateInputPlacer>
       </DateString>
-      {enableDateChange && (
-        <DateInput
-          ref={dateRef}
-          value={graphDate(date)}
-          onChange={dateChange}
-          onBlur={dateBlur}
-          min={graphDate(minDate)}
-          max={graphDate(new Date())}
-        />
-      )}
     </Outer>
   );
 }
