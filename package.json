@@ -35,7 +35,7 @@
     "micro-cors": "^0.1.1",
     "moment-timezone": "^0.5.26",
     "mongoose": "^8.5.2",
-    "next": "16.0.1",
+    "next": "16.0.10",
     "prop-types": "^15.7.2",
     "react": "19.2.0",
     "react-apollo": "^2.5.8",
