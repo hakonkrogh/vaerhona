@@ -4,6 +4,20 @@ import './init';
 import { snapshotModel, snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
 import { saveImageFromSnapshot } from './aws/s3';
+import { hasYrSupport, fetchTemperature } from './yr-service';
+
+// Temperature validation constants
+const TEMP_MIN = -50;
+const TEMP_MAX = 50;
+
+/**
+ * Check if temperature is within valid range
+ * @param {number} temperature
+ * @returns {boolean}
+ */
+function isTemperatureValid(temperature) {
+  return temperature >= TEMP_MIN && temperature <= TEMP_MAX;
+}
 
 function byDateAscending(a, b) {
   return new Date(a.dateAdded) - new Date(b.dateAdded);
@@ -79,6 +93,34 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     throw new Error('Place 404');
   }
 
+  // Temperature validation and yr.no fallback
+  let temperature = snapshotBody.temperature;
+  const sensorTemperature = temperature;
+
+  if (!isTemperatureValid(temperature)) {
+    console.log(
+      `[addSnapshot] Temperature ${temperature}°C outside valid range [${TEMP_MIN}, ${TEMP_MAX}] for place: ${place.name}`
+    );
+
+    if (hasYrSupport(place)) {
+      const yrTemperature = await fetchTemperature(place);
+      if (yrTemperature !== null) {
+        console.log(
+          `[addSnapshot] Using yr.no temperature ${yrTemperature}°C instead of sensor value ${sensorTemperature}°C`
+        );
+        temperature = yrTemperature;
+      } else {
+        console.warn(
+          `[addSnapshot] yr.no fallback failed, using original sensor temperature ${sensorTemperature}°C`
+        );
+      }
+    } else {
+      console.log(
+        `[addSnapshot] No yr.no support for place ${place.name}, using sensor temperature ${sensorTemperature}°C`
+      );
+    }
+  }
+
   // Add snapshot
   const snapshot = new snapshotModel({
     place: place._id,
@@ -86,7 +128,7 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     cuid: generateCuid(),
     dateAdded: Date.now(),
     ...snapshotBody,
-    temperature: snapshotBody.temperature.toFixed(2),
+    temperature: temperature.toFixed(2),
     humidity: snapshotBody.humidity.toFixed(2),
     ...(isTestPlace && { boxId }),
   });

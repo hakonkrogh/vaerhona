@@ -11,6 +11,8 @@ export const snapshotPlaceSchema = new Schema({
   firstSnapshotDate: { type: 'Date' },
   lastSnapshot: { type: Schema.Types.ObjectId, ref: MODEL_NAMES.SNAPSHOT },
   lastSnapshotDate: { type: 'Date' },
+  lat: { type: 'Number', required: false },
+  lon: { type: 'Number', required: false },
 });
 
 export const snapshotSchema = new Schema({

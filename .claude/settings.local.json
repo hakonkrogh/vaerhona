@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.met.no)",
+      "Bash(pnpm test:run:*)"
+    ]
+  }
+}
