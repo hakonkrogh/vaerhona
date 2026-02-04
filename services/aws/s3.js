@@ -1,15 +1,20 @@
-import AWS from 'aws-sdk';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import imageSize from 'image-size';
 
 import config from '../config';
 
-AWS.config.update({
-  accessKeyId: process.env.VH_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.VH_AWS_SECRET_ACCESS_KEY,
+const s3 = new S3Client({
   region: 'eu-west-1',
+  credentials: {
+    accessKeyId: process.env.VH_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.VH_AWS_SECRET_ACCESS_KEY,
+  },
 });
-
-const s3 = new AWS.S3();
 
 /**
  * Takes a base64 image string and stores the required images to a S3 bucket
@@ -40,21 +45,18 @@ export function uploadSingleImage({ place, snapshot, imageBuffer }) {
     type,
   };
 
-  return s3
-    .upload(
-      {
-        Bucket: config.aws.s3BucketName,
-        Key: getRelativePathForImage({
-          place,
-          snapshot,
-          legacyExtension: false,
-        }),
-        Body: imageBuffer,
-        Metadata,
-      },
-      {}
-    )
-    .promise();
+  const command = new PutObjectCommand({
+    Bucket: config.aws.s3BucketName,
+    Key: getRelativePathForImage({
+      place,
+      snapshot,
+      legacyExtension: false,
+    }),
+    Body: imageBuffer,
+    Metadata,
+  });
+
+  return s3.send(command);
 }
 
 /**
@@ -69,21 +71,22 @@ export function getImage({ placeName, snapshot }) {
     snapshot,
   });
 
-  return s3
-    .getObject({
-      Bucket: config.aws.s3BucketName,
-      Key,
-    })
-    .promise();
+  const command = new GetObjectCommand({
+    Bucket: config.aws.s3BucketName,
+    Key,
+  });
+
+  return s3.send(command);
 }
 
-export const deleteObject = (Key) =>
-  s3
-    .deleteObject({
-      Bucket: config.aws.s3BucketName,
-      Key,
-    })
-    .promise();
+export const deleteObject = (Key) => {
+  const command = new DeleteObjectCommand({
+    Bucket: config.aws.s3BucketName,
+    Key,
+  });
+
+  return s3.send(command);
+};
 
 /**
  * Returns the relative path for an image for a snapshot (ex: /test/1/30/cuid.jpg)
