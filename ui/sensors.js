@@ -12,12 +12,15 @@ import {
   TrendUp,
   TrendDown,
   Minus,
-  Sun,
-  CloudSun,
-  Cloud,
-  CloudRain,
-  Wind,
 } from '@phosphor-icons/react';
+import {
+  ClearDay,
+  PartlyCloudyDay,
+  Cloudy,
+  Overcast,
+  OvercastRain,
+  Wind,
+} from './weather-icons';
 
 const Sensor = styled.span`
   display: inline-flex;
@@ -180,7 +183,7 @@ function getWeatherCondition({
 
   // Regn: lavt trykk + mye skyer + høy fuktighet
   if (pressure < 1005 && clouds > 70 && humidity > 75) {
-    return { label: 'Regn', Icon: CloudRain };
+    return { label: 'Regn', Icon: OvercastRain };
   }
 
   // Mye vind (> 10 m/s)
@@ -190,36 +193,41 @@ function getWeatherCondition({
 
   // Overskyet: veldig høy skydekke
   if (clouds > 80) {
-    return { label: 'Overskyet', Icon: Cloud };
+    return { label: 'Overskyet', Icon: Overcast };
   }
 
   // Skyet: høy skydekke
   if (clouds > 50) {
-    return { label: 'Skyet', Icon: Cloud };
+    return { label: 'Skyet', Icon: Cloudy };
   }
 
   // Delvis skyet: middels skydekke
   if (clouds > 20) {
-    return { label: 'Delvis skyet', Icon: CloudSun };
+    return { label: 'Delvis skyet', Icon: PartlyCloudyDay };
   }
 
   // Klart: lite skyer
-  return { label: 'Klart', Icon: Sun };
+  return { label: 'Klart', Icon: ClearDay };
 }
 
 export const WeatherCondition = (yr) => {
   if (!yr) return null;
   const { label, Icon } = getWeatherCondition(yr);
   const details = [
-    yr.cloudAreaFraction != null && `Skyer: ${Math.round(yr.cloudAreaFraction)}%`,
-    yr.airPressureAtSeaLevel != null && `Trykk: ${Math.round(yr.airPressureAtSeaLevel)} hPa`,
+    yr.cloudAreaFraction != null &&
+      `Skyer: ${Math.round(yr.cloudAreaFraction)}%`,
+    yr.airPressureAtSeaLevel != null &&
+      `Trykk: ${Math.round(yr.airPressureAtSeaLevel)} hPa`,
     yr.windSpeed != null && `Vind: ${yr.windSpeed.toFixed(1)} m/s`,
-    yr.relativeHumidity != null && `Fuktighet: ${Math.round(yr.relativeHumidity)}%`,
-  ].filter(Boolean).join('\n');
+    yr.relativeHumidity != null &&
+      `Fuktighet: ${Math.round(yr.relativeHumidity)}%`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return (
     <Sensor title={`${label}\n${details}`} style={{ cursor: 'help' }}>
-      <Icon size={24} weight="fill" />
+      <Icon size={32} />
     </Sensor>
   );
 };

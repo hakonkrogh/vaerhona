@@ -28,7 +28,7 @@ const YrWeatherRow = styled.div`
   display: flex;
   gap: 15px;
   justify-content: center;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
 `;
 
