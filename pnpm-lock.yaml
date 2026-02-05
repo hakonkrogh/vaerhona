@@ -26,6 +26,9 @@ importers:
       '@mantine/hooks':
         specifier: ^2.0.6
         version: 2.5.1(react@19.2.0)
+      '@phosphor-icons/react':
+        specifier: ^2.1.10
+        version: 2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@urql/exchange-refocus':
         specifier: ^0.1.0
         version: 0.1.0(graphql@14.7.0)
@@ -876,6 +879,13 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
 
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
@@ -4070,6 +4080,11 @@ snapshots:
 
   '@next/swc-win32-x64-msvc@16.0.10':
     optional: true
+
+  '@phosphor-icons/react@2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   '@popperjs/core@2.11.8': {}
 

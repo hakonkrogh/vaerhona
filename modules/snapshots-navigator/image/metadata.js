@@ -7,8 +7,7 @@ import {
   WindDirection,
   WindSpeed,
   WindGust,
-  CloudCover,
-  SeaLevelPressure,
+  WeatherCondition,
 } from 'ui';
 
 const Values = styled.div`
@@ -29,6 +28,7 @@ const YrWeatherRow = styled.div`
   display: flex;
   gap: 15px;
   justify-content: center;
+  align-items: baseline;
   flex-wrap: wrap;
 `;
 
@@ -40,14 +40,18 @@ const WindGroup = styled.span`
 export default function Metadata({ snapshot }) {
   const yr = snapshot.yrWeather;
 
+  // Prefer yr data over local sensor data when available
+  const humidity = yr?.relativeHumidity ?? snapshot.humidity;
+
   return (
     <>
       <Values>
         <Temperature {...snapshot} /> /
-        <Humidity {...snapshot} />
+        <Humidity humidity={humidity} />
       </Values>
       {yr && (
         <YrWeatherRow>
+          <WeatherCondition {...yr} />
           {yr.windDirectionCompass != null && (
             <WindGroup>
               <WindDirection {...yr} />
@@ -55,8 +59,6 @@ export default function Metadata({ snapshot }) {
               {yr.windSpeedOfGust != null && <WindGust {...yr} />}
             </WindGroup>
           )}
-          {yr.cloudAreaFraction != null && <CloudCover {...yr} />}
-          {yr.airPressureAtSeaLevel != null && <SeaLevelPressure {...yr} />}
         </YrWeatherRow>
       )}
     </>
