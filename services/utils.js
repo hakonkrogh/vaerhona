@@ -7,5 +7,6 @@ export const normalizeAndEnrichSnapshot = ({ snapshot, place }) => {
     temperature: snapshot.temperature,
     humidity: Math.round(snapshot.humidity * 10) / 10,
     pressure: Math.round(snapshot.pressure * 10) / 10,
+    yrWeather: snapshot.yrWeather || null,
   };
 };

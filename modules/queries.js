@@ -1,3 +1,17 @@
+const YR_WEATHER_FIELDS = `
+  yrWeather {
+    airTemperature
+    windSpeed
+    windFromDirection
+    windSpeedOfGust
+    airPressureAtSeaLevel
+    cloudAreaFraction
+    dewPointTemperature
+    relativeHumidity
+    windDirectionCompass
+  }
+`;
+
 export const PLACE = `
   query PLACE($placeName: String!) {
     place(name: $placeName) {
@@ -11,6 +25,7 @@ export const PLACE = `
         pressure
         humidity
         image
+        ${YR_WEATHER_FIELDS}
       }
       lastSnapshot {
         cuid
@@ -19,6 +34,7 @@ export const PLACE = `
         pressure
         humidity
         image
+        ${YR_WEATHER_FIELDS}
       }
     }
   }
@@ -44,6 +60,7 @@ export const PLACE_SNAPSHOTS = `
       pressure
       image
       placeName
+      ${YR_WEATHER_FIELDS}
     }
   }
 `;

@@ -71,3 +71,52 @@ export const Pressure = ({ pressure }) => (
     <Unit>hPa</Unit>
   </Sensor>
 );
+
+export const WindSpeed = ({ windSpeed }) => {
+  if (windSpeed == null) return null;
+  return (
+    <Sensor>
+      {windSpeed.toFixed(1)}
+      <Unit>m/s</Unit>
+    </Sensor>
+  );
+};
+
+export const WindDirection = ({ windFromDirection, windDirectionCompass }) => {
+  if (windDirectionCompass == null) return null;
+  return (
+    <Sensor title={`${windFromDirection}°`} style={{ cursor: 'help' }}>
+      {windDirectionCompass}
+    </Sensor>
+  );
+};
+
+export const WindGust = ({ windSpeedOfGust }) => {
+  if (windSpeedOfGust == null) return null;
+  return (
+    <Sensor>
+      (gust {windSpeedOfGust.toFixed(1)}
+      <Unit>m/s</Unit>)
+    </Sensor>
+  );
+};
+
+export const CloudCover = ({ cloudAreaFraction }) => {
+  if (cloudAreaFraction == null) return null;
+  return (
+    <Sensor>
+      {Math.round(cloudAreaFraction)}
+      <Unit>%</Unit>
+    </Sensor>
+  );
+};
+
+export const SeaLevelPressure = ({ airPressureAtSeaLevel }) => {
+  if (airPressureAtSeaLevel == null) return null;
+  return (
+    <Sensor>
+      {Math.round(airPressureAtSeaLevel)}
+      <Unit>hPa</Unit>
+    </Sensor>
+  );
+};

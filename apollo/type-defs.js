@@ -11,6 +11,18 @@ export const typeDefs = gql`
     lastSnapshot: Snapshot
   }
 
+  type YrWeather {
+    airTemperature: Float
+    windSpeed: Float
+    windFromDirection: Float
+    windSpeedOfGust: Float
+    airPressureAtSeaLevel: Float
+    cloudAreaFraction: Float
+    dewPointTemperature: Float
+    relativeHumidity: Float
+    windDirectionCompass: String
+  }
+
   type Snapshot {
     cuid: String
     placeName: String
@@ -19,6 +31,7 @@ export const typeDefs = gql`
     pressure: Float
     humidity: Float
     image: String
+    yrWeather: YrWeather
   }
 
   type Query {

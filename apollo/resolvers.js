@@ -83,6 +83,16 @@ export const resolvers = {
       }/${snapshot.cuid}`;
     },
   },
+  YrWeather: {
+    windDirectionCompass(yrWeather) {
+      const degrees = yrWeather.windFromDirection;
+      if (degrees == null) return null;
+
+      const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      const index = Math.round(degrees / 45) % 8;
+      return directions[index];
+    },
+  },
   Date: new GraphQLScalarType({
     name: 'Date',
     description: 'Date (custom scalar type)',

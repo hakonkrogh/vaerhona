@@ -15,6 +15,20 @@ export const snapshotPlaceSchema = new Schema({
   lon: { type: 'Number', required: false },
 });
 
+const yrWeatherSchema = new Schema(
+  {
+    airTemperature: { type: 'Number' },
+    windSpeed: { type: 'Number' },
+    windFromDirection: { type: 'Number' },
+    windSpeedOfGust: { type: 'Number' },
+    airPressureAtSeaLevel: { type: 'Number' },
+    cloudAreaFraction: { type: 'Number' },
+    dewPointTemperature: { type: 'Number' },
+    relativeHumidity: { type: 'Number' },
+  },
+  { _id: false }
+);
+
 export const snapshotSchema = new Schema({
   cuid: { type: 'String', required: true },
   boxId: { type: String, required: false },
@@ -24,4 +38,5 @@ export const snapshotSchema = new Schema({
   humidity: { type: 'Number', required: true },
   pressure: { type: 'Number', required: false },
   dateAdded: { type: 'Date', default: Date.now, required: true },
+  yrWeather: { type: yrWeatherSchema, required: false },
 });

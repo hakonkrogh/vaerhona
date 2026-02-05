@@ -4,7 +4,7 @@ import './init';
 import { snapshotModel, snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
 import { saveImageFromSnapshot } from './aws/s3';
-import { hasYrSupport, fetchTemperature } from './yr-service';
+import { hasYrSupport, fetchWeatherData } from './yr-service';
 
 // Temperature validation constants
 const TEMP_MIN = -50;
@@ -93,6 +93,15 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     throw new Error('Place 404');
   }
 
+  // Fetch yr.no weather data if place has coordinates
+  let yrWeather = null;
+  if (hasYrSupport(place)) {
+    yrWeather = await fetchWeatherData(place);
+    if (!yrWeather) {
+      console.warn(`[addSnapshot] Failed to fetch yr.no weather data for place: ${place.name}`);
+    }
+  }
+
   // Temperature validation and yr.no fallback
   let temperature = snapshotBody.temperature;
   const sensorTemperature = temperature;
@@ -102,18 +111,15 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
       `[addSnapshot] Temperature ${temperature}°C outside valid range [${TEMP_MIN}, ${TEMP_MAX}] for place: ${place.name}`
     );
 
-    if (hasYrSupport(place)) {
-      const yrTemperature = await fetchTemperature(place);
-      if (yrTemperature !== null) {
-        console.log(
-          `[addSnapshot] Using yr.no temperature ${yrTemperature}°C instead of sensor value ${sensorTemperature}°C`
-        );
-        temperature = yrTemperature;
-      } else {
-        console.warn(
-          `[addSnapshot] yr.no fallback failed, using original sensor temperature ${sensorTemperature}°C`
-        );
-      }
+    if (yrWeather?.airTemperature != null) {
+      console.log(
+        `[addSnapshot] Using yr.no temperature ${yrWeather.airTemperature}°C instead of sensor value ${sensorTemperature}°C`
+      );
+      temperature = yrWeather.airTemperature;
+    } else if (hasYrSupport(place)) {
+      console.warn(
+        `[addSnapshot] yr.no fallback failed, using original sensor temperature ${sensorTemperature}°C`
+      );
     } else {
       console.log(
         `[addSnapshot] No yr.no support for place ${place.name}, using sensor temperature ${sensorTemperature}°C`
@@ -131,6 +137,7 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     temperature: temperature.toFixed(2),
     humidity: snapshotBody.humidity.toFixed(2),
     ...(isTestPlace && { boxId }),
+    ...(yrWeather && { yrWeather }),
   });
 
   const saveResponse = await snapshot.save();
