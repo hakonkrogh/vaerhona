@@ -1,11 +1,43 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { hasYrSupport, fetchTemperature } from './yr-service.js';
+import { hasYrSupport, fetchTemperature, roundCoordinate } from './yr-service.js';
 
 describe('yr-service', () => {
-  // Test place with coordinates
+  // Test place with high-precision coordinates (more than 4 decimal places)
   const placeWithCoords = { name: 'test-place', lat: 60.0283364, lon: 9.025748 };
   // Test place without coordinates
   const placeWithoutCoords = { name: 'no-coords-place' };
+
+  describe('roundCoordinate', () => {
+    it('rounds to 4 decimal places', () => {
+      expect(roundCoordinate(59.123456789)).toBe(59.1235);
+      expect(roundCoordinate(10.987654321)).toBe(10.9877);
+    });
+
+    it('handles coordinates that need no rounding', () => {
+      expect(roundCoordinate(59.1234)).toBe(59.1234);
+      expect(roundCoordinate(10.5)).toBe(10.5);
+    });
+
+    it('handles negative coordinates', () => {
+      expect(roundCoordinate(-59.123456789)).toBe(-59.1235);
+      expect(roundCoordinate(-10.987654321)).toBe(-10.9877);
+    });
+
+    it('handles zero', () => {
+      expect(roundCoordinate(0)).toBe(0);
+    });
+
+    it('rounds correctly at the boundary (5)', () => {
+      expect(roundCoordinate(59.12345)).toBe(59.1235);
+      expect(roundCoordinate(59.123449)).toBe(59.1234);
+    });
+
+    it('does not expose more than 4 decimal places for privacy', () => {
+      const rounded = roundCoordinate(59.123456789);
+      const decimalPlaces = rounded.toString().split('.')[1]?.length || 0;
+      expect(decimalPlaces).toBeLessThanOrEqual(4);
+    });
+  });
 
   describe('hasYrSupport', () => {
     it('returns true for place with lat and lon', () => {
@@ -90,7 +122,7 @@ describe('yr-service', () => {
       );
     });
 
-    it('includes correct coordinates in API request', async () => {
+    it('rounds coordinates to 4 decimal places in API request', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -103,8 +135,13 @@ describe('yr-service', () => {
       await fetchTemperature(placeWithCoords);
 
       const url = mockFetch.mock.calls[0][0];
-      expect(url).toContain(`lat=${placeWithCoords.lat}`);
-      expect(url).toContain(`lon=${placeWithCoords.lon}`);
+      // placeWithCoords.lat = 60.0283364 should be rounded to 60.0283
+      // placeWithCoords.lon = 9.025748 should be rounded to 9.0257
+      expect(url).toContain('lat=60.0283');
+      expect(url).toContain('lon=9.0257');
+      // Ensure we don't send the full precision coordinates
+      expect(url).not.toContain('lat=60.0283364');
+      expect(url).not.toContain('lon=9.025748');
     });
 
     it('returns null when API returns non-ok response', async () => {

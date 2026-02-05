@@ -5,6 +5,17 @@
 
 const YR_API_BASE = 'https://api.met.no/weatherapi/locationforecast/2.0/compact';
 const USER_AGENT = 'vaerhona-weather-monitor/1.0';
+const COORDINATE_PRECISION = 4; // MET API requires max 4 decimal places
+
+/**
+ * Round coordinate to the precision required by MET API (4 decimal places)
+ * @param {number} coord - Latitude or longitude value
+ * @returns {number}
+ */
+export function roundCoordinate(coord) {
+  const factor = Math.pow(10, COORDINATE_PRECISION);
+  return Math.round(coord * factor) / factor;
+}
 
 /**
  * Check if a place has yr.no support (coordinates configured in database)
@@ -26,7 +37,9 @@ export async function fetchTemperature(place) {
     return null;
   }
 
-  const url = `${YR_API_BASE}?lat=${place.lat}&lon=${place.lon}`;
+  const lat = roundCoordinate(place.lat);
+  const lon = roundCoordinate(place.lon);
+  const url = `${YR_API_BASE}?lat=${lat}&lon=${lon}`;
 
   try {
     const response = await fetch(url, {
@@ -79,7 +92,9 @@ export async function fetchWeatherData(place) {
     return null;
   }
 
-  const url = `${YR_API_BASE}?lat=${place.lat}&lon=${place.lon}`;
+  const lat = roundCoordinate(place.lat);
+  const lon = roundCoordinate(place.lon);
+  const url = `${YR_API_BASE}?lat=${lat}&lon=${lon}`;
 
   try {
     const response = await fetch(url, {
