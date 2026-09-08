@@ -1,4 +1,5 @@
 {
+  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=22"
   },
@@ -9,7 +10,10 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload"
   },
   "dependencies": {
     "@apollo/react-common": "^3.1.1",
@@ -18,6 +22,7 @@
     "@aws-sdk/client-s3": "^3.717.0",
     "@mantine/core": "^2.0.6",
     "@mantine/hooks": "^2.0.6",
+    "@opennextjs/cloudflare": "^1.20.6",
     "@phosphor-icons/react": "^2.1.10",
     "@urql/exchange-refocus": "^0.1.0",
     "apollo-boost": "^0.4.4",
@@ -54,6 +59,7 @@
   "devDependencies": {
     "eslint": "^9.7.0",
     "prettier": "^2.1.2",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "wrangler": "^4.129.0"
   }
 }

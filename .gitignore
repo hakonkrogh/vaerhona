@@ -10,3 +10,9 @@ yarn-error.log
 .env
 
 .vercel
+.env*
+
+# Cloudflare / OpenNext
+.open-next
+.wrangler
+.dev.vars
