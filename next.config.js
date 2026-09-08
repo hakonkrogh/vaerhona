@@ -1,6 +1,16 @@
 const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare');
 
 module.exports = {
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.xn--vrhna-sra2k.no' }],
+        destination: 'https://xn--vrhna-sra2k.no/:path*',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
