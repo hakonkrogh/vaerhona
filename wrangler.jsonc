@@ -8,6 +8,12 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "xn--vrhna-sra2k.no", "custom_domain": true },
+    { "pattern": "www.xn--vrhna-sra2k.no", "custom_domain": true }
+  ],
   "observability": {
     "enabled": true
   },
