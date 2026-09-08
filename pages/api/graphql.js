@@ -4,6 +4,7 @@ import { ApolloServer } from 'apollo-server-micro';
 
 import { typeDefs } from '../../apollo/type-defs';
 import { resolvers } from '../../apollo/resolvers';
+import { runWithDb } from '../../services/init';
 
 const loggingPlugin = {
   // Fires whenever a GraphQL request is received from a client.
@@ -44,10 +45,10 @@ export const config = {
 
 const apolloHandler = apolloServer.createHandler({ path: '/api/graphql' });
 
-export default cors()((req, res) => {
+export default cors()(async (req, res) => {
   if (req.method === 'OPTIONS') {
     return send(res, 200);
   }
 
-  return apolloHandler(req, res);
+  return runWithDb(() => apolloHandler(req, res));
 });

@@ -1,4 +1,3 @@
-import './init';
 import { snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
 

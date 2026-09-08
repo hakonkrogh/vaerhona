@@ -1,3 +1,5 @@
+const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare');
+
 module.exports = {
   images: {
     remotePatterns: [
@@ -17,3 +19,8 @@ module.exports = {
     minimumCacheTTL: 2147483647, // Max 32-bit integer (~68 years) - effectively forever
   },
 };
+
+// Makes Cloudflare bindings available in `next dev` (skipped during `next build`)
+if (process.env.NODE_ENV !== 'production') {
+  initOpenNextCloudflareForDev();
+}

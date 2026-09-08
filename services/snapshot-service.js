@@ -1,6 +1,5 @@
 import generateCuid from 'cuid';
 
-import './init';
 import { snapshotModel, snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
 import { saveImageFromSnapshot } from './aws/s3';
