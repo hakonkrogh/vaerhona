@@ -97,7 +97,7 @@ These are places where today's code does not meet the intent, or may not. All co
 1. **An open page never updates.** `useRefreshQuery` in `web/core/utils.js` was written to refresh every 30 seconds, but reads `reexecuteQuery` from the wrong place, so the refresh never runs. See open question 1.
 2. **Going back to a place in the same tab can show old data.** urql (the GraphQL client) keeps results in memory, so moving from a place to the front page and back can reuse the first result. This breaks F1 and is not yet tested live.
 3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing.
-4. **Forward paging has no sort.** A query with only a start date has no sort order in `getSnapshots`, so the order of results is not guaranteed.
+4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
 5. **A date with no data gives no feedback.** The page keeps the old photo and shows no message. Veggli has no snapshots for 12 to 18 June 2024, for example.
 6. **The front page order does nothing.** `getTopPublicPlaces` sorts on `lastSnapshot.dateAdded`, but `lastSnapshot` is only an id at that point.
 7. **A request can hang.** One API request ran for over 6 minutes on 2026-11-06, while other requests worked. The cause is unknown (observed live, once).
