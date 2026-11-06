@@ -1,39 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import upperFirst from 'upper-case-first';
 
-import { isServer, useRefreshQuery } from 'core/utils';
 import Layout from 'modules/layout';
 import { SnapshotsNavigator } from 'modules/snapshots-navigator';
-import { PLACE } from 'modules/queries';
+import { getPlaceForPage } from 'services/place-page';
 
-export default function PlacePage({ placeName }) {
-  const [{ data: { place } = {}, fetching } = {}] = useRefreshQuery({
-    query: PLACE,
-    variables: { placeName },
-    pause: isServer,
-  });
+export default function PlacePage({ place }) {
+  // The back button can restore a saved copy of the page, which could show an
+  // older snapshot than the latest.
+  useEffect(() => {
+    function onPageShow(event) {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    }
 
-  const loading = isServer || fetching;
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
 
   return (
-    <Layout title={upperFirst(placeName)} loading={loading}>
-      {!loading && <SnapshotsNavigator place={place} />}
+    <Layout title={upperFirst(place.name)}>
+      <SnapshotsNavigator key={place.name} place={place} />
     </Layout>
   );
 }
 
-export function getStaticPaths() {
-  return {
-    paths: ['/test', '/veggli', '/buvassbrenna', '/myking', '/tornes'],
-    fallback: 'blocking',
-  };
-}
+// Runs on every request and is not cached, because the page must show the
+// latest snapshot (rule F1 in SPEC.md).
+export async function getServerSideProps({ params }) {
+  const place = await getPlaceForPage(params.placeName);
 
-export function getStaticProps({ params }) {
-  return {
-    props: {
-      placeName: params.placeName,
-    },
-    revalidate: 60,
-  };
+  return place ? { props: { place } } : { notFound: true };
 }

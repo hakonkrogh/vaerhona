@@ -12,34 +12,6 @@ const YR_WEATHER_FIELDS = `
   }
 `;
 
-export const PLACE = `
-  query PLACE($placeName: String!) {
-    place(name: $placeName) {
-      cuid
-      name
-      isPublic
-      firstSnapshot {
-        cuid
-        date
-        temperature
-        pressure
-        humidity
-        image
-        ${YR_WEATHER_FIELDS}
-      }
-      lastSnapshot {
-        cuid
-        date
-        temperature
-        pressure
-        humidity
-        image
-        ${YR_WEATHER_FIELDS}
-      }
-    }
-  }
-`;
-
 export const PLACE_SNAPSHOTS = `
   query PLACE_SNAPSHOTS(
     $placeName: String!

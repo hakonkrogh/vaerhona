@@ -3,7 +3,7 @@ import produce from 'immer';
 import { useQuery } from 'urql';
 import styled from 'styled-components';
 
-import { getClosestSnapshot, hoursBetweenDates } from 'core/utils';
+import { getClosestSnapshot, hoursBetweenDates, isServer } from 'core/utils';
 import { graphDate } from 'core/date';
 import { PLACE_SNAPSHOTS } from 'modules/queries';
 import SnapshotImage from 'modules/snapshot-image';
@@ -34,15 +34,19 @@ const ImageWrap = styled.div`
   margin: 0 auto;
 `;
 
-const initialState = {
-  pendingNavigation: null,
-  snapshots: [],
-  query: {
-    from: null,
-    to: new Date(),
-    limit: 24 * 7,
-  },
-};
+function getInitialState(place) {
+  return {
+    pendingNavigation: null,
+    snapshots: [],
+    query: {
+      from: null,
+      // The clock when this module loaded could be older than the latest
+      // snapshot, which would leave it out of the list.
+      to: place.lastSnapshot.date,
+      limit: 24 * 7,
+    },
+  };
+}
 
 const reducer = produce((draft, { action, ...rest }) => {
   switch (action) {
@@ -128,7 +132,7 @@ export default function SliceOfTime({
       localSnapshot,
     },
     dispatch,
-  ] = useReducer(reducer, initialState);
+  ] = useReducer(reducer, place, getInitialState);
 
   const snapshot = localSnapshot || snapshotFromParent;
 
@@ -138,6 +142,8 @@ export default function SliceOfTime({
       ...query,
       placeName: place.name,
     },
+    // The server has no API URL to call, and the list is only for browsing.
+    pause: isServer,
   });
 
   useEffect(() => {

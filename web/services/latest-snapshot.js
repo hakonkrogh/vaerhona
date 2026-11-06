@@ -61,7 +61,9 @@ export function buildLatestRecord({ place, firstSnapshot, lastSnapshot }) {
           place.name
         )
       : null,
-    lastSnapshot: toRecordSnapshot(lastSnapshot, place.name),
+    lastSnapshot: lastSnapshot
+      ? toRecordSnapshot(lastSnapshot, place.name)
+      : null,
   };
 }
 

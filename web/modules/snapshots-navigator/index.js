@@ -13,7 +13,7 @@ export function SnapshotsNavigator({ place }) {
 
   const view = 'image';
   const canCompare =
-    new Date(currentSnapshot?.date) - new Date(place?.firstSnapshot.date) >
+    new Date(currentSnapshot?.date) - new Date(place?.firstSnapshot?.date) >
     oneYear;
 
   useEffect(() => {

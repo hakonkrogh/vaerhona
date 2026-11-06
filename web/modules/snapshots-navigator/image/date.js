@@ -84,6 +84,13 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
   const dateRef = createRef();
   const [enableDateChange, setEnableDateChange] = useState(true);
   const [date, setDate] = useState(snapshot.date);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // "Time ago" depends on the current time, so the server and the browser can
+  // disagree on the text. The line keeps its height until the browser takes over.
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   function executeDateChange(dateValue) {
     const d = new Date(dateValue);
@@ -113,12 +120,19 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
     }
   }, [dateRef]);
 
-  const minDate = place.firstSnapshot.date;
+  const minDate = place.firstSnapshot?.date;
 
   return (
     <Outer>
       <DateTimeAgo>
-        <TimeAgo date={new Date(snapshot.date)} formatter={timeAgoFormatter} />
+        {isMounted ? (
+          <TimeAgo
+            date={new Date(snapshot.date)}
+            formatter={timeAgoFormatter}
+          />
+        ) : (
+          '\u00a0'
+        )}
       </DateTimeAgo>
       <DateString>
         <DateInputPlacer>

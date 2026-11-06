@@ -14,6 +14,12 @@ const dbStorage = new AsyncLocalStorage();
  * connection, exposed to the models through AsyncLocalStorage.
  */
 export async function runWithDb(fn) {
+  // Checked here and not when the module loads, because `next build` loads this
+  // module and CI has no database secrets at build time.
+  if (!config.mongo.url) {
+    throw new Error('process.env.MONGO_DB_URI is not set');
+  }
+
   const connection = await mongoose
     .createConnection(config.mongo.url, {
       maxPoolSize: 1,
