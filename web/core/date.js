@@ -1,34 +1,101 @@
-import moment from 'moment-timezone';
+const TIME_ZONE = 'Europe/Oslo';
+const INVALID_DATE = 'Invalid date';
 
-// Set the global locale
-moment.locale('nb');
+const WEEKDAYS = ['sø.', 'ma.', 'ti.', 'on.', 'to.', 'fr.', 'lø.'];
+const MONTHS = [
+  'jan.',
+  'feb.',
+  'mars',
+  'apr.',
+  'mai',
+  'juni',
+  'juli',
+  'aug.',
+  'sep.',
+  'okt.',
+  'nov.',
+  'des.',
+];
 
-const tz = 'Europe/Oslo';
+const partsFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: TIME_ZONE,
+  hourCycle: 'h23',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+/**
+ * The calendar values of a date in Oslo, or null if the date is invalid.
+ * All text on the site uses this time zone, wherever the viewer is.
+ */
+function osloParts(date = new Date()) {
+  // new Date(null) would be 1 January 1970.
+  const parsed = date === null ? new Date(NaN) : new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  const parts = {};
+  for (const { type, value } of partsFormatter.formatToParts(parsed)) {
+    parts[type] = value;
+  }
+
+  const year = Number(parts.year);
+  const month = Number(parts.month);
+  const day = Number(parts.day);
+
+  return {
+    year,
+    monthName: MONTHS[month - 1],
+    day,
+    weekdayName: WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()],
+    paddedMonth: parts.month,
+    paddedDay: parts.day,
+    paddedHour: parts.hour,
+    paddedMinute: parts.minute,
+  };
+}
+
+function format(date, formatParts) {
+  const parts = osloParts(date);
+
+  return parts ? formatParts(parts) : INVALID_DATE;
+}
 
 export function prettyDate(date, { year = true } = {}) {
-  return moment(date)
-    .tz(tz)
-    .format(year ? 'L' : 'DD MMM');
+  return format(date, (p) =>
+    year
+      ? `${p.paddedDay}.${p.paddedMonth}.${p.year}`
+      : `${p.paddedDay} ${p.monthName}`
+  );
 }
 
 export function prettyDateTime(date) {
-  return moment(date).tz(tz).format('llll');
+  return format(
+    date,
+    (p) =>
+      `${p.weekdayName} ${p.day}. ${p.monthName} ${p.year} kl. ${p.paddedHour}:${p.paddedMinute}`
+  );
 }
 
 export function prettyYearMonth(date) {
-  return moment(date).tz(tz).format('MMM YYYY');
+  return format(date, (p) => `${p.monthName} ${p.year}`);
 }
 
 export function chartDate(date) {
-  return moment(date).tz(tz).format('Do MMM HH');
+  return format(date, (p) => `${p.day}. ${p.monthName} ${p.paddedHour}`);
 }
 
 export function prettyTime(date) {
-  return moment(date).tz(tz).format('LT');
+  return format(date, (p) => `${p.paddedHour}:${p.paddedMinute}`);
 }
 
 export function timeOrDate(date) {
-  if (moment().isSame(date, 'day')) {
+  if (graphDate(new Date()) === graphDate(date)) {
     return prettyTime(date);
   }
 
@@ -40,13 +107,5 @@ export function graphDate(date) {
     return;
   }
 
-  /**
-   * Cannot use this on the server side
-   * Throws an error in apollo.cache.readQyuery
-   */
-  // if (typeof window !== 'undefined') {
-  //   return new Date(date).toISOString();
-  // }
-
-  return moment(date).tz(tz).format('YYYY-MM-DD');
+  return format(date, (p) => `${p.year}-${p.paddedMonth}-${p.paddedDay}`);
 }
