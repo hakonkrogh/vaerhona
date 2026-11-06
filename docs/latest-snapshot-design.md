@@ -137,7 +137,7 @@ The order matters. If a reader runs while any Worker version can upload without 
    ```
 
 2. **PR 1: writer only.** Uploads maintain the record, and no page reads it. Merging deploys it, because every push to `main` that changes `web/` deploys.
-3. **Check for at least 24 hours.** Compare each record with the API after uploads, look for write failures in the logs, and measure R2 read time.
+3. **Check after two upload cycles.** Compare each record with the API, look for write failures in the logs, and measure R2 read time. Uploads are hourly, and a bad record or a slow read only sends the page back to MongoDB, so a longer wait would only add more samples of the same thing.
 4. **PR 2: reader.** Move the page to `getServerSideProps`, and add `priority` to the first photo.
 5. **Test and measure.** Run the freshness check in the spec, then compare with the baseline.
 
