@@ -26,6 +26,19 @@ export const getPlace = async ({ placeName }) => {
   return parsePlace(place);
 };
 
+/**
+ * Only what is needed to query snapshots. The first and last snapshot are not
+ * loaded, since every lookup is one more request to MongoDB.
+ */
+export const getPlaceForSnapshots = ({ placeName }) =>
+  snapshotPlaceModel
+    .findOne({
+      name: placeName,
+    })
+    .select('cuid name')
+    .lean()
+    .exec();
+
 export const getTopPublicPlaces = async ({ limit }) => {
   const places = await snapshotPlaceModel
     .find({
