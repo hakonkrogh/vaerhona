@@ -100,7 +100,7 @@ These are places where today's code does not meet the intent, or may not. All co
 4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
 5. **A date with no data gives no feedback.** The page keeps the old photo and shows no message. Veggli has no snapshots for 12 to 18 June 2024, for example.
 6. **The front page order does nothing.** `getTopPublicPlaces` sorts on `lastSnapshot.dateAdded`, but `lastSnapshot` is only an id at that point.
-7. **A request can hang.** One API request ran for over 6 minutes on 2026-11-06, while other requests worked. The cause is unknown (observed live, once).
+7. **A request can hang.** One API request ran for over 6 minutes on 2026-11-06, while other requests worked. The cause is unknown (seen live). Three later timing runs that day each had one request that failed or took over 20 seconds, but they did not record the cause, so they may or may not be the same problem.
 8. **Boxes do not notice a failed upload.** `snapshots.add` catches errors and answers HTTP 200 with `success: false`. `device/logger.js` does not read `success`, so it logs "Snapshot sent" and does not retry. That snapshot is lost or left unpublished until the next upload.
 9. **`firstSnapshot.image` in the API has a wrong URL.** The path contains `undefined` where the place name should be (observed live). The page does not use this field today. The latest snapshot record stores the correct URL.
 10. **An upload with no photo still becomes the latest.** The `image` field is optional in both mutations, and `lastSnapshot` moves anyway, so the page would show a broken photo. Current box code always sends a photo.
@@ -126,9 +126,24 @@ Measured on 2026-11-06 from Norway against production, with no changes applied. 
 | Page HTML, usual | 40-70 ms |
 | Page HTML, sometimes | 0.3-1.3 s |
 
+### After the first speed work
+
+Measured on 2026-11-06 from Norway against production, after the snapshot index, the latest snapshot record and Worker placement went live. Each row is the median of 20 requests, measured as the wait for the first byte after the connection is open. A browser's full load takes longer, since it also fetches scripts and the photo. Page times include the data, because the server puts it in the HTML. The Worker ran in London (`cf-placement: remote-LHR`). Photos were not measured.
+
+| Measure | Time |
+|---|---|
+| Place page that reads the record (Veggli) | ~200 ms |
+| Place page that reads the record (Myking) | ~180 ms |
+| Place page that reads MongoDB (Tornes, no recent upload) | ~470 ms |
+| API request that only opens a MongoDB connection | ~330 ms |
+| `snapshots` query (1 snapshot, only `cuid` and `date`) | ~370 ms |
+| `PLACE_SNAPSHOTS` query (168 snapshots) | ~430 ms |
+
+A few requests were much slower. Across the runs, the slowest Veggli page took about 4 s and the slowest Myking page about 1.6 s, the latter just after a deploy. Veggli was always measured first, so this may be the Worker warming up. The cause is not confirmed.
+
 ## Decisions
 
-- **2026-11-06: The Worker runs in `aws:eu-west-1`, next to MongoDB Atlas and S3.** Each MongoDB request takes several round trips, so being close should save more than the longer path from a visitor to the Worker costs. This is not measured yet. Static assets still come from the location nearest the visitor.
+- **2026-11-06: The Worker runs in `aws:eu-west-1`, next to MongoDB Atlas and S3.** Each MongoDB request takes several round trips, so being close saves more than the longer path from a visitor to the Worker costs. Measured from Norway, a 168-snapshot query with the same fields went from about 740 ms to about 445 ms, and pages that read the record got about 40 ms slower. On 2026-11-06 Cloudflare ran the Worker in London for this setting, which is near enough to help. Check the `cf-placement` header for the current location, since Cloudflare can change it. Static assets still come from the location nearest the visitor.
 - **2026-11-06: The first view does not use ISR with `revalidate`.** It would load faster, but can show an older snapshot, which breaks F1 and F3.
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
 - **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).

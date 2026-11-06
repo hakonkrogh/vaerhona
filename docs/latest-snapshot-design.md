@@ -12,7 +12,7 @@ The record is correct because of three choices:
 2. **An upload deletes the record before it changes `lastSnapshot` in MongoDB.** If a later step fails, the record is missing, not old, and a missing record means "read MongoDB".
 3. **A record older than 90 minutes is not trusted.** The page reads MongoDB instead, which limits the damage from a failure nobody planned for.
 
-Expected result (estimate, to be measured): the wait for place data drops from about 800 ms to under 100 ms, and the photo can start loading with the HTML.
+The estimate was that the wait for place data would drop from about 800 ms to under 100 ms. Measured result: a place page with a usable record now answers in about 180-200 ms, including the HTML and the data, and the photo can start loading with the HTML. See the timings in [SPEC.md](../SPEC.md).
 
 This follows rules F1 to F5 in [SPEC.md](../SPEC.md).
 
