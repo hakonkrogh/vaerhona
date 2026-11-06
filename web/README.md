@@ -24,6 +24,7 @@ npx wrangler secret put VH_AWS_SECRET_ACCESS_KEY
 ```
 
 ISR pages are cached in the R2 bucket `vaerhona-next-cache`.
+Uploads keep a latest snapshot record per place in the R2 bucket `vaerhona-latest` (see [the design](../docs/latest-snapshot-design.md)).
 Image optimization uses the Cloudflare Images binding.
 
 ## CI
