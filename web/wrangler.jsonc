@@ -27,6 +27,10 @@
     {
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "vaerhona-next-cache"
+    },
+    {
+      "binding": "LATEST_R2_BUCKET",
+      "bucket_name": "vaerhona-latest"
     }
   ],
   "durable_objects": {

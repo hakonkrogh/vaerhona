@@ -3,7 +3,10 @@ import { Kind } from 'graphql/language';
 
 import * as PlaceService from '../services/place-service';
 import * as SnapshotService from '../services/snapshot-service';
-import config from '../services/config';
+import {
+  getSnapshotImageUrl,
+  getWindDirectionCompass,
+} from '../services/snapshot-view';
 
 export const resolvers = {
   Query: {
@@ -73,24 +76,12 @@ export const resolvers = {
       return new Date(snapshot.dateAdded);
     },
     image(snapshot) {
-      const baseUrl =
-        config.environment === 'development'
-          ? 'https://vaerhona-development.s3-eu-west-1.amazonaws.com'
-          : 'https://vaerhona.s3-eu-west-1.amazonaws.com';
-      const date = new Date(snapshot.dateAdded);
-      return `${baseUrl}/${snapshot.placeName}/${date.getFullYear()}/${
-        date.getMonth() + 1
-      }/${snapshot.cuid}`;
+      return getSnapshotImageUrl(snapshot);
     },
   },
   YrWeather: {
     windDirectionCompass(yrWeather) {
-      const degrees = yrWeather.windFromDirection;
-      if (degrees == null) return null;
-
-      const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-      const index = Math.round(degrees / 45) % 8;
-      return directions[index];
+      return getWindDirectionCompass(yrWeather.windFromDirection);
     },
   },
   Date: new GraphQLScalarType({

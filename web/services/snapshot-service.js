@@ -3,6 +3,7 @@ import generateCuid from 'cuid';
 import { snapshotModel, snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
 import { saveImageFromSnapshot } from './aws/s3';
+import { publishLatestSnapshot } from './latest-snapshot';
 import { hasYrSupport, fetchWeatherData } from './yr-service';
 
 // Temperature validation constants
@@ -146,12 +147,7 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
     await saveImageFromSnapshot({ place, snapshot, image });
   }
 
-  // Update the place with the last snapshot
-  await place
-    .updateOne({
-      lastSnapshot: saveResponse._id,
-    })
-    .exec();
+  await publishLatestSnapshot({ place, snapshot: saveResponse });
 
   return saveResponse;
 }
@@ -195,12 +191,7 @@ export async function addSnapshotLegacy({
     await saveImageFromSnapshot({ place, snapshot, image: imageBase64 });
   }
 
-  // Update the place with the last snapshot
-  await place
-    .updateOne({
-      lastSnapshot: saveResponse._id,
-    })
-    .exec();
+  await publishLatestSnapshot({ place, snapshot: saveResponse });
 
   return saveResponse;
 }
