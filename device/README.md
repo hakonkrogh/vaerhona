@@ -1,8 +1,16 @@
-# vaerhona-server
+# vaerhona device
 
 Node server running on a raspberry PI for collecting weather data
 
 Compatible with sensors DHT22/11 and BMP085, and the Raspberry PiCam
+
+## New boxes
+
+Clone this repo and run the app from this `device/` folder. `.env`, `snapshot.jpg`
+and the firmware update all use the folder the app is started from.
+
+Boxes set up before the monorepo still track the archived `vaerhona-server` repo.
+They do not get changes made here.
 
 ## SD card Image
 

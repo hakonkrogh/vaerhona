@@ -1,4 +1,6 @@
-# vaerhona
+# vaerhona web
+
+The website and API. Run all commands below from this folder.
 
 ## Local development
 
@@ -26,6 +28,7 @@ Image optimization uses the Cloudflare Images binding.
 
 ## CI
 
-`.github/workflows/deploy.yml` deploys to production on every push to `main`.
+`.github/workflows/deploy.yml` (at the repo root) deploys to production on every
+push to `main` that changes `web/` or the workflow itself.
 It needs two repository secrets: `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`
 (a token made from the "Edit Cloudflare Workers" template).
