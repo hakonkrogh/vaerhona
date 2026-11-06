@@ -19,6 +19,11 @@ export async function runWithDb(fn) {
       maxPoolSize: 1,
       minPoolSize: 0,
       serverSelectionTimeoutMS: 10000,
+      // Every request opens a new connection, so these would each add requests
+      // to MongoDB every time. Indexes are created by a script instead, and
+      // MongoDB creates a missing collection on the first insert.
+      autoIndex: false,
+      autoCreate: false,
     })
     .asPromise();
 

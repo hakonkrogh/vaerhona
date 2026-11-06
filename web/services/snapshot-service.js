@@ -19,6 +19,10 @@ function isTemperatureValid(temperature) {
   return temperature >= TEMP_MIN && temperature <= TEMP_MAX;
 }
 
+// The fields of a snapshot that the API can return.
+const SNAPSHOT_LIST_FIELDS =
+  'cuid placeCuid temperature humidity pressure dateAdded yrWeather';
+
 function byDateAscending(a, b) {
   return new Date(a.dateAdded) - new Date(b.dateAdded);
 }
@@ -38,14 +42,16 @@ export async function getSnapshots({ limit = 10, place, from, to }) {
     };
   }
 
-  const inst = snapshotModel.find(whereFilter);
+  const inst = snapshotModel
+    .find(whereFilter)
+    .select(SNAPSHOT_LIST_FIELDS)
+    // With only an end date we want the newest snapshots before it. In every
+    // other case we want the oldest ones after the start date.
+    .sort(to && !from ? '-dateAdded' : 'dateAdded')
+    .lean();
 
   if (!to || !from) {
     inst.limit(limit);
-  }
-
-  if (to && !from) {
-    inst.sort('-dateAdded');
   }
 
   const snapshots = await inst.exec();

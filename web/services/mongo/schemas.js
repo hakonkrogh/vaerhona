@@ -40,3 +40,8 @@ export const snapshotSchema = new Schema({
   dateAdded: { type: 'Date', default: Date.now, required: true },
   yrWeather: { type: yrWeatherSchema, required: false },
 });
+
+// Serves every snapshot list query, in both directions. Create it with
+// scripts/create-snapshot-index.mjs. Mongoose must not do it, see
+// services/init.js.
+snapshotSchema.index({ placeCuid: 1, dateAdded: -1 });

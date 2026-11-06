@@ -19,7 +19,7 @@ export const resolvers = {
       });
     },
     async snapshots(_, { place: placeName, ...rest }) {
-      const place = await PlaceService.getPlace({
+      const place = await PlaceService.getPlaceForSnapshots({
         placeName,
       });
 
