@@ -42,7 +42,9 @@ async function checkOnlineStatus() {
 let firmwareVersionPromise;
 function getFirmwareVersion() {
   if (!firmwareVersionPromise) {
-    firmwareVersionPromise = bashCmd("git rev-parse --short HEAD").catch((e) => {
+    // Last commit that changed this folder, so web-only commits in the monorepo
+    // don't change the reported version.
+    firmwareVersionPromise = bashCmd("git log -1 --format=%h -- .").catch((e) => {
       console.log(e);
       return "n/a";
     });

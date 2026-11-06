@@ -7,5 +7,5 @@ Weather stations and the website that shows their data.
 
 The two folders share no code and each has its own dependencies.
 
-The boxes post their data to `/api/graphql` on the website. Most boxes can't be
-updated remotely, so changes to `web/` must keep that API working for old box code.
+The boxes post their data to `/api/graphql` on the website. They can't be updated
+remotely, so changes to `web/` must keep that API working for old box code.
