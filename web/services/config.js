@@ -1,7 +1,3 @@
-if (!process.env.MONGO_DB_URI) {
-  throw Error('process.env.MONGO_DB_URI is not set');
-}
-
 const config = {
   environment: 'production', // process.env.NODE_ENV || 'development',
 

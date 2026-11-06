@@ -95,7 +95,7 @@ Also repeat step 3 after the page has not been visited for a long time, because 
 These are places where today's code does not meet the intent, or may not. All come from reading the code unless marked.
 
 1. **An open page never updates.** `useRefreshQuery` in `web/core/utils.js` was written to refresh every 30 seconds, but reads `reexecuteQuery` from the wrong place, so the refresh never runs. See open question 1.
-2. **Going back to a place in the same tab can show old data.** urql (the GraphQL client) keeps results in memory, so moving from a place to the front page and back can reuse the first result. This breaks F1 and is not yet tested live.
+2. **Going back to the front page in the same tab can show old data.** urql (the GraphQL client) keeps results in memory, so using the back button to return to the front page can reuse the first result. This breaks F6 and is not yet tested live. The place page no longer has this problem.
 3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing.
 4. **Forward paging has no sort.** A query with only a start date has no sort order in `getSnapshots`, so the order of results is not guaranteed.
 5. **A date with no data gives no feedback.** The page keeps the old photo and shows no message. Veggli has no snapshots for 12 to 18 June 2024, for example.
@@ -130,4 +130,4 @@ Measured on 2026-11-06 from Norway against production, with no changes applied. 
 
 - **2026-11-06: The first view does not use ISR with `revalidate`.** It would load faster, but can show an older snapshot, which breaks F1 and F3.
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
-- **2026-11-06 (proposed): Uploads maintain a latest snapshot record in R2.** It is how we plan to meet F4. See [the design](docs/latest-snapshot-design.md).
+- **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).

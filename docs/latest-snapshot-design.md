@@ -1,6 +1,6 @@
 # Design: latest snapshot record
 
-Status: proposed, 2026-11-06. Nothing here is built yet.
+Status: built, 2026-11-06. See the rollout section for what is live.
 
 ## Summary
 
@@ -106,8 +106,10 @@ The cost is that a place has no record until its next upload. That is fine, sinc
 ### Why `getServerSideProps`
 
 - The photo and values are in the HTML, with no spinner. The photo can use `priority` and start loading right away.
-- The responses are not cached, and each client-side navigation asks the server again. This should also fix known gap 2 in the spec, but it must be tested.
+- The responses are not cached, and each client-side navigation asks the server again, so returning to a place shows its latest snapshot.
 - It adds a small Worker render to each page view, where static HTML is served today.
+- The server now renders dates, so it needs the same text as the browser. `moment` did not load its Norwegian locale on the Worker, so this builds on replacing it with `Intl`.
+- "Time ago" is only rendered in the browser, because it depends on the current time and would otherwise differ from the server's text.
 
 Unknown place names return a 404 instead of an empty page.
 
