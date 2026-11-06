@@ -128,6 +128,7 @@ Measured on 2026-11-06 from Norway against production, with no changes applied. 
 
 ## Decisions
 
+- **2026-11-06: The Worker runs in `aws:eu-west-1`, next to MongoDB Atlas and S3.** Each MongoDB request takes several round trips, so being close should save more than the longer path from a visitor to the Worker costs. This is not measured yet. Static assets still come from the location nearest the visitor.
 - **2026-11-06: The first view does not use ISR with `revalidate`.** It would load faster, but can show an older snapshot, which breaks F1 and F3.
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
 - **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).

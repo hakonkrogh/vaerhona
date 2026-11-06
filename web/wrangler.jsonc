@@ -8,6 +8,10 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  // Run the Worker next to MongoDB Atlas and S3, which are both in this region.
+  "placement": {
+    "region": "aws:eu-west-1"
+  },
   "workers_dev": true,
   "preview_urls": false,
   "routes": [
