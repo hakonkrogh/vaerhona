@@ -46,7 +46,8 @@ function toRecordSnapshot(snapshot, placeName) {
 }
 
 /**
- * The record has the same shape as the `place` field of the PLACE query.
+ * The record has the fields the place page uses from the PLACE query, in the
+ * same shape. It leaves out isPublic, which the page does not read.
  * The first snapshot is normalized and the last one is not, because that is
  * how services/place-service.js returns them.
  */
@@ -66,7 +67,7 @@ export function buildLatestRecord({ place, firstSnapshot, lastSnapshot }) {
 
 async function writeLatestRecord({ place, snapshot }) {
   const firstSnapshot = place.firstSnapshot
-    ? await snapshotModel.findById(place.firstSnapshot).lean().exec()
+    ? await snapshotModel.findById(place.firstSnapshot).exec()
     : null;
   const record = buildLatestRecord({
     place,
@@ -78,13 +79,19 @@ async function writeLatestRecord({ place, snapshot }) {
   const putAttempts = await putLatestRecord(place.name, record);
   const putMs = Date.now() - putStarted;
 
-  // Rollout measurement: how fast is a read, and does it return what we wrote?
+  console.log(
+    `[latest] place=${place.name} putAttempts=${putAttempts} putMs=${putMs}`
+  );
+}
+
+// Rollout measurement: how fast is a read, and does it return what we wrote?
+async function measureLatestRecordRead({ place, snapshot }) {
   const readStarted = Date.now();
   const stored = await readLatestRecord(place.name);
   const readMs = Date.now() - readStarted;
 
   console.log(
-    `[latest] place=${place.name} putAttempts=${putAttempts} putMs=${putMs} readMs=${readMs} matches=${
+    `[latest] place=${place.name} readMs=${readMs} matches=${
       stored?.lastSnapshot?.cuid === snapshot.cuid
     }`
   );
@@ -113,5 +120,12 @@ export async function publishLatestSnapshot({ place, snapshot }) {
     await writeLatestRecord({ place, snapshot });
   } catch (err) {
     console.error(`[latest] place=${place.name} record write failed`, err);
+    return;
+  }
+
+  try {
+    await measureLatestRecordRead({ place, snapshot });
+  } catch (err) {
+    console.error(`[latest] place=${place.name} read-back failed`, err);
   }
 }

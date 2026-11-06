@@ -5,9 +5,11 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 const KEY_PREFIX = 'v1';
 
 // R2 allows one write per second to the same key. The delete and the write of
-// one upload can be closer than that, so the write may need another try.
-const PUT_ATTEMPTS = 3;
-const PUT_RETRY_DELAY_MS = 1100;
+// one upload can be closer than that, so each may need another try. A failed
+// delete also stops the upload from publishing, so a brief error should not
+// be final.
+const ATTEMPTS = 3;
+const RETRY_DELAY_MS = 1100;
 
 function getKey(placeName) {
   return `${KEY_PREFIX}/${placeName}.json`;
@@ -30,10 +32,29 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * @returns {Promise<number>} how many tries it took
+ */
+async function withRetry(operation) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await operation();
+      return attempt;
+    } catch (err) {
+      if (attempt >= ATTEMPTS) {
+        throw err;
+      }
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+}
+
 export async function removeLatestRecord(placeName) {
   const bucket = await getBucket();
 
-  await bucket?.delete(getKey(placeName));
+  if (bucket) {
+    await withRetry(() => bucket.delete(getKey(placeName)));
+  }
 }
 
 /**
@@ -48,19 +69,11 @@ export async function putLatestRecord(placeName, record) {
 
   const body = JSON.stringify(record);
 
-  for (let attempt = 1; ; attempt++) {
-    try {
-      await bucket.put(getKey(placeName), body, {
-        httpMetadata: { contentType: 'application/json' },
-      });
-      return attempt;
-    } catch (err) {
-      if (attempt >= PUT_ATTEMPTS) {
-        throw err;
-      }
-      await sleep(PUT_RETRY_DELAY_MS);
-    }
-  }
+  return withRetry(() =>
+    bucket.put(getKey(placeName), body, {
+      httpMetadata: { contentType: 'application/json' },
+    })
+  );
 }
 
 /**

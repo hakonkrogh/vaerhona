@@ -57,9 +57,7 @@ describe('publishLatestSnapshot', () => {
 
     calls = [];
     place = makePlace(calls);
-    findById.mockReturnValue({
-      lean: () => ({ exec: async () => firstSnapshot }),
-    });
+    findById.mockReturnValue({ exec: async () => firstSnapshot });
     store.removeLatestRecord.mockImplementation(async () => {
       calls.push('remove');
     });
@@ -119,11 +117,9 @@ describe('publishLatestSnapshot', () => {
 
   it('still succeeds when the first snapshot lookup fails', async () => {
     findById.mockReturnValue({
-      lean: () => ({
-        exec: async () => {
-          throw new Error('Mongo down');
-        },
-      }),
+      exec: async () => {
+        throw new Error('Mongo down');
+      },
     });
 
     await expect(
@@ -141,13 +137,29 @@ describe('publishLatestSnapshot', () => {
     ).resolves.toBeUndefined();
 
     expect(calls).toEqual(['remove', 'mongo:new-id', 'put']);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('read-back failed'),
+      expect.any(Error)
+    );
+  });
+
+  it('skips the read-back when the record write fails', async () => {
+    store.putLatestRecord.mockRejectedValue(new Error('R2 down'));
+
+    await publishLatestSnapshot({ place, snapshot });
+
+    expect(store.readLatestRecord).not.toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('record write failed'),
+      expect.any(Error)
+    );
   });
 });
 
 describe('buildLatestRecord', () => {
   const place = { name: 'veggli', cuid: 'place-cuid' };
 
-  it('has the same shape as the PLACE query', () => {
+  it('has the fields the page uses from the PLACE query', () => {
     const record = buildLatestRecord({
       place,
       firstSnapshot,

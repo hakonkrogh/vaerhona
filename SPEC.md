@@ -52,7 +52,7 @@ The main question the site answers is: **what does it look like there now?**
 | ID | Rule | Source |
 |---|---|---|
 | B1 | Boxes cannot be updated remotely, so `/api/graphql` must keep working for old box code. This includes both the `addSnapshot` and `snapshots.add` mutations. | Docs |
-| B2 | A place's `lastSnapshot` moves only after the photo is stored, so the latest snapshot always has a photo. | Code |
+| B2 | A place's `lastSnapshot` moves only after the upload's photo is stored. See known gap 10 for uploads with no photo. | Code |
 | B3 | A box that is not paired to a place uploads to the place named `test`. | Code |
 | B4 | Weather from yr.no (the Norwegian weather service) is fetched at upload and stored with the snapshot. It is not fetched when someone views the page. | Code |
 | B5 | A temperature outside -50 to 50 °C is replaced with the yr.no temperature when one is available. | Code |
@@ -103,6 +103,7 @@ These are places where today's code does not meet the intent, or may not. All co
 7. **A request can hang.** One API request ran for over 6 minutes on 2026-11-06, while other requests worked. The cause is unknown (observed live, once).
 8. **Boxes do not notice a failed upload.** `snapshots.add` catches errors and answers HTTP 200 with `success: false`. `device/logger.js` does not read `success`, so it logs "Snapshot sent" and does not retry. That snapshot is lost or left unpublished until the next upload.
 9. **`firstSnapshot.image` in the API has a wrong URL.** The path contains `undefined` where the place name should be (observed live). The page does not use this field today. The latest snapshot record stores the correct URL.
+10. **An upload with no photo still becomes the latest.** The `image` field is optional in both mutations, and `lastSnapshot` moves anyway, so the page would show a broken photo. Current box code always sends a photo.
 
 ## Open questions for the owner
 

@@ -34,10 +34,24 @@ describe('latest-store', () => {
     expect(bucket.delete).toHaveBeenCalledWith('v1/veggli.json');
   });
 
-  it('lets a failed remove throw', async () => {
+  it('retries a failed remove', async () => {
+    bucket.delete.mockRejectedValueOnce(new Error('500')).mockResolvedValue();
+
+    const removed = removeLatestRecord('veggli');
+    await vi.advanceTimersByTimeAsync(1100);
+
+    await expect(removed).resolves.toBeUndefined();
+    expect(bucket.delete).toHaveBeenCalledTimes(2);
+  });
+
+  it('throws when every remove fails', async () => {
     bucket.delete.mockRejectedValue(new Error('R2 down'));
 
-    await expect(removeLatestRecord('veggli')).rejects.toThrow('R2 down');
+    const removed = removeLatestRecord('veggli').catch((err) => err);
+    await vi.advanceTimersByTimeAsync(2200);
+
+    expect((await removed).message).toBe('R2 down');
+    expect(bucket.delete).toHaveBeenCalledTimes(3);
   });
 
   it('retries a failed write after the rate limit window', async () => {

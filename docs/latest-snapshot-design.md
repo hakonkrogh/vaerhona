@@ -64,7 +64,7 @@ async function publishLatest({ place, snapshot }) {
 }
 ```
 
-R2 allows one write per second to the same key, and the docs do not say whether a delete counts. The delete and the write are often closer together than that, so the write tries up to 3 times, 1.1 seconds apart. The logs show how many tries it took, which step 3 of the rollout checks.
+R2 allows one write per second to the same key, and the docs do not say whether a delete counts. The delete and the write are often closer together than that, so each tries up to 3 times, 1.1 seconds apart. The logs show how many tries the write took, which step 3 of the rollout checks.
 
 ### What happens when a step fails
 
@@ -120,7 +120,7 @@ Unknown place names return a 404 instead of an empty page.
 ## Accepted downsides
 
 - **Offline boxes stay slow.** A place with no upload in 90 minutes, such as `tornes` today, reads MongoDB on every view. The HTML then takes about 800 ms with no spinner, where today a spinner shows while the data loads. The total wait is about the same.
-- **Two uploads at once for one place** could leave the older one as the latest, in both the record and MongoDB. MongoDB has this risk today. The next upload corrects it.
+- **Two uploads at once for one place** could leave the older one as the latest. The record and MongoDB can also disagree, if the uploads finish their steps in a different order. The 90 minute limit does not catch this, but the next upload corrects it. It needs two uploads within a very short time, so we accept it for now. MongoDB alone has a similar risk today.
 - **Manual database edits** to `lastSnapshot`, `firstSnapshot` or a place name are not seen by the record. After such an edit, delete the record for that place. The 90 minute limit is the backstop for `lastSnapshot`.
 - **Local development against production MongoDB** writes to a local R2, not the real one. Do not upload to production data from a dev server.
 
