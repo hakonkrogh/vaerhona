@@ -33,7 +33,9 @@ function getCacheKey(request) {
   for (const name of ['url', 'w', 'q']) {
     key.searchParams.set(name, url.searchParams.get(name) ?? '');
   }
-  key.searchParams.set('avif', String(accept.includes('image/avif')));
+  // next.config.js sets no image formats, so Next.js only makes WebP, and a
+  // browser that also accepts AVIF gets the same image. Add AVIF here if it
+  // is ever added to images.formats.
   key.searchParams.set('webp', String(accept.includes('image/webp')));
 
   return new Request(key.toString());
