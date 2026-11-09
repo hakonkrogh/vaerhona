@@ -1,6 +1,16 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 
+import splash from '../core/splash-screens.json';
+
+// iOS shows one of these while the home screen app starts, instead of a black
+// screen. It needs an exact screen size match. Made by
+// scripts/make-splash-screens.mjs.
+const splashLinks = splash.screens.map(({ width, height, ratio }) => ({
+  media: `(device-width: ${width}px) and (device-height: ${height}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`,
+  href: `/static/splash/splash-${width * ratio}x${height * ratio}.png`,
+}));
+
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet();
@@ -38,6 +48,14 @@ export default class MyDocument extends Document {
             sizes="180x180"
             href="/static/favicons/apple-touch-icon.png?v=M4yo99lAWP"
           />
+          {splashLinks.map(({ media, href }) => (
+            <link
+              key={href}
+              rel="apple-touch-startup-image"
+              media={media}
+              href={href}
+            />
+          ))}
           <link
             rel="icon"
             type="image/png"
