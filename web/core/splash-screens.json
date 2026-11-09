@@ -1,6 +1,7 @@
 {
   "background": "#fcfcfc",
   "logoWidthShare": 0.3,
+  "logoCornerShare": 0.225,
   "screens": [
     { "width": 440, "height": 956, "ratio": 3 },
     { "width": 430, "height": 932, "ratio": 3 },
