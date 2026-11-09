@@ -1,8 +1,17 @@
+import { Montserrat } from 'next/font/google';
 import Head from 'next/head';
 import styled, { keyframes } from 'styled-components';
 
 import { GlobalStyle } from 'ui';
 import { useNavigationPending } from 'core/use-navigation-pending';
+
+// Downloaded at build time and served with the site's own files, so the first
+// paint does not wait for a stylesheet from Google.
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+});
 
 const slide = keyframes`
   from { transform: translateX(-100%); }
@@ -42,7 +51,7 @@ export default function App({ Component, pageProps }) {
           content="width=device-width, viewport-fit=cover"
         />
       </Head>
-      <GlobalStyle />
+      <GlobalStyle fontFamily={montserrat.style.fontFamily} />
       {navigating && <NavigationBar role="progressbar" aria-label="Laster" />}
       <Component {...pageProps} />
     </>
