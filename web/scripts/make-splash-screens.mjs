@@ -5,25 +5,16 @@
 // size in core/splash-screens.json. pages/_document.js links them from the
 // same list. Run this again after changing the list or the logo.
 import { mkdirSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
-const WEB = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { WEB, iconPng, readIcon, sharp } from './icon-tools.mjs';
+
 const OUT = join(WEB, 'public/static/splash');
-
-// sharp comes with Next.js, so this needs no extra dependency.
-const require = createRequire(require_resolve('next/package.json'));
-const sharp = require('sharp');
-
-function require_resolve(name) {
-  return createRequire(join(WEB, 'package.json')).resolve(name);
-}
 
 const config = JSON.parse(
   readFileSync(join(WEB, 'core/splash-screens.json'), 'utf8')
 );
-const logo = readFileSync(join(WEB, 'public/static/icons/app.svg'));
+const logo = readIcon('app.svg');
 
 mkdirSync(OUT, { recursive: true });
 
@@ -33,16 +24,7 @@ for (const { width, height, ratio } of config.screens) {
   const logoSize = Math.round(pixelWidth * config.logoWidthShare);
   // The icon is a full square. Round its corners so it looks like the
   // app icon on the home screen.
-  const radius = Math.round(logoSize * (config.logoCornerShare ?? 0));
-  const corners = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${logoSize}" height="${logoSize}">` +
-      `<rect width="${logoSize}" height="${logoSize}" rx="${radius}" fill="#fff"/></svg>`
-  );
-  const logoPng = await sharp(logo, { density: 300 })
-    .resize(logoSize, logoSize)
-    .composite([{ input: corners, blend: 'dest-in' }])
-    .png()
-    .toBuffer();
+  const logoPng = await iconPng(logo, logoSize, config.logoCornerShare ?? 0);
   const file = join(OUT, `splash-${pixelWidth}x${pixelHeight}.png`);
 
   await sharp({
