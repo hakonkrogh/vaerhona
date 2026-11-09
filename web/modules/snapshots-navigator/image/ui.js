@@ -2,7 +2,9 @@ import styled from 'styled-components';
 
 export const Outer = styled.div`
   --navigation-buttons-height: 65px;
-  padding-bottom: calc(var(--navigation-buttons-height) + 15px);
+  padding-bottom: calc(
+    var(--navigation-buttons-height) + 15px + env(safe-area-inset-bottom)
+  );
 `;
 
 export const CompareList = styled.ul`
@@ -18,7 +20,9 @@ export const CompareList = styled.ul`
 `;
 
 export const Bottom = styled.div`
-  height: var(--navigation-buttons-height);
+  /* Room for the iOS home indicator below the buttons. */
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(var(--navigation-buttons-height) + env(safe-area-inset-bottom));
   position: fixed;
   background: #fff;
   bottom: 0;

@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import styled, { keyframes } from 'styled-components';
 import {
   createClient,
@@ -48,6 +49,15 @@ export default function App({ Component, pageProps }) {
 
   return (
     <Provider value={client}>
+      <Head>
+        {/* As a home screen app, iOS draws the page under the status bar and
+            the home indicator. viewport-fit=cover makes that explicit, and
+            the safe-area-inset values then say how much room to leave. */}
+        <meta
+          name="viewport"
+          content="width=device-width, viewport-fit=cover"
+        />
+      </Head>
       <GlobalStyle />
       {navigating && <NavigationBar role="progressbar" aria-label="Laster" />}
       <Component {...pageProps} />

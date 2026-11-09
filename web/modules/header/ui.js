@@ -2,7 +2,9 @@ import styled from 'styled-components';
 
 export const Wrapper = styled.header`
   flex: 0 0 auto;
-  height: 50px;
+  /* Room for the iOS status bar. It is 0 in a normal browser tab. */
+  padding-top: env(safe-area-inset-top);
+  height: calc(50px + env(safe-area-inset-top));
   box-sizing: border-box;
   overflow: auto;
   display: flex;
