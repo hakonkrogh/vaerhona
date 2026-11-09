@@ -56,7 +56,8 @@ export default function SliceOfTime({
       <ImageWrap>
         <SnapshotImage
           key={snapshot.cuid}
-          {...snapshot}
+          image={snapshot.image}
+          date={snapshot.date}
           placeName={place.name}
           sizes={PLACE_PHOTO_SIZES}
           priority={priority}
