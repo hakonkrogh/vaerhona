@@ -84,13 +84,20 @@ describe('serveCachedImage', () => {
     expect(await response.text()).toBe('photo');
   });
 
-  it('keeps browsers with different format support apart', async () => {
+  it('keeps browsers with and without WebP support apart', async () => {
     await serve(photoRequest('image/webp,*/*'));
-    await serve(photoRequest('image/avif,image/webp,*/*'));
     await serve(photoRequest('*/*'));
 
-    expect(getImage).toHaveBeenCalledTimes(3);
-    expect(cache.stored.size).toBe(3);
+    expect(getImage).toHaveBeenCalledTimes(2);
+    expect(cache.stored.size).toBe(2);
+  });
+
+  it('stores one copy for browsers that also accept AVIF', async () => {
+    await serve(photoRequest('image/webp,*/*'));
+    await serve(photoRequest('image/avif,image/webp,*/*'));
+
+    expect(getImage).toHaveBeenCalledTimes(1);
+    expect(cache.stored.size).toBe(1);
   });
 
   it('keeps different sizes apart', async () => {
