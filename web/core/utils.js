@@ -1,6 +1,3 @@
-import { useEffect } from 'react';
-import { useQuery } from 'urql';
-
 export const isServer =
   typeof document === 'undefined' && typeof window === 'undefined';
 export const isClient = !isServer;
@@ -37,18 +34,3 @@ export function getClosestSnapshot({ desiredDate, snapshots = [] }) {
   };
 }
 
-export function useRefreshQuery(args) {
-  const [{ reexecuteQuery, ...rest } = {}] = useQuery(args);
-
-  useEffect(() => {
-    if (!args.paused && reexecuteQuery) {
-      const interval = setInterval(() => {
-        reexecuteQuery({ requestPolicy: 'network-only' });
-      }, 30000);
-
-      return () => clearInterval(interval);
-    }
-  }, [args, reexecuteQuery]);
-
-  return [{ reexecuteQuery, ...rest }];
-}

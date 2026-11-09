@@ -116,7 +116,7 @@ Unknown place names return a 404 instead of an empty page.
 ### Other things that stay the same
 
 - **Browsing:** the arrows, date picker and compare still use `PLACE_SNAPSHOTS` and MongoDB. The first of those requests still runs when the page opens, but it no longer delays the first photo.
-- **Front page:** it stays on MongoDB for now, which is correct but slow.
+- **Front page:** it stays on MongoDB. Since 2026-11-09 it is rendered on the server, but it still reads MongoDB and not the records (see the decision in [SPEC.md](../SPEC.md)).
 - **GraphQL API:** it keeps the `place` query.
 
 ## Accepted downsides
@@ -162,5 +162,5 @@ Manual checks before PR 2 is done:
 ## Not part of this work
 
 - An open page updating by itself (spec open question 1). A small endpoint that reads this record would make that cheap to add, with no MongoDB connection per check.
-- Using the record for the front page.
+- Using the record for the front page. A place with no recent upload has no record, so the front page would still need MongoDB for those places.
 - Other performance fixes: image caching, the index and query clean-up, Worker placement, and removing `moment-timezone`.

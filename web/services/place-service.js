@@ -39,7 +39,17 @@ export const getPlaceForSnapshots = ({ placeName }) =>
     .lean()
     .exec();
 
-export const getTopPublicPlaces = async ({ limit }) => {
+// How many places the front page lists, both on the page and in the API.
+export const TOP_PUBLIC_PLACES_LIMIT = 10;
+
+/**
+ * @param {boolean} [withFirstSnapshot] false skips loading the first snapshot,
+ * which saves a request to MongoDB when it is not needed.
+ */
+export const getTopPublicPlaces = async ({
+  limit,
+  withFirstSnapshot = true,
+}) => {
   const places = await snapshotPlaceModel
     .find({
       isPublic: true,
@@ -47,7 +57,9 @@ export const getTopPublicPlaces = async ({ limit }) => {
         $ne: null,
       },
     })
-    .populate(['firstSnapshot', 'lastSnapshot'])
+    .populate(
+      withFirstSnapshot ? ['firstSnapshot', 'lastSnapshot'] : 'lastSnapshot'
+    )
     .limit(limit)
     .sort({
       'lastSnapshot.dateAdded': 'desc',

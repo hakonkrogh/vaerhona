@@ -7,7 +7,7 @@ import SnapshotImage from 'modules/snapshot-image';
 
 import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
 
-const PlaceListItem = ({ name, lastSnapshot: snapshot }) => (
+const PlaceListItem = ({ name, lastSnapshot: snapshot, priority }) => (
   <ListItem>
     <Link href={`/${name}`}>
       <Upper>
@@ -18,7 +18,7 @@ const PlaceListItem = ({ name, lastSnapshot: snapshot }) => (
       </Upper>
 
       <ImageWrapper>
-        <SnapshotImage {...snapshot} sizes="300px" />
+        <SnapshotImage {...snapshot} sizes="300px" priority={priority} />
       </ImageWrapper>
     </Link>
   </ListItem>

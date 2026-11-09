@@ -11,7 +11,9 @@ import {
 export const resolvers = {
   Query: {
     places() {
-      return PlaceService.getTopPublicPlaces({ limit: 10 });
+      return PlaceService.getTopPublicPlaces({
+        limit: PlaceService.TOP_PUBLIC_PLACES_LIMIT,
+      });
     },
     place(_, { name: placeName }) {
       return PlaceService.getPlace({

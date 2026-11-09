@@ -94,8 +94,8 @@ Also repeat step 3 after the page has not been visited for a long time, because 
 
 These are places where today's code does not meet the intent, or may not. All come from reading the code unless marked.
 
-1. **An open page never updates.** `useRefreshQuery` in `web/core/utils.js` was written to refresh every 30 seconds, but reads `reexecuteQuery` from the wrong place, so the refresh never runs. See open question 1.
-2. **Going back to the front page in the same tab can show old data.** urql (the GraphQL client) keeps results in memory, so using the back button to return to the front page can reuse the first result. This breaks F6 and is not yet tested live. The place page no longer has this problem.
+1. **An open page never updates.** The front page had a refresh every 30 seconds, but a bug stopped it from ever running. It was removed on 2026-11-09, when the front page moved to the server. See open question 1.
+2. **Going back to the front page in the same tab could show old data.** urql (the GraphQL client) kept the front page result in memory. Since 2026-11-09 the front page is rendered on the server like the place page, so it no longer uses urql, and a page restored by the browser's back-forward cache reloads. Not yet checked live that a client-side back asks the server again.
 3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing.
 4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
 5. **A date with no data gives no feedback.** The page keeps the old photo and shows no message. Veggli has no snapshots for 12 to 18 June 2024, for example.
@@ -141,9 +141,22 @@ Measured on 2026-11-06 from Norway against production, after the snapshot index,
 
 A few requests were much slower. Across the runs, the slowest Veggli page took about 4 s and the slowest Myking page about 1.6 s, the latter just after a deploy. Veggli was always measured first, so this may be the Worker warming up. The cause is not confirmed.
 
+### Slowdown since 2026-11-07
+
+From about 12:23-12:35 UTC on 2026-11-07, the first request in each 15-minute check got much slower, and it stayed that way. Medians of the wait for the first byte, from Norway:
+
+| Request | Before (25 checks) | After (37 checks) |
+|---|---|---|
+| Front page (then static HTML, no database) | 83 ms | 1,226 ms |
+| Place page that reads the record (Veggli) | 208 ms | 1,539 ms |
+| `places` query | 735 ms | 1,256 ms |
+
+The front page was static HTML and did not touch MongoDB, so the delay is in the Worker or the Cloudflare network, not the database. The image cache (#50) went live at 12:34 and was reverted for 3 hours on 2026-11-09 as a test. It was just as slow without it, so #50 is not the cause. The cause is unknown.
+
 ## Decisions
 
 - **2026-11-06: The Worker runs in `aws:eu-west-1`, next to MongoDB Atlas and S3.** Each MongoDB request takes several round trips, so being close saves more than the longer path from a visitor to the Worker costs. Measured from Norway, a 168-snapshot query with the same fields went from about 740 ms to about 445 ms, and pages that read the record got about 40 ms slower. On 2026-11-06 Cloudflare ran the Worker in London for this setting, which is near enough to help. Check the `cf-placement` header for the current location, since Cloudflare can change it. Static assets still come from the location nearest the visitor.
 - **2026-11-06: The first view does not use ISR with `revalidate`.** It would load faster, but can show an older snapshot, which breaks F1 and F3.
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
 - **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).
+- **2026-11-09: The front page is rendered on the server from MongoDB, on every request.** Before, the server sent an empty page, and the browser had to load the scripts, then the front page code, then ask the API, before anything showed. As a home screen app on iOS this meant seconds of black and then white. It does not use the latest snapshot records, because a place with no recent upload has no record, and the front page lists those places too (Tornes had not uploaded since April 2026). The first byte now waits for MongoDB, but nothing else has to load before the photos.
