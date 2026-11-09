@@ -73,7 +73,7 @@ The main question the site answers is: **what does it look like there now?**
 
 | ID | Rule | Source |
 |---|---|---|
-| S1 | The front page lists up to 10 public places that have a snapshot, each with its latest photo and time. | Code |
+| S1 | The front page lists up to 10 public places that have a snapshot from the last 364 days, each with its latest photo and time. A place with only older snapshots is left off, but its page still works by URL. | Owner |
 | S2 | `/setup` connects to a box over Bluetooth to set wifi, read the sensors, take a photo, change box id, update, reboot and shut down. | Code |
 
 The graph view exists in `web/modules/snapshots-navigator/graph` but is not in use.
@@ -159,4 +159,5 @@ The front page was static HTML and did not touch MongoDB, so the delay is in the
 - **2026-11-06: The first view does not use ISR with `revalidate`.** It would load faster, but can show an older snapshot, which breaks F1 and F3.
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
 - **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).
-- **2026-11-09: The front page is rendered on the server from MongoDB, on every request.** Before, the server sent an empty page, and the browser had to load the scripts, then the front page code, then ask the API, before anything showed. As a home screen app on iOS this meant seconds of black and then white. It does not use the latest snapshot records, because a place with no recent upload has no record, and the front page lists those places too (Tornes had not uploaded since April 2026). The first byte now waits for MongoDB, but nothing else has to load before the photos.
+- **2026-11-09: The front page is rendered on the server from MongoDB, on every request.** Before, the server sent an empty page, and the browser had to load the scripts, then the front page code, then ask the API, before anything showed. As a home screen app on iOS this meant seconds of black and then white. It does not use the latest snapshot records, because a place with no recent upload has no record, and the front page lists those places too (Tornes had not uploaded since April 2026). The first byte now waits for MongoDB, but nothing else has to load before the photos. Later the same day, the front page moved to the records (next decision).
+- **2026-11-09: A record is trusted if it was checked against MongoDB in the last 90 minutes, and the front page reads the records.** Every upload checks the records of the other front page places and writes the list of front page places, so a place whose box is quiet keeps a trusted record. MongoDB is still the fallback for anything missing or not trusted. See [the design](docs/front-page-records-design.md).

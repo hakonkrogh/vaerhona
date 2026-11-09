@@ -1,19 +1,32 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { findById, store } = vi.hoisted(() => ({
+const { findById, getTopPublicPlaces, store } = vi.hoisted(() => ({
   findById: vi.fn(),
+  getTopPublicPlaces: vi.fn(),
   store: {
     removeLatestRecord: vi.fn(),
     putLatestRecord: vi.fn(),
     readLatestRecord: vi.fn(),
+    listRecordEtags: vi.fn(),
+    putFrontPageList: vi.fn(),
+    putLatestRecordIfUnchanged: vi.fn(),
   },
 }));
 
 vi.mock('./config', () => ({ default: { environment: 'production' } }));
 vi.mock('./mongo/models', () => ({ snapshotModel: { findById } }));
 vi.mock('./latest-store', () => store);
+vi.mock('./place-service', () => ({
+  getTopPublicPlaces,
+  TOP_PUBLIC_PLACES_LIMIT: 10,
+}));
 
-import { buildLatestRecord, publishLatestSnapshot } from './latest-snapshot';
+import {
+  buildLatestRecord,
+  isFrontPageListTrusted,
+  isRecordTrusted,
+  publishLatestSnapshot,
+} from './latest-snapshot';
 
 const snapshot = {
   _id: 'new-id',
@@ -68,6 +81,8 @@ describe('publishLatestSnapshot', () => {
     store.readLatestRecord.mockResolvedValue({
       lastSnapshot: { cuid: snapshot.cuid },
     });
+    store.listRecordEtags.mockResolvedValue(new Map());
+    getTopPublicPlaces.mockResolvedValue([]);
   });
 
   it('removes the record, moves lastSnapshot, then writes the record', async () => {
@@ -143,6 +158,18 @@ describe('publishLatestSnapshot', () => {
     );
   });
 
+  it('sets confirmedAt to when it writes the record', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-11-09T12:00:00.000Z'));
+
+    await publishLatestSnapshot({ place, snapshot });
+
+    expect(store.putLatestRecord.mock.calls[0][1].confirmedAt).toBe(
+      '2026-11-09T12:00:00.000Z'
+    );
+    vi.useRealTimers();
+  });
+
   it('skips the read-back when the record write fails', async () => {
     store.putLatestRecord.mockRejectedValue(new Error('R2 down'));
 
@@ -164,11 +191,13 @@ describe('buildLatestRecord', () => {
       place,
       firstSnapshot,
       lastSnapshot: snapshot,
+      confirmedAt: '2026-11-06T12:00:01.000Z',
     });
 
     expect(record).toEqual({
       cuid: 'place-cuid',
       name: 'veggli',
+      confirmedAt: '2026-11-06T12:00:01.000Z',
       firstSnapshot: {
         cuid: 'first-cuid',
         date: '2016-10-18T04:31:46.085Z',
@@ -207,6 +236,7 @@ describe('buildLatestRecord', () => {
       place,
       firstSnapshot,
       lastSnapshot: { ...snapshot, pressure: undefined, yrWeather: undefined },
+      confirmedAt: '2026-11-06T12:00:01.000Z',
     });
 
     expect(JSON.parse(JSON.stringify(record))).toEqual(record);
@@ -222,5 +252,174 @@ describe('buildLatestRecord', () => {
     });
 
     expect(record.firstSnapshot).toBeNull();
+  });
+});
+
+describe('refreshing the front page during an upload', () => {
+  const NOW = new Date('2026-11-09T12:00:00.000Z');
+  const HOUR = 60 * 60 * 1000;
+  let calls;
+
+  function mongoPlace(name, lastSnapshotAgeMs) {
+    return {
+      name,
+      cuid: `${name}-cuid`,
+      firstSnapshot: null,
+      lastSnapshot: {
+        cuid: `${name}-snap`,
+        dateAdded: new Date(NOW.getTime() - lastSnapshotAgeMs),
+      },
+    };
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    calls = [];
+    findById.mockReturnValue({ exec: async () => null });
+    store.removeLatestRecord.mockResolvedValue();
+    store.putLatestRecord.mockResolvedValue(1);
+    store.readLatestRecord.mockResolvedValue(null);
+    store.listRecordEtags.mockImplementation(async () => {
+      calls.push('list etags');
+      return new Map([
+        ['veggli', 'veggli-etag'],
+        ['myking', 'myking-etag'],
+      ]);
+    });
+    getTopPublicPlaces.mockImplementation(async () => {
+      calls.push('mongo');
+      return [
+        mongoPlace('veggli', 0),
+        mongoPlace('myking', 5 * 60 * 1000),
+        mongoPlace('tornes', 200 * 24 * HOUR),
+      ];
+    });
+    store.putLatestRecordIfUnchanged.mockResolvedValue(true);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  const upload = () =>
+    publishLatestSnapshot({ place: makePlace([]), snapshot });
+
+  it('reads the record etags before MongoDB', async () => {
+    await upload();
+
+    expect(calls).toEqual(['list etags', 'mongo']);
+  });
+
+  it('writes the list of front page places', async () => {
+    await upload();
+
+    expect(store.putFrontPageList).toHaveBeenCalledWith({
+      writtenAt: NOW.toISOString(),
+      places: ['veggli', 'myking', 'tornes'],
+    });
+  });
+
+  it('confirms the other records only if they have not changed', async () => {
+    await upload();
+
+    const writes = store.putLatestRecordIfUnchanged.mock.calls;
+    expect(writes.map(([name, , etag]) => [name, etag])).toEqual([
+      ['myking', 'myking-etag'],
+      ['tornes', undefined],
+    ]);
+    expect(writes[0][1]).toMatchObject({
+      name: 'myking',
+      confirmedAt: NOW.toISOString(),
+      lastSnapshot: { cuid: 'myking-snap' },
+    });
+  });
+
+  it('does not touch the uploading place, which wrote its own record', async () => {
+    await upload();
+
+    const names = store.putLatestRecordIfUnchanged.mock.calls.map(([n]) => n);
+    expect(names).not.toContain('veggli');
+  });
+
+  it('leaves a missing record missing for a box that uploaded recently', async () => {
+    store.listRecordEtags.mockResolvedValue(new Map());
+    getTopPublicPlaces.mockResolvedValue([
+      mongoPlace('veggli', 0),
+      mongoPlace('myking', 23 * HOUR),
+    ]);
+
+    await upload();
+
+    expect(store.putLatestRecordIfUnchanged).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('written=0 refused=0 skipped=1')
+    );
+  });
+
+  it('counts a refused write', async () => {
+    store.putLatestRecordIfUnchanged.mockResolvedValue(false);
+
+    await upload();
+
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('written=0 refused=2 skipped=0')
+    );
+  });
+
+  it('still succeeds when the refresh fails', async () => {
+    store.listRecordEtags.mockRejectedValue(new Error('R2 down'));
+
+    await expect(upload()).resolves.toBeUndefined();
+    expect(store.putFrontPageList).not.toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('refresh failed'),
+      expect.any(Error)
+    );
+  });
+});
+
+describe('trust rules', () => {
+  const NOW = new Date('2026-11-09T12:00:00.000Z').getTime();
+  const ago = (minutes) => new Date(NOW - minutes * 60 * 1000).toISOString();
+
+  it('trusts a record confirmed in the last 90 minutes', () => {
+    expect(
+      isRecordTrusted(
+        { confirmedAt: ago(89), lastSnapshot: { date: ago(1e6) } },
+        NOW
+      )
+    ).toBe(true);
+    expect(isRecordTrusted({ confirmedAt: ago(90) }, NOW)).toBe(false);
+  });
+
+  it('uses the snapshot date for a record without confirmedAt', () => {
+    expect(isRecordTrusted({ lastSnapshot: { date: ago(10) } }, NOW)).toBe(
+      true
+    );
+    expect(isRecordTrusted({ lastSnapshot: { date: ago(91) } }, NOW)).toBe(
+      false
+    );
+  });
+
+  it('does not trust a missing or broken record', () => {
+    expect(isRecordTrusted(null, NOW)).toBe(false);
+    expect(isRecordTrusted({ confirmedAt: 'nope' }, NOW)).toBe(false);
+  });
+
+  it('trusts a front page list written in the last 90 minutes', () => {
+    expect(
+      isFrontPageListTrusted({ writtenAt: ago(30), places: [] }, NOW)
+    ).toBe(true);
+    expect(
+      isFrontPageListTrusted({ writtenAt: ago(91), places: ['veggli'] }, NOW)
+    ).toBe(false);
+    expect(isFrontPageListTrusted({ writtenAt: ago(1) }, NOW)).toBe(false);
+    expect(isFrontPageListTrusted(null, NOW)).toBe(false);
   });
 });

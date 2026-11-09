@@ -7,9 +7,14 @@ const { getCloudflareContext } = vi.hoisted(() => ({
 vi.mock('@opennextjs/cloudflare', () => ({ getCloudflareContext }));
 
 import {
+  listRecordEtags,
+  putFrontPageList,
   putLatestRecord,
+  putLatestRecordIfUnchanged,
+  readFrontPageList,
   readLatestRecord,
   removeLatestRecord,
+  withTimeout,
 } from './latest-store';
 
 describe('latest-store', () => {
@@ -17,7 +22,7 @@ describe('latest-store', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    bucket = { delete: vi.fn(), put: vi.fn(), get: vi.fn() };
+    bucket = { delete: vi.fn(), put: vi.fn(), get: vi.fn(), list: vi.fn() };
     getCloudflareContext.mockResolvedValue({
       env: { LATEST_R2_BUCKET: bucket },
     });
@@ -88,6 +93,84 @@ describe('latest-store', () => {
     });
   });
 
+  it('writes only if the etag still matches', async () => {
+    bucket.put.mockResolvedValue({});
+
+    await expect(
+      putLatestRecordIfUnchanged('tornes', { a: 1 }, 'etag-1')
+    ).resolves.toBe(true);
+    expect(bucket.put).toHaveBeenCalledWith(
+      'v1/tornes.json',
+      '{"a":1}',
+      expect.objectContaining({ onlyIf: { etagMatches: 'etag-1' } })
+    );
+  });
+
+  it('writes a missing record only if it is still missing', async () => {
+    bucket.put.mockResolvedValue({});
+
+    await putLatestRecordIfUnchanged('tornes', {}, undefined);
+
+    const { onlyIf } = bucket.put.mock.calls[0][2];
+    expect(onlyIf).toBeInstanceOf(Headers);
+    expect(onlyIf.get('If-None-Match')).toBe('*');
+  });
+
+  it('reports a refused write and does not retry it', async () => {
+    bucket.put.mockResolvedValue(null);
+
+    await expect(
+      putLatestRecordIfUnchanged('tornes', {}, 'etag-1')
+    ).resolves.toBe(false);
+    expect(bucket.put).toHaveBeenCalledTimes(1);
+  });
+
+  it('lists the etag of every record by place name', async () => {
+    bucket.list
+      .mockResolvedValueOnce({
+        objects: [{ key: 'v1/veggli.json', etag: 'a' }],
+        truncated: true,
+        cursor: 'next',
+      })
+      .mockResolvedValueOnce({
+        objects: [{ key: 'v1/tornes.json', etag: 'b' }],
+        truncated: false,
+      });
+
+    const etags = await listRecordEtags();
+
+    expect([...etags]).toEqual([
+      ['veggli', 'a'],
+      ['tornes', 'b'],
+    ]);
+    expect(bucket.list).toHaveBeenNthCalledWith(1, {
+      prefix: 'v1/',
+      cursor: undefined,
+    });
+    expect(bucket.list).toHaveBeenNthCalledWith(2, {
+      prefix: 'v1/',
+      cursor: 'next',
+    });
+  });
+
+  it('keeps the front page list apart from the records', async () => {
+    const list = { writtenAt: 'now', places: ['veggli'] };
+    bucket.get.mockResolvedValue({ json: async () => list });
+
+    await putFrontPageList(list);
+
+    expect(bucket.put.mock.calls[0][0]).toBe('front-page/v1.json');
+    await expect(readFrontPageList()).resolves.toEqual(list);
+    expect(bucket.get).toHaveBeenCalledWith('front-page/v1.json');
+  });
+
+  it('gives up on a slow read', async () => {
+    const pending = withTimeout(new Promise(() => {}), 500);
+    await vi.advanceTimersByTimeAsync(500);
+
+    await expect(pending).resolves.toBeNull();
+  });
+
   it('does nothing without the binding', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     getCloudflareContext.mockResolvedValue({ env: {} });
@@ -95,5 +178,9 @@ describe('latest-store', () => {
     await expect(removeLatestRecord('veggli')).resolves.toBeUndefined();
     await expect(putLatestRecord('veggli', {})).resolves.toBe(0);
     await expect(readLatestRecord('veggli')).resolves.toBeNull();
+    await expect(putLatestRecordIfUnchanged('veggli', {})).resolves.toBe(false);
+    await expect(listRecordEtags()).resolves.toEqual(new Map());
+    await expect(putFrontPageList({})).resolves.toBeUndefined();
+    await expect(readFrontPageList()).resolves.toBeNull();
   });
 });
