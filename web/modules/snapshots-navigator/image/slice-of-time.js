@@ -303,9 +303,7 @@ export default function SliceOfTime({
           key={snapshot.cuid}
           {...snapshot}
           placeName={place.name}
-          sizes="(min-width: 700px) 700px, 100vw"
-          // Compare mode passes a date. Those photos are further down the page.
-          priority={!date}
+          sizes="100vw"
         />
       </ImageWrap>
     </Outer>
