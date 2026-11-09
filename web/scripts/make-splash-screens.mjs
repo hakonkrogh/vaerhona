@@ -33,7 +33,7 @@ for (const { width, height, ratio } of config.screens) {
   const logoSize = Math.round(pixelWidth * config.logoWidthShare);
   // The icon is a full square. Round its corners so it looks like the
   // app icon on the home screen.
-  const radius = Math.round(logoSize * config.logoCornerShare);
+  const radius = Math.round(logoSize * (config.logoCornerShare ?? 0));
   const corners = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${logoSize}" height="${logoSize}">` +
       `<rect width="${logoSize}" height="${logoSize}" rx="${radius}" fill="#fff"/></svg>`

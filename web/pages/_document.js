@@ -8,7 +8,7 @@ import splash from '../core/splash-screens.json';
 // scripts/make-splash-screens.mjs.
 const splashLinks = splash.screens.map(({ width, height, ratio }) => ({
   media: `(device-width: ${width}px) and (device-height: ${height}px) and (-webkit-device-pixel-ratio: ${ratio}) and (orientation: portrait)`,
-  href: `/static/splash/splash-${width * ratio}x${height * ratio}.png`,
+  href: `/static/splash/splash-${width * ratio}x${height * ratio}.png?v=sydvest`,
 }));
 
 export default class MyDocument extends Document {

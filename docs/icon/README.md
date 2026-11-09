@@ -14,4 +14,4 @@ What is made from them:
 - `web/public/static/splash/`: the iOS splash images. Run `node scripts/make-splash-screens.mjs` from `web/` to make them again from `app.svg`.
 - `web/ui/icons/app.js`: `app-small.svg`, inlined. The site header shows it at 30 px.
 
-When you change the icon, also change the `?v=` value in `web/pages/_document.js`, `manifest.json` and `browserconfig.xml`, so browsers fetch the new favicons instead of the cached ones.
+When you change the icon, also change the `?v=` value in `web/pages/_document.js` (favicons and splash links), `manifest.json` and `browserconfig.xml`, so browsers fetch the new favicons instead of the cached ones.
