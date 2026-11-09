@@ -96,8 +96,8 @@ Also repeat step 3 after the page has not been visited for a long time, because 
 
 These are places where today's code does not meet the intent, or may not. All come from reading the code unless marked.
 
-1. **An open page never updates.** The front page had a refresh every 30 seconds, but a bug stopped it from ever running. It was removed on 2026-11-09, when the front page moved to the server. See open question 1.
-2. **Going back to the front page in the same tab could show old data.** urql (the GraphQL client) kept the front page result in memory. Since 2026-11-09 the front page is rendered on the server like the place page, so it no longer uses urql, and a page restored by the browser's back-forward cache reloads. Not yet checked live that a client-side back asks the server again.
+1. **An open page that stays on screen does not update.** Since 2026-11-09 a page checks `/api/latest` when it becomes visible again, for example when the home screen app is opened after a while, and gets its data again if a snapshot is newer. A page that is left visible the whole time is still not updated. See open question 1.
+2. **Going back to the front page in the same tab could show old data.** urql (the GraphQL client) kept the front page result in memory. Since 2026-11-09 the front page is rendered on the server like the place page, so it no longer uses urql, and a page restored by the browser's back-forward cache reloads. Checked live on 2026-11-09: a client-side back asks the server again.
 3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing. Snapshot lists are cached forever (see "What may be cached"), so deleting such a snapshot does not reach a list that is already cached.
 4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
 5. **A date with no data gives no feedback.** Since 2026-11-09 the page jumps to the closest snapshot on another date, but it does not say that the chosen date had none. Veggli has no snapshots for 12 to 18 June 2024, for example.
@@ -109,7 +109,7 @@ These are places where today's code does not meet the intent, or may not. All co
 
 ## Open questions for the owner
 
-1. Should an open page update by itself when a new snapshot arrives? The old code tried to. If yes, it must not throw away where the user has browsed to.
+1. Should an open page update by itself when a new snapshot arrives? The old code tried to. If yes, it must not throw away where the user has browsed to. Partly answered on 2026-11-09 (owner): yes when the page becomes visible again. It then updates only while the latest snapshot is on screen and years are not being compared. Still open: should a page that stays visible also update, for example every few minutes?
 2. Is F5 too strict? A cached photo followed by a quick swap to the latest would feel faster, but shows wrong data for a moment.
 3. What does `isPublic` mean? Today it only controls the front page list. A place with `isPublic: false` can still be opened by name, through both the page and the API. Are those places meant to be private?
 4. How fast should a page be? There is no target yet. See the baseline below.

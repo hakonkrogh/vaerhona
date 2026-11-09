@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+import {
+  latestByPlace,
+  useRefreshWhenNewer,
+} from 'core/use-refresh-when-newer';
 import { useReloadOnRestore } from 'core/use-reload-on-restore';
 import Layout from 'modules/layout';
 import PlaceList from 'modules/place-list';
@@ -12,6 +16,7 @@ const Message = styled.p`
 
 export default function FrontPage({ places }) {
   useReloadOnRestore();
+  useRefreshWhenNewer('/api/latest', places ? latestByPlace(places) : null);
 
   return (
     <Layout title="Værhøna" scroll>
