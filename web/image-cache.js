@@ -1,3 +1,5 @@
+import { serveFromCache } from './edge-cache.js';
+
 // A snapshot photo never changes, and a new snapshot gets a new URL, so an
 // optimized photo can be cached forever without hiding a newer one.
 const CACHE_CONTROL = 'public, max-age=31536000, immutable';
@@ -37,38 +39,23 @@ function getCacheKey(request) {
   return new Request(key.toString());
 }
 
-export async function serveCachedImage({ request, ctx, cache, getImage }) {
-  const key = getCacheKey(request);
-  // The cache is only an optimization. A problem with it must not stop the
-  // photo from loading.
-  const cached = await cache.match(key).catch((err) => {
-    console.error('[image-cache] match failed', err);
-    return undefined;
+export function serveCachedImage({ request, ctx, cache, getImage }) {
+  return serveFromCache({
+    name: 'image',
+    key: getCacheKey(request),
+    ctx,
+    cache,
+    getResponse: getImage,
+    // Only a real photo is cached. A photo that fails to load must be able to
+    // work on the next try.
+    toCacheable(image) {
+      if (image.status !== 200) {
+        return null;
+      }
+
+      const response = new Response(image.body, image);
+      response.headers.set('Cache-Control', CACHE_CONTROL);
+      return response;
+    },
   });
-
-  if (cached) {
-    const hit = new Response(cached.body, cached);
-    hit.headers.set('x-image-cache', 'hit');
-    return hit;
-  }
-
-  const image = await getImage();
-
-  // Only a real photo is cached. A photo that fails to load must be able to
-  // work on the next try.
-  if (image.status !== 200) {
-    return image;
-  }
-
-  const response = new Response(image.body, image);
-  response.headers.set('Cache-Control', CACHE_CONTROL);
-  response.headers.set('x-image-cache', 'miss');
-
-  ctx.waitUntil(
-    cache.put(key, response.clone()).catch((err) => {
-      console.error('[image-cache] put failed', err);
-    })
-  );
-
-  return response;
 }

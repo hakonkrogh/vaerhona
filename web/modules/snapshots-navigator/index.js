@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
 
 import SnapshotImage from './image';
+import { createSnapshotStore, initialListUrl } from './store';
 // import SnapshotGraph from './graph';
 
 const oneYear = 1000 * 60 * 60 * 24 * 365;
 
 export function SnapshotsNavigator({ place }) {
+  const [store] = useState(() =>
+    place?.lastSnapshot ? createSnapshotStore(place) : null
+  );
   const [currentSnapshot, setCurrentSnapshot] = useState(place?.lastSnapshot);
   // const [view, setView] = useState('image');
   const [compare, setCompare] = useState(false);
@@ -45,6 +50,7 @@ export function SnapshotsNavigator({ place }) {
   }
 
   const sharedProps = {
+    store,
     place,
     currentSnapshot,
     setCurrentSnapshot,
@@ -55,7 +61,22 @@ export function SnapshotsNavigator({ place }) {
   };
 
   if (view === 'image') {
-    return <SnapshotImage {...sharedProps} />;
+    return (
+      <>
+        <Head>
+          {/* The arrows need this list. Asking for it here starts it while
+              the scripts load, instead of after. Its answer can be cached, so
+              the request from store.js gets it from the browser. */}
+          <link
+            rel="preload"
+            as="fetch"
+            href={initialListUrl(place)}
+            crossOrigin="anonymous"
+          />
+        </Head>
+        <SnapshotImage {...sharedProps} />
+      </>
+    );
   }
 
   return <div>todo graph</div>;

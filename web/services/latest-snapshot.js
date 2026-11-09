@@ -4,46 +4,8 @@ import {
   readLatestRecord,
   removeLatestRecord,
 } from './latest-store';
-import { getSnapshotImageUrl, getWindDirectionCompass } from './snapshot-view';
+import { toSnapshotView } from './snapshot-view';
 import { normalizeAndEnrichSnapshot } from './utils';
-
-function finiteOrNull(value) {
-  return Number.isFinite(value) ? value : null;
-}
-
-function toRecordYrWeather(yrWeather) {
-  if (!yrWeather) {
-    return null;
-  }
-
-  return {
-    airTemperature: finiteOrNull(yrWeather.airTemperature),
-    windSpeed: finiteOrNull(yrWeather.windSpeed),
-    windFromDirection: finiteOrNull(yrWeather.windFromDirection),
-    windSpeedOfGust: finiteOrNull(yrWeather.windSpeedOfGust),
-    airPressureAtSeaLevel: finiteOrNull(yrWeather.airPressureAtSeaLevel),
-    cloudAreaFraction: finiteOrNull(yrWeather.cloudAreaFraction),
-    dewPointTemperature: finiteOrNull(yrWeather.dewPointTemperature),
-    relativeHumidity: finiteOrNull(yrWeather.relativeHumidity),
-    windDirectionCompass: getWindDirectionCompass(yrWeather.windFromDirection),
-  };
-}
-
-function toRecordSnapshot(snapshot, placeName) {
-  return {
-    cuid: snapshot.cuid,
-    date: new Date(snapshot.dateAdded).toISOString(),
-    temperature: finiteOrNull(snapshot.temperature),
-    pressure: finiteOrNull(snapshot.pressure),
-    humidity: finiteOrNull(snapshot.humidity),
-    image: getSnapshotImageUrl({
-      placeName,
-      dateAdded: snapshot.dateAdded,
-      cuid: snapshot.cuid,
-    }),
-    yrWeather: toRecordYrWeather(snapshot.yrWeather),
-  };
-}
 
 /**
  * The record has the fields the place page uses from the PLACE query, in the
@@ -56,13 +18,13 @@ export function buildLatestRecord({ place, firstSnapshot, lastSnapshot }) {
     cuid: place.cuid,
     name: place.name,
     firstSnapshot: firstSnapshot
-      ? toRecordSnapshot(
+      ? toSnapshotView(
           normalizeAndEnrichSnapshot({ snapshot: firstSnapshot, place }),
           place.name
         )
       : null,
     lastSnapshot: lastSnapshot
-      ? toRecordSnapshot(lastSnapshot, place.name)
+      ? toSnapshotView(lastSnapshot, place.name)
       : null,
   };
 }

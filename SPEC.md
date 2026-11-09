@@ -42,7 +42,7 @@ The main question the site answers is: **what does it look like there now?**
 |---|---|---|
 | Latest snapshot of a place | Only as F4 describes | F1 |
 | A snapshot photo, at any size | Yes, forever | The URL contains the snapshot's unique id, and the photo never changes. A new snapshot has a new URL. |
-| A list of snapshots that ends before the place's latest snapshot | Yes, for a long time | Boxes only add snapshots dated now, so the past does not change. |
+| A list of snapshots that ends at or before the place's latest snapshot | Yes, forever | Boxes only add snapshots dated now, which is after the latest snapshot, so the list can never change. `/api/snapshots` marks these lists `immutable`, and the Worker keeps them in the Cloudflare cache. |
 | A list of snapshots that could include a new snapshot | No, unless F4 holds | It would hide the newest snapshot. This includes any query with no end date, or with an end date near now. |
 | Page HTML with no snapshot data in it | Yes | It only holds the place name and code. |
 | Page HTML with snapshot data in it | Only as F4 describes | Same as the latest snapshot. |
@@ -68,6 +68,7 @@ The main question the site answers is: **what does it look like there now?**
 | P5 | The date picker jumps to the closest snapshot on the chosen date. It allows dates from the first snapshot up to today. | Code |
 | P6 | Compare shows the same time in earlier years. It is available only when the current snapshot is more than one year newer than the place's first snapshot. | Code |
 | P7 | Dates and times are shown in Norwegian, in the `Europe/Oslo` time zone, for every viewer. | Code |
+| P8 | The arrows should answer at once. The page loads ahead the snapshots and photos they lead to, but only after the photo on screen has loaded. | Owner |
 
 ### Front page and setup
 
@@ -87,6 +88,7 @@ Run this after any change to loading or caching, on a preview or on production:
 3. As soon as the upload has finished, open the place page in a new private window.
 4. The new photo and time must show on the first render.
 5. Reload, and open the front page. Both must show the new snapshot too.
+6. On the place page, go back one step. It must show the snapshot just before the new one.
 
 Also repeat step 3 after the page has not been visited for a long time, because that is when a stale cache would show.
 
@@ -98,7 +100,7 @@ These are places where today's code does not meet the intent, or may not. All co
 2. **Going back to the front page in the same tab could show old data.** urql (the GraphQL client) kept the front page result in memory. Since 2026-11-09 the front page is rendered on the server like the place page, so it no longer uses urql, and a page restored by the browser's back-forward cache reloads. Not yet checked live that a client-side back asks the server again.
 3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing.
 4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
-5. **A date with no data gives no feedback.** The page keeps the old photo and shows no message. Veggli has no snapshots for 12 to 18 June 2024, for example.
+5. **A date with no data gives no feedback.** Since 2026-11-09 the page jumps to the closest snapshot on another date, but it does not say that the chosen date had none. Veggli has no snapshots for 12 to 18 June 2024, for example.
 6. **The front page order does nothing.** `getTopPublicPlaces` sorts on `lastSnapshot.dateAdded`, but `lastSnapshot` is only an id at that point.
 7. **A request can hang.** One API request ran for over 6 minutes on 2026-11-06, while other requests worked. The cause is unknown (seen live). Three later timing runs that day each had one request that failed or took over 20 seconds, but they did not record the cause, so they may or may not be the same problem.
 8. **Boxes do not notice a failed upload.** `snapshots.add` catches errors and answers HTTP 200 with `success: false`. `device/logger.js` does not read `success`, so it logs "Snapshot sent" and does not retry. That snapshot is lost or left unpublished until the next upload.
@@ -160,3 +162,8 @@ The front page was static HTML and did not touch MongoDB, so the delay is in the
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
 - **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).
 - **2026-11-09: The front page is rendered on the server from MongoDB, on every request.** Before, the server sent an empty page, and the browser had to load the scripts, then the front page code, then ask the API, before anything showed. As a home screen app on iOS this meant seconds of black and then white. It does not use the latest snapshot records, because a place with no recent upload has no record, and the front page lists those places too (Tornes had not uploaded since April 2026). The first byte now waits for MongoDB, but nothing else has to load before the photos.
+- **2026-11-09: Browsing loads ahead, and its lists are cached.** The arrows used to wait for the week's list (about 800 ms on every page view, measured with Worker placement off) and then for each photo (about 600 ms when the Worker had not cached it). Now:
+  - The place page reads lists from `/api/snapshots` instead of GraphQL. Every list it asks for ends at or before the latest snapshot on the page, so the list is final, and the browser and the Worker keep it (see the cache table above).
+  - The week before the latest snapshot starts loading with the HTML, through a `preload` link.
+  - The next week loads in the background when the user gets within 4 days of the end of what is loaded.
+  - After the photo on screen has loaded, the photos the arrows lead to load, then a few more steps back. With data saver on, only the arrow photos load.

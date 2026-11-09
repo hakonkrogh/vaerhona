@@ -3,11 +3,13 @@ import Switch from 'react-switch';
 
 import { Button, IconArrow, IconCompare } from 'ui';
 
+import { useSnapshotNavigation } from '../use-snapshot-navigation';
 import { Outer, Bottom, BottomInner, SwitchOuter, CompareList } from './ui';
-import SliceOfTime from './slice-of-time';
+import SliceOfTime, { SliceOfTimeAt } from './slice-of-time';
 import DateVisualiser from './date';
 
 export default function SnapshotImage({
+  store,
   place,
   currentSnapshot,
   setCurrentSnapshot,
@@ -16,39 +18,27 @@ export default function SnapshotImage({
   compare,
   compareDates,
 }) {
-  const [command, setCommand] = useState(null);
-  const [buttonLoading, setButtonLoading] = useState(null);
+  // The snapshot whose photo has loaded. Photos ahead load only after it, so
+  // they do not slow down the one on screen.
+  const [loadedPhoto, setLoadedPhoto] = useState(null);
+  const { go, goToDate, pending } = useSnapshotNavigation({
+    store,
+    current: currentSnapshot,
+    setCurrent: setCurrentSnapshot,
+    photoLoaded: loadedPhoto === currentSnapshot.cuid,
+  });
 
-  function onDateChange(newDate) {
-    setCommand({
-      d: Date.now(),
-      nextDesiredDate: newDate,
-    });
-  }
-
-  function buttonProps(snapshotsToMove) {
+  function buttonProps(step) {
     let disabled =
-      snapshotsToMove > 0 &&
+      step > 0 &&
       new Date(currentSnapshot.date) >= new Date(place.lastSnapshot.date);
 
     return {
       clean: true,
-      onClick: () => {
-        setCommand({
-          d: Date.now(),
-          snapshotsToMove,
-        });
-      },
+      onClick: () => go(step),
       disabled,
-      loading: buttonLoading === snapshotsToMove,
+      loading: pending === step,
     };
-  }
-
-  const compareDate = new Date(currentSnapshot.date);
-  compareDate.setFullYear(compareDate.getFullYear() - 1);
-
-  if (!currentSnapshot) {
-    return null;
   }
 
   return (
@@ -56,15 +46,14 @@ export default function SnapshotImage({
       <DateVisualiser
         place={place}
         snapshot={currentSnapshot}
-        onDateChange={onDateChange}
+        onDateChange={goToDate}
       />
 
       <SliceOfTime
-        command={command}
         place={place}
         snapshot={currentSnapshot}
-        setSnapshot={setCurrentSnapshot}
-        setLoading={setButtonLoading}
+        priority
+        onPhotoLoad={() => setLoadedPhoto(currentSnapshot.cuid)}
       />
 
       {compare && (
@@ -74,7 +63,7 @@ export default function SnapshotImage({
               <div style={{ margin: '30px 0 15px', textAlign: 'center' }}>
                 {date.getFullYear()}
               </div>
-              <SliceOfTime place={place} date={date} />
+              <SliceOfTimeAt store={store} place={place} date={date} />
             </li>
           ))}
         </CompareList>
