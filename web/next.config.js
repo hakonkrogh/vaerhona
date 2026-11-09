@@ -1,6 +1,9 @@
 const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare');
 
 module.exports = {
+  // Next.js leaves node_modules out of the server build, so the Worker got the
+  // whole icon library (about 6 MB). Building it in keeps only the icons used.
+  transpilePackages: ['@phosphor-icons/react'],
   async redirects() {
     return [
       {
