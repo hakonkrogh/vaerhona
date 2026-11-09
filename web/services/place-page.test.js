@@ -2,7 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { findOne, store } = vi.hoisted(() => ({
   findOne: vi.fn(),
-  store: { readLatestRecord: vi.fn() },
+  store: {
+    readLatestRecord: vi.fn(),
+    withTimeout: (promise, ms) =>
+      Promise.race([
+        promise,
+        new Promise((resolve) => setTimeout(() => resolve(null), ms)),
+      ]),
+  },
 }));
 
 vi.mock('./config', () => ({ default: { environment: 'production' } }));
@@ -65,6 +72,28 @@ describe('getPlaceForPage', () => {
     expect(findOne).not.toHaveBeenCalled();
   });
 
+  it('uses a record with an old snapshot that was confirmed recently', async () => {
+    const record = {
+      ...recordWithAge(200 * 24 * 60 * MINUTE),
+      confirmedAt: new Date(NOW.getTime() - 30 * MINUTE).toISOString(),
+    };
+    store.readLatestRecord.mockResolvedValue(record);
+
+    await expect(getPlaceForPage('veggli')).resolves.toBe(record);
+    expect(findOne).not.toHaveBeenCalled();
+  });
+
+  it('uses MongoDB when the record was confirmed over 90 minutes ago', async () => {
+    store.readLatestRecord.mockResolvedValue({
+      ...recordWithAge(5 * MINUTE),
+      confirmedAt: new Date(NOW.getTime() - 90 * MINUTE).toISOString(),
+    });
+
+    const place = await getPlaceForPage('veggli');
+
+    expect(place.lastSnapshot.cuid).toBe('from-mongo');
+  });
+
   it.each([
     ['is missing', async () => null],
     ['is over 90 minutes old', async () => recordWithAge(90 * MINUTE)],
@@ -117,6 +146,7 @@ describe('getPlaceForPage', () => {
     await expect(getPlaceForPage('new')).resolves.toEqual({
       cuid: 'c',
       name: 'new',
+      confirmedAt: NOW.toISOString(),
       firstSnapshot: null,
       lastSnapshot: null,
     });

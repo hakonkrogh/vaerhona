@@ -10,7 +10,7 @@ The record is correct because of three choices:
 
 1. **Only uploads write the record.** Page views never do.
 2. **An upload deletes the record before it changes `lastSnapshot` in MongoDB.** If a later step fails, the record is missing, not old, and a missing record means "read MongoDB".
-3. **A record older than 90 minutes is not trusted.** The page reads MongoDB instead, which limits the damage from a failure nobody planned for.
+3. **A record older than 90 minutes is not trusted.** The page reads MongoDB instead, which limits the damage from a failure nobody planned for. Since 2026-11-09 the age is counted from when the record was last checked against MongoDB (`confirmedAt`), not from the snapshot. See [the front page design](front-page-records-design.md).
 
 The estimate was that the wait for place data would drop from about 800 ms to under 100 ms. Measured result: a place page with a usable record now answers in about 180-200 ms, including the HTML and the data, and the photo can start loading with the HTML. See the timings in [SPEC.md](../SPEC.md).
 
@@ -95,7 +95,7 @@ export async function getServerSideProps({ params }) {
 2. If the record is usable, return it.
 3. Otherwise read MongoDB as today, and return that. **Never write it back to R2.**
 
-A record is usable when it exists, parses, and its `lastSnapshot.date` is less than 90 minutes old.
+A record is usable when it exists, parses, and its `lastSnapshot.date` is less than 90 minutes old. Since 2026-11-09: when its `confirmedAt` is less than 90 minutes old.
 
 ### Why page views never write the record
 
@@ -116,12 +116,12 @@ Unknown place names return a 404 instead of an empty page.
 ### Other things that stay the same
 
 - **Browsing:** the arrows, date picker and compare still use `PLACE_SNAPSHOTS` and MongoDB. The first of those requests still runs when the page opens, but it no longer delays the first photo.
-- **Front page:** it stays on MongoDB. Since 2026-11-09 it is rendered on the server, but it still reads MongoDB and not the records (see the decision in [SPEC.md](../SPEC.md)).
+- **Front page:** it stayed on MongoDB at first. Since 2026-11-09 it is rendered on the server and reads the records (see [the front page design](front-page-records-design.md)).
 - **GraphQL API:** it keeps the `place` query.
 
 ## Accepted downsides
 
-- **Offline boxes stay slow.** A place with no upload in 90 minutes, such as `tornes` today, reads MongoDB on every view. The HTML then takes about 800 ms with no spinner, where today a spinner shows while the data loads. The total wait is about the same.
+- **Offline boxes stay slow.** A place with no upload in 90 minutes, such as `tornes` today, reads MongoDB on every view. The HTML then takes about 800 ms with no spinner, where today a spinner shows while the data loads. The total wait is about the same. Fixed on 2026-11-09: other uploads now keep these records trusted.
 - **Two uploads at once for one place** could leave the older one as the latest. The record and MongoDB can also disagree, if the uploads finish their steps in a different order. The 90 minute limit does not catch this, but the next upload corrects it. It needs two uploads within a very short time, so we accept it for now. MongoDB alone has a similar risk today.
 - **Manual database edits** to `lastSnapshot`, `firstSnapshot` or a place name are not seen by the record. After such an edit, delete the record for that place. The 90 minute limit is the backstop for `lastSnapshot`.
 - **Local development against production MongoDB** writes to a local R2, not the real one. Do not upload to production data from a dev server.
@@ -162,5 +162,5 @@ Manual checks before PR 2 is done:
 ## Not part of this work
 
 - An open page updating by itself (spec open question 1). A small endpoint that reads this record would make that cheap to add, with no MongoDB connection per check.
-- Using the record for the front page. A place with no recent upload has no record, so the front page would still need MongoDB for those places.
+- Using the record for the front page. Done on 2026-11-09, see [the front page design](front-page-records-design.md).
 - Other performance fixes: image caching, the index and query clean-up, Worker placement, and removing `moment-timezone`.

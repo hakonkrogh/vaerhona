@@ -1,38 +1,23 @@
 import { runWithDb } from './init';
-import { buildLatestRecord } from './latest-snapshot';
-import { readLatestRecord } from './latest-store';
+import { buildLatestRecord, isRecordTrusted } from './latest-snapshot';
+import { readLatestRecord, withTimeout } from './latest-store';
 import { snapshotPlaceModel } from './mongo/models';
 
-// See docs/latest-snapshot-design.md. A record this old is not trusted, which
-// limits the damage from a failure nobody planned for. Boxes upload every hour.
-const MAX_RECORD_AGE_MS = 90 * 60 * 1000;
 const RECORD_READ_TIMEOUT_MS = 500;
-
-function isUsable(record) {
-  const date = new Date(record?.lastSnapshot?.date).getTime();
-
-  return Date.now() - date < MAX_RECORD_AGE_MS;
-}
 
 /**
  * @returns {Promise<object|null>} the record, or null if it cannot be read in
  * time. A problem here must only make the page slower, never break it.
  */
 async function readRecord(placeName) {
-  let timer;
-
   try {
-    return await Promise.race([
+    return await withTimeout(
       readLatestRecord(placeName),
-      new Promise((resolve) => {
-        timer = setTimeout(() => resolve(null), RECORD_READ_TIMEOUT_MS);
-      }),
-    ]);
+      RECORD_READ_TIMEOUT_MS
+    );
   } catch (err) {
     console.error(`[latest] place=${placeName} record read failed`, err);
     return null;
-  } finally {
-    clearTimeout(timer);
   }
 }
 
@@ -48,6 +33,7 @@ function readFromMongo(placeName) {
           place,
           firstSnapshot: place.firstSnapshot,
           lastSnapshot: place.lastSnapshot,
+          confirmedAt: new Date().toISOString(),
         })
       : null;
   });
@@ -63,7 +49,7 @@ function readFromMongo(placeName) {
 export async function getPlaceForPage(placeName) {
   const record = await readRecord(placeName);
 
-  if (isUsable(record)) {
+  if (isRecordTrusted(record)) {
     console.log(`[latest] place=${placeName} source=record`);
     return record;
   }
