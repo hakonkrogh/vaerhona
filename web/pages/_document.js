@@ -86,7 +86,6 @@ export default class MyDocument extends Document {
             content="/static/favicons/browserconfig.xml?v=sydvest"
           />
           <meta name="theme-color" content="#ffffff" />
-          <link rel="preconnect" href="https://vaerhona.imgix.net" />
 
           <script
             dangerouslySetInnerHTML={{
@@ -98,12 +97,8 @@ export default class MyDocument extends Document {
               __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-PX3JG5J');`,
             }}
           />
-          <link
-            href="https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap"
-            rel="stylesheet"
-          />
         </Head>
-        <body style={{ margin: 0, fontFamily: `'Montserrat', sans-serif` }}>
+        <body style={{ margin: 0 }}>
           <Main />
           <NextScript />
         </body>
