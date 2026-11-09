@@ -11,7 +11,11 @@ export default function PlacePage({ place }) {
 
   return (
     <Layout title={upperFirst(place.name)}>
-      <SnapshotsNavigator key={place.name} place={place} />
+      {/* A newer latest snapshot starts the navigator again from it. */}
+      <SnapshotsNavigator
+        key={`${place.name}:${place.lastSnapshot?.cuid}`}
+        place={place}
+      />
     </Layout>
   );
 }

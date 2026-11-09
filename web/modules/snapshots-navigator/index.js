@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 
+import { useRefreshWhenNewer } from 'core/use-refresh-when-newer';
+
 import SnapshotImage from './image';
 import { createSnapshotStore, initialListUrl } from './store';
 // import SnapshotGraph from './graph';
@@ -15,6 +17,17 @@ export function SnapshotsNavigator({ place }) {
   // const [view, setView] = useState('image');
   const [compare, setCompare] = useState(false);
   const [compareDates, setCompareDates] = useState([]);
+
+  // Only while the latest snapshot is on screen. A user who has browsed to an
+  // older one, or is comparing years, keeps where they are.
+  const onLatest =
+    !compare &&
+    currentSnapshot &&
+    currentSnapshot.cuid === place?.lastSnapshot?.cuid;
+  useRefreshWhenNewer(
+    `/api/latest?place=${encodeURIComponent(place?.name ?? '')}`,
+    onLatest ? { [place.name]: currentSnapshot.cuid } : null
+  );
 
   const view = 'image';
   const canCompare =
