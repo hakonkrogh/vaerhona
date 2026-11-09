@@ -8,9 +8,11 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  // Run the Worker next to MongoDB Atlas and S3, which are both in this region.
+  // Temporary test (2026-11-09): placement is disabled to see if it causes the
+  // slow first requests since 2026-11-07. It ran the Worker next to MongoDB
+  // Atlas and S3 with { "region": "aws:eu-west-1" }.
   "placement": {
-    "region": "aws:eu-west-1"
+    "mode": "off"
   },
   "workers_dev": true,
   "preview_urls": false,
