@@ -31,8 +31,16 @@ for (const { width, height, ratio } of config.screens) {
   const pixelWidth = width * ratio;
   const pixelHeight = height * ratio;
   const logoSize = Math.round(pixelWidth * config.logoWidthShare);
+  // The icon is a full square. Round its corners so it looks like the
+  // app icon on the home screen.
+  const radius = Math.round(logoSize * config.logoCornerShare);
+  const corners = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${logoSize}" height="${logoSize}">` +
+      `<rect width="${logoSize}" height="${logoSize}" rx="${radius}" fill="#fff"/></svg>`
+  );
   const logoPng = await sharp(logo, { density: 300 })
     .resize(logoSize, logoSize)
+    .composite([{ input: corners, blend: 'dest-in' }])
     .png()
     .toBuffer();
   const file = join(OUT, `splash-${pixelWidth}x${pixelHeight}.png`);

@@ -46,7 +46,7 @@ export default class MyDocument extends Document {
           <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="/static/favicons/apple-touch-icon.png?v=M4yo99lAWP"
+            href="/static/favicons/apple-touch-icon.png?v=sydvest"
           />
           {splashLinks.map(({ media, href }) => (
             <link
@@ -60,30 +60,30 @@ export default class MyDocument extends Document {
             rel="icon"
             type="image/png"
             sizes="32x32"
-            href="/static/favicons/favicon-32x32.png?v=M4yo99lAWP"
+            href="/static/favicons/favicon-32x32.png?v=sydvest"
           />
           <link
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="/static/favicons/favicon-16x16.png?v=M4yo99lAWP"
+            href="/static/favicons/favicon-16x16.png?v=sydvest"
           />
           <link
             rel="manifest"
-            href="/static/favicons/manifest.json?v=M4yo99lAWP"
+            href="/static/favicons/manifest.json?v=sydvest"
           />
           <link
             rel="mask-icon"
-            href="/static/favicons/safari-pinned-tab.svg?v=M4yo99lAWP"
-            color="#5bbad5"
+            href="/static/favicons/safari-pinned-tab.svg?v=sydvest"
+            color="#0b3d55"
           />
           <link
             rel="shortcut icon"
-            href="/static/favicons/favicon.ico?v=M4yo99lAWP"
+            href="/static/favicons/favicon.ico?v=sydvest"
           />
           <meta
             name="msapplication-config"
-            content="/static/favicons/browserconfig.xml?v=M4yo99lAWP"
+            content="/static/favicons/browserconfig.xml?v=sydvest"
           />
           <meta name="theme-color" content="#ffffff" />
           <link rel="preconnect" href="https://vaerhona.imgix.net" />
