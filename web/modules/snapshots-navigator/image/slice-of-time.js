@@ -1,14 +1,13 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
-import produce from 'immer';
-import { useQuery } from 'urql';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { getClosestSnapshot, hoursBetweenDates, isServer } from 'core/utils';
-import { graphDate } from 'core/date';
-import { PLACE_SNAPSHOTS } from 'modules/queries';
 import SnapshotImage from 'modules/snapshot-image';
-import Metadata from './metadata';
 import { Spinner } from 'ui';
+
+import { PLACE_PHOTO_SIZES } from '../photo-prefetch';
+import { findSnapshot } from '../store';
+import { closestTarget } from '../timeline';
+import Metadata from './metadata';
 
 const Outer = styled.div`
   position: relative;
@@ -34,257 +33,13 @@ const ImageWrap = styled.div`
   margin: 0 auto;
 `;
 
-function getInitialState(place) {
-  return {
-    pendingNavigation: null,
-    snapshots: [],
-    query: {
-      from: null,
-      // The clock when this module loaded could be older than the latest
-      // snapshot, which would leave it out of the list.
-      to: place.lastSnapshot.date,
-      limit: 24 * 7,
-    },
-  };
-}
-
-const reducer = produce((draft, { action, ...rest }) => {
-  switch (action) {
-    case 'clear-command': {
-      draft.nextCommand = null;
-      draft.pendingNavigation = null;
-      draft.pendingDate = null;
-      draft.pendingDateOnSnapshotChange = null;
-      break;
-    }
-    case 'command': {
-      draft.nextCommand = rest.command;
-      draft.pendingNavigation = null;
-      draft.pendingDate = null;
-      draft.pendingDateOnSnapshotChange = null;
-      break;
-    }
-    case 'get-more': {
-      const { snapshots, snapshotsToMove, desiredDate } = rest;
-
-      draft.lastSnapshotsDate = draft.snapshotsDate;
-
-      if (desiredDate) {
-        const from = new Date(desiredDate.getTime());
-        const to = new Date(desiredDate.getTime());
-        from.setDate(from.getDate() - 3);
-        to.setDate(to.getDate() + 3);
-        draft.query.from = graphDate(from);
-        draft.query.to = graphDate(to);
-        draft.pendingDateOnSnapshotChange = desiredDate;
-        break;
-      }
-
-      draft.pendingNavigation = snapshotsToMove;
-
-      if (snapshotsToMove < 0) {
-        draft.query.from = null;
-        draft.query.to = snapshots[0]?.date || new Date().toISOString();
-      } else {
-        draft.query.from = snapshots[snapshots.length - 1].date;
-        draft.query.to = null;
-      }
-      break;
-    }
-    case 'got-more': {
-      draft.pendingNavigation = null;
-      draft.pendingDate = null;
-      draft.pendingDateOnSnapshotChange = null;
-
-      draft.localSnapshot = rest.nextLocalSnapshot;
-      break;
-    }
-    case 'snapshots': {
-      draft.snapshots = (draft.snapshots || []).concat(rest.snapshots);
-      draft.snapshotsDate = new Date();
-      draft.pendingDate = draft.pendingDateOnSnapshotChange;
-      draft.pendingDateOnSnapshotChange = null;
-      break;
-    }
-    default: {
-      throw new Error(`Action "${action}" not implemented`);
-    }
-  }
-});
-
+/** One snapshot: its values and its photo. */
 export default function SliceOfTime({
   place,
-  command,
-  setLoading,
-  date,
-  snapshot: snapshotFromParent,
-  setSnapshot,
+  snapshot,
+  priority,
+  onPhotoLoad,
 }) {
-  const [
-    {
-      nextCommand,
-      pendingNavigation,
-      pendingDate,
-      snapshots,
-      snapshotsDate,
-      lastSnapshotsDate,
-      query,
-      localSnapshot,
-    },
-    dispatch,
-  ] = useReducer(reducer, place, getInitialState);
-
-  const snapshot = localSnapshot || snapshotFromParent;
-
-  const [{ data = {} }] = useQuery({
-    query: PLACE_SNAPSHOTS,
-    variables: {
-      ...query,
-      placeName: place.name,
-    },
-    // The server has no API URL to call, and the list is only for browsing.
-    pause: isServer,
-  });
-
-  useEffect(() => {
-    if (data.snapshots) {
-      dispatch({ action: 'snapshots', ...data });
-    }
-  }, [data]);
-
-  const getNextSnapshot = useCallback(
-    ({ snapshotsToMove, desiredDate: desiredDateFromCommand }) => {
-      if (!snapshots) {
-        return {};
-      }
-
-      if (desiredDateFromCommand) {
-        const closest = getClosestSnapshot({
-          desiredDate: desiredDateFromCommand,
-          snapshots,
-        });
-
-        return {
-          snapshot: closest.snapshot,
-          desiredDate: desiredDateFromCommand,
-        };
-      } else {
-        if (!snapshot) {
-          return {};
-        }
-        if (Math.abs(snapshotsToMove) === 1) {
-          const index = snapshots?.findIndex((s) => s.cuid === snapshot.cuid);
-          if (snapshotsToMove === 1) {
-            return {
-              snapshot: snapshots[index + 1] || snapshots[snapshots.length - 1],
-            };
-          } else if (snapshotsToMove === -1) {
-            return { snapshot: snapshots[index - 1] || snapshots[0] };
-          }
-        } else {
-          const desiredDate = new Date(snapshot.date);
-          desiredDate.setHours(desiredDate.getHours() + snapshotsToMove);
-
-          const closest = getClosestSnapshot({
-            desiredDate,
-            snapshots,
-          });
-
-          return { snapshot: closest.snapshot, desiredDate };
-        }
-      }
-    },
-    [snapshots, snapshot]
-  );
-
-  // Act on date from parent
-  useEffect(() => {
-    if (date) {
-      dispatch({ action: 'command', command: { nextDesiredDate: date } });
-    }
-  }, [date]);
-
-  // Parent notification of loading
-  useEffect(() => {
-    setLoading?.(pendingNavigation);
-  }, [setLoading, pendingNavigation]);
-
-  // Listen for parent commands
-  useEffect(() => {
-    if (command) {
-      dispatch({ action: 'command', command });
-    }
-  }, [command]);
-
-  // Act on command
-  useEffect(() => {
-    if (nextCommand) {
-      dispatch({ action: 'clear-command' });
-      const { snapshotsToMove, nextDesiredDate } = nextCommand;
-
-      if (snapshotsToMove || nextDesiredDate) {
-        const next = getNextSnapshot({
-          snapshotsToMove,
-          desiredDate: nextDesiredDate,
-        });
-
-        // Check if we moved enough
-        if (
-          !next.snapshot ||
-          !snapshot ||
-          snapshot?.cuid === next.snapshot?.cuid ||
-          hoursBetweenDates(new Date(next.snapshot.date), nextDesiredDate) > 1
-        ) {
-          dispatch({
-            action: 'get-more',
-            desiredDate: nextDesiredDate,
-            snapshotsToMove,
-            snapshots,
-          });
-          return;
-        }
-
-        if (setSnapshot) {
-          if (next.snapshot) {
-            setSnapshot(next.snapshot);
-          }
-        } else {
-          dispatch({ action: 'got-more', nextLocalSnapshot: next.snapshot });
-        }
-      }
-    }
-  }, [nextCommand, snapshot, snapshots, getNextSnapshot, setSnapshot]);
-
-  // Act on new data
-  useEffect(() => {
-    if (
-      lastSnapshotsDate !== snapshotsDate &&
-      (pendingNavigation || pendingDate)
-    ) {
-      const next = getNextSnapshot({
-        snapshotsToMove: pendingNavigation,
-        desiredDate: pendingDate,
-      });
-
-      if (setSnapshot) {
-        if (next.snapshot) {
-          setSnapshot(next.snapshot);
-        }
-        dispatch({ action: 'got-more' });
-      } else {
-        dispatch({ action: 'got-more', nextLocalSnapshot: next.snapshot });
-      }
-    }
-  }, [
-    lastSnapshotsDate,
-    snapshots,
-    snapshotsDate,
-    getNextSnapshot,
-    pendingNavigation,
-    pendingDate,
-    setSnapshot,
-  ]);
-
   if (!snapshot) {
     return (
       <Outer>
@@ -301,13 +56,44 @@ export default function SliceOfTime({
       <ImageWrap>
         <SnapshotImage
           key={snapshot.cuid}
-          {...snapshot}
+          image={snapshot.image}
+          date={snapshot.date}
           placeName={place.name}
-          sizes="(min-width: 700px) 700px, 100vw"
-          // Compare mode passes a date. Those photos are further down the page.
-          priority={!date}
+          sizes={PLACE_PHOTO_SIZES}
+          priority={priority}
+          onLoad={onPhotoLoad}
+          // A snapshot can have no photo (SPEC.md, known gap 3). Photos ahead
+          // must still load then.
+          onError={onPhotoLoad}
         />
       </ImageWrap>
     </Outer>
   );
+}
+
+/** The snapshot closest to a date, for compare mode. */
+export function SliceOfTimeAt({ store, place, date }) {
+  const time = date.getTime();
+  // Keeps the previous snapshot on screen while the next one loads.
+  const [snapshot, setSnapshot] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    findSnapshot(
+      store,
+      (timeline, settle) => closestTarget(timeline, time, { settle }),
+      () => !active
+    ).then((found) => {
+      if (active && found) {
+        setSnapshot(found);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [store, time]);
+
+  return <SliceOfTime place={place} snapshot={snapshot} />;
 }

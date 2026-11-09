@@ -32,9 +32,6 @@ importers:
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@urql/exchange-refocus':
-        specifier: ^0.1.0
-        version: 0.1.0(graphql@14.7.0)
       apollo-boost:
         specifier: ^0.4.4
         version: 0.4.9(graphql@14.7.0)
@@ -71,9 +68,6 @@ importers:
       image-size:
         specifier: ^0.7.4
         version: 0.7.5
-      immer:
-        specifier: ^9.0.2
-        version: 9.0.21
       keycode:
         specifier: ^2.2.0
         version: 2.2.1
@@ -119,9 +113,6 @@ importers:
       upper-case-first:
         specifier: ^1.1.2
         version: 1.1.2
-      urql:
-        specifier: ^4.1.0
-        version: 4.2.2(@urql/core@6.0.1(graphql@14.7.0))(react@19.2.0)
     devDependencies:
       eslint:
         specifier: ^9.7.0
@@ -137,14 +128,6 @@ importers:
         version: 4.129.0
 
 packages:
-
-  '@0no-co/graphql.web@1.2.0':
-    resolution: {integrity: sha512-/1iHy9TTr63gE1YcR5idjx8UREz1s0kFhydf3bBLCXyqjhkIc6igAzTOx3zPifCwFR87tsh/4Pa9cNts6d2otw==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    peerDependenciesMeta:
-      graphql:
-        optional: true
 
   '@apollo/protobufjs@1.2.2':
     resolution: {integrity: sha512-vF+zxhPiLtkwxONs6YanSt1EpwpGilThpneExUN5K3tCymuxNnVq2yojTvnpRjv2QfsEIt/n7ozPIIzBLwGIDQ==}
@@ -2138,14 +2121,6 @@ packages:
   '@types/zen-observable@0.8.7':
     resolution: {integrity: sha512-LKzNTjj+2j09wAo/vvVjzgw5qckJJzhdGgWHW7j69QIGdq/KnZrMAMIHQiWGl3Ccflh5/CudBAntTPYdprPltA==}
 
-  '@urql/core@6.0.1':
-    resolution: {integrity: sha512-FZDiQk6jxbj5hixf2rEPv0jI+IZz0EqqGW8mJBEug68/zHTtT+f34guZDmyjJZyiWbj0vL165LoMr/TkeDHaug==}
-
-  '@urql/exchange-refocus@0.1.0':
-    resolution: {integrity: sha512-R6GI+OwYrrmA3LXSHBwMGHtMeTMlZLhpW0C3uioKI2bb3RRylChwbHDM6HqjNaDOm0RHbRgDY6uNWQz2xUk9BA==}
-    peerDependencies:
-      graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-
   '@vitest/expect@4.0.18':
     resolution: {integrity: sha512-8sCWUyckXXYvx4opfzVY03EOiYVxyNrHS5QxX3DAIi5dpJAAkyJezHCP77VMX4HKA2LDT/Jpfo8i2r5BE3GnQQ==}
 
@@ -3090,9 +3065,6 @@ packages:
     resolution: {integrity: sha512-Hiyv+mXHfFEP7LzUL/llg9RwFxxY+o9N3JVLIeG5E7iFIFAalxvRU9UZthBdYDEVnzHMgjnKJPPpay5BWf1g9g==}
     engines: {node: '>=6.9.0'}
     hasBin: true
-
-  immer@9.0.21:
-    resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
 
   import-fresh@3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
@@ -4158,12 +4130,6 @@ packages:
   urlpattern-polyfill@10.1.0:
     resolution: {integrity: sha512-IGjKp/o0NL3Bso1PymYURCJxMPNAf/ILOpendP9f5B6e1rTJgdgiOvgfoT8VxCAdY+Wisb9uhGaJJf3yZ2V9nw==}
 
-  urql@4.2.2:
-    resolution: {integrity: sha512-3GgqNa6iF7bC4hY/ImJKN4REQILcSU9VKcKL8gfELZM8mM5BnLH1BsCc8kBdnVGD1LIFOs4W3O2idNHhON1r0w==}
-    peerDependencies:
-      '@urql/core': ^5.0.0
-      react: '>= 16.8.0'
-
   use-composed-ref@1.4.0:
     resolution: {integrity: sha512-djviaxuOOh7wkj0paeO1Q/4wMZ8Zrnag5H6yBvzN7AKKe8beOaED9SF5/ByLqsku8NP4zQqsvM2u3ew/tJK8/w==}
     peerDependencies:
@@ -4334,12 +4300,6 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
-  wonka@4.0.15:
-    resolution: {integrity: sha512-U0IUQHKXXn6PFo9nqsHphVCE5m3IntqZNB9Jjn7EB1lrR7YTDY3YWgFvEvwniTzXSvOH/XMzAZaIfJF/LvHYXg==}
-
-  wonka@6.3.5:
-    resolution: {integrity: sha512-SSil+ecw6B4/Dm7Pf2sAshKQ5hWFvfyGlfPbEd6A14dOH6VDjrmbY86u6nZvy9omGwwIPFR8V41+of1EezgoUw==}
-
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
@@ -4435,10 +4395,6 @@ packages:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
 
 snapshots:
-
-  '@0no-co/graphql.web@1.2.0(graphql@14.7.0)':
-    optionalDependencies:
-      graphql: 14.7.0
 
   '@apollo/protobufjs@1.2.2':
     dependencies:
@@ -6783,19 +6739,6 @@ snapshots:
 
   '@types/zen-observable@0.8.7': {}
 
-  '@urql/core@6.0.1(graphql@14.7.0)':
-    dependencies:
-      '@0no-co/graphql.web': 1.2.0(graphql@14.7.0)
-      wonka: 6.3.5
-    transitivePeerDependencies:
-      - graphql
-
-  '@urql/exchange-refocus@0.1.0(graphql@14.7.0)':
-    dependencies:
-      '@urql/core': 6.0.1(graphql@14.7.0)
-      graphql: 14.7.0
-      wonka: 4.0.15
-
   '@vitest/expect@4.0.18':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -7994,8 +7937,6 @@ snapshots:
   ignore@5.3.2: {}
 
   image-size@0.7.5: {}
-
-  immer@9.0.21: {}
 
   import-fresh@3.3.1:
     dependencies:
@@ -9213,12 +9154,6 @@ snapshots:
 
   urlpattern-polyfill@10.1.0: {}
 
-  urql@4.2.2(@urql/core@6.0.1(graphql@14.7.0))(react@19.2.0):
-    dependencies:
-      '@urql/core': 6.0.1(graphql@14.7.0)
-      react: 19.2.0
-      wonka: 6.3.5
-
   use-composed-ref@1.4.0(@types/react@16.14.67)(react@19.2.0):
     dependencies:
       react: 19.2.0
@@ -9383,10 +9318,6 @@ snapshots:
     dependencies:
       siginfo: 2.0.0
       stackback: 0.0.2
-
-  wonka@4.0.15: {}
-
-  wonka@6.3.5: {}
 
   word-wrap@1.2.5: {}
 

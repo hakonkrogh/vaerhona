@@ -18,7 +18,13 @@ const PlaceListItem = ({ name, lastSnapshot: snapshot, priority }) => (
       </Upper>
 
       <ImageWrapper>
-        <SnapshotImage {...snapshot} sizes="300px" priority={priority} />
+        <SnapshotImage
+          image={snapshot.image}
+          date={snapshot.date}
+          placeName={name}
+          sizes="300px"
+          priority={priority}
+        />
       </ImageWrapper>
     </Link>
   </ListItem>

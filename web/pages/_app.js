@@ -1,24 +1,8 @@
 import Head from 'next/head';
 import styled, { keyframes } from 'styled-components';
-import {
-  createClient,
-  Provider,
-  // dedupExchange,
-  cacheExchange,
-  fetchExchange,
-} from 'urql';
-// import { refocusExchange } from '@urql/exchange-refocus';
 
 import { GlobalStyle } from 'ui';
 import { useNavigationPending } from 'core/use-navigation-pending';
-
-const client = createClient({
-  url: '/api/graphql',
-  // ...(isClient && {
-  // exchanges: [dedupExchange, refocusExchange(), cacheExchange, fetchExchange],
-  exchanges: [cacheExchange, fetchExchange],
-  // }),
-});
 
 const slide = keyframes`
   from { transform: translateX(-100%); }
@@ -48,7 +32,7 @@ export default function App({ Component, pageProps }) {
   const navigating = useNavigationPending();
 
   return (
-    <Provider value={client}>
+    <>
       <Head>
         {/* As a home screen app, iOS draws the page under the status bar and
             the home indicator. viewport-fit=cover makes that explicit, and
@@ -61,6 +45,6 @@ export default function App({ Component, pageProps }) {
       <GlobalStyle />
       {navigating && <NavigationBar role="progressbar" aria-label="Laster" />}
       <Component {...pageProps} />
-    </Provider>
+    </>
   );
 }
