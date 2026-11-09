@@ -42,6 +42,16 @@ export const getPlaceForSnapshots = ({ placeName }) =>
 // How many places the front page lists, both on the page and in the API.
 export const TOP_PUBLIC_PLACES_LIMIT = 10;
 
+// A place with no snapshot for this long is left off the front page (rule S1).
+// Its page still works by URL.
+const SHOWN_FOR_MS = 364 * 24 * 60 * 60 * 1000;
+
+function hasRecentSnapshot(place, now) {
+  const date = new Date(place.lastSnapshot?.dateAdded).getTime();
+
+  return now - date <= SHOWN_FOR_MS;
+}
+
 /**
  * @param {boolean} [withFirstSnapshot] false skips loading the first snapshot,
  * which saves a request to MongoDB when it is not needed.
@@ -60,11 +70,17 @@ export const getTopPublicPlaces = async ({
     .populate(
       withFirstSnapshot ? ['firstSnapshot', 'lastSnapshot'] : 'lastSnapshot'
     )
-    .limit(limit)
     .sort({
       'lastSnapshot.dateAdded': 'desc',
     })
     .exec();
+  const now = Date.now();
 
-  return places.map(parsePlace);
+  // Filtered here, since the date is only known after populate. The limit
+  // comes after, so old places do not take up its slots.
+  // A missing snapshot document leaves lastSnapshot empty after populate.
+  return places
+    .filter((place) => place.lastSnapshot && hasRecentSnapshot(place, now))
+    .slice(0, limit)
+    .map(parsePlace);
 };
