@@ -62,6 +62,9 @@ export default function SliceOfTime({
           sizes={PLACE_PHOTO_SIZES}
           priority={priority}
           onLoad={onPhotoLoad}
+          // A snapshot can have no photo (SPEC.md, known gap 3). Photos ahead
+          // must still load then.
+          onError={onPhotoLoad}
         />
       </ImageWrap>
     </Outer>

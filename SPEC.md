@@ -98,7 +98,7 @@ These are places where today's code does not meet the intent, or may not. All co
 
 1. **An open page never updates.** The front page had a refresh every 30 seconds, but a bug stopped it from ever running. It was removed on 2026-11-09, when the front page moved to the server. See open question 1.
 2. **Going back to the front page in the same tab could show old data.** urql (the GraphQL client) kept the front page result in memory. Since 2026-11-09 the front page is rendered on the server like the place page, so it no longer uses urql, and a page restored by the browser's back-forward cache reloads. Not yet checked live that a client-side back asks the server again.
-3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing.
+3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing. Snapshot lists are cached forever (see "What may be cached"), so deleting such a snapshot does not reach a list that is already cached.
 4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
 5. **A date with no data gives no feedback.** Since 2026-11-09 the page jumps to the closest snapshot on another date, but it does not say that the chosen date had none. Veggli has no snapshots for 12 to 18 June 2024, for example.
 6. **The front page order does nothing.** `getTopPublicPlaces` sorts on `lastSnapshot.dateAdded`, but `lastSnapshot` is only an id at that point.
