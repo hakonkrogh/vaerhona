@@ -41,7 +41,7 @@ export default class Icon extends Component {
 
       case 'image-compare':
         icon = (
-          <ImageCompare color={fillColor}>
+          <ImageCompare $color={fillColor}>
             <Picture fill={fillColor} />
           </ImageCompare>
         );
@@ -68,11 +68,7 @@ export default class Icon extends Component {
     }
 
     return (
-      <Container
-        selected={this.props.selected}
-        onClick={this.onClick}
-        onTouchStart={this.onClick}
-      >
+      <Container onClick={this.onClick} onTouchStart={this.onClick}>
         {icon}
         {this.props.label ? (
           <Label style={{ color: fillColor }}>{this.props.label}</Label>

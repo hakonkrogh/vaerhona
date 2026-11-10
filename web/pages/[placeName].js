@@ -1,5 +1,5 @@
 import React from 'react';
-import upperFirst from 'upper-case-first';
+import { upperFirst } from 'core/utils';
 
 import { useReloadOnRestore } from 'core/use-reload-on-restore';
 import Layout from 'modules/layout';

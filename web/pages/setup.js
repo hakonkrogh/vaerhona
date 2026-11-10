@@ -5,9 +5,21 @@ import {
   Container,
   Divider,
   Group,
-  InputWrapper,
   Input,
+  MantineProvider,
 } from '@mantine/core';
+// Only the Mantine styles this page uses. The order matters, see
+// https://mantine.dev/styles/css-files-list/
+import '@mantine/core/styles/baseline.css';
+import '@mantine/core/styles/default-css-variables.css';
+import '@mantine/core/styles/global.css';
+import '@mantine/core/styles/UnstyledButton.css';
+import '@mantine/core/styles/Loader.css';
+import '@mantine/core/styles/Button.css';
+import '@mantine/core/styles/Container.css';
+import '@mantine/core/styles/Divider.css';
+import '@mantine/core/styles/Group.css';
+import '@mantine/core/styles/Input.css';
 
 import { Temperature, Humidity } from 'ui';
 
@@ -227,160 +239,164 @@ export default function Setup() {
   }
 
   return (
-    <Container size="sm" suppressHydrationWarning>
-      {blockingMessage ? (
-        <BlockingMessage>
-          <span>{blockingMessage}</span>
-        </BlockingMessage>
-      ) : null}
-      {!isConnected ? (
-        <div
-          style={{
-            display: 'flex',
-            minHeight: '80vh',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Button type="button" onClick={connect}>
-            Søk etter en Værhøne
-          </Button>
-        </div>
-      ) : (
-        <div>
-          <Group position="apart" spacing="sm" style={{ margin: '8px 0' }}>
-            <Button onClick={() => send({ action: 'take-snapshot' })}>
-              Ta bilde
-            </Button>
-            <div>
-              <Group position="apart" spacing="md">
-                <Button
-                  size="xs"
-                  variant="light"
-                  type="button"
-                  onClick={() => device.gatt.disconnect()}
-                >
-                  Koble fra
-                </Button>
-
-                <Button
-                  size="xs"
-                  variant="light"
-                  onClick={() => {
-                    const id = prompt('Skriv inn box-id (tom for auto)');
-                    send({ action: 'regenerate-boxid', id });
-                  }}
-                >
-                  Lag ny box-id
-                </Button>
-
-                <Button
-                  size="xs"
-                  variant="light"
-                  onClick={() => send({ action: 'firmware-update' })}
-                >
-                  Oppdater fastvare
-                </Button>
-
-                <Button
-                  size="xs"
-                  variant="light"
-                  onClick={() => send({ action: 'os-update' })}
-                >
-                  Oppdater OS
-                </Button>
-
-                <Button
-                  size="xs"
-                  variant="light"
-                  onClick={() => send({ action: 'reboot' })}
-                >
-                  Start på nytt
-                </Button>
-
-                <Button
-                  size="xs"
-                  variant="light"
-                  onClick={() => send({ action: 'shutdown' })}
-                >
-                  Skru av
-                </Button>
-              </Group>
-            </div>
-          </Group>
-          <Divider />
-          <Group
-            position="center"
-            spacing="xl"
-            style={{ padding: '50px', fontSize: 50 }}
+    <MantineProvider>
+      <Container size="sm" suppressHydrationWarning>
+        {blockingMessage ? (
+          <BlockingMessage>
+            <span>{blockingMessage}</span>
+          </BlockingMessage>
+        ) : null}
+        {!isConnected ? (
+          <div
+            style={{
+              display: 'flex',
+              minHeight: '80vh',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <Temperature {...sensorValues} />
-            <Divider
-              orientation="vertical"
-              margins="sm"
-              style={{ margin: '0 50px' }}
-            />
-            <Humidity {...sensorValues} />
-          </Group>
-          <Divider />
-          <Group style={{ padding: '16px 0' }}>
-            {!changeWifi ? (
-              <>
-                <Button variant="light" onClick={() => setChangeWifi(true)}>
-                  Endre wifi
-                </Button>
-                <IsOnline isOnline={isOnline}>
-                  {isOnline === null
-                    ? 'Sjekker nettstatus...'
-                    : isOnline
-                    ? '☑️ Er på nett'
-                    : '⚠️ Er IKKE på nett'}
-                </IsOnline>
-              </>
-            ) : (
-              <form
-                onSubmit={onWifiSettingsUpdateSubmit}
-                autoComplete="off"
-                style={{ display: 'grid', gap: '10px' }}
-              >
-                {wifiSettings.map((w, index) => (
-                  <div key={index} style={{ opacity: w.deleted ? 0.5 : 1 }}>
-                    <InputWrapper
-                      required
-                      label="Navn på wifi"
-                      style={{ marginBottom: 16 }}
-                    >
-                      <Input name={`${index}:::::ssid`} defaultValue={w.ssid} />
-                    </InputWrapper>
-                    <InputWrapper
-                      required
-                      label="Passordet for wifi"
-                      style={{ marginBottom: 16 }}
-                    >
-                      <Input name={`${index}:::::psk`} defaultValue={w.psk} />
-                    </InputWrapper>
-                    {supportsMultipleWifi &&
-                      wifiSettings.filter((s) => !s.deleted).length > 1 && (
-                        <button type="button" onClick={() => removeWifi(index)}>
-                          -
-                        </button>
-                      )}
-                  </div>
-                ))}
+            <Button type="button" onClick={connect}>
+              Søk etter en Værhøne
+            </Button>
+          </div>
+        ) : (
+          <div>
+            <Group justify="space-between" gap="sm" style={{ margin: '8px 0' }}>
+              <Button onClick={() => send({ action: 'take-snapshot' })}>
+                Ta bilde
+              </Button>
+              <div>
+                <Group justify="space-between" gap="md">
+                  <Button
+                    size="xs"
+                    variant="light"
+                    type="button"
+                    onClick={() => device.gatt.disconnect()}
+                  >
+                    Koble fra
+                  </Button>
 
-                {supportsMultipleWifi && (
-                  <button type="button" onClick={() => addWifi()}>
-                    +
-                  </button>
-                )}
+                  <Button
+                    size="xs"
+                    variant="light"
+                    onClick={() => {
+                      const id = prompt('Skriv inn box-id (tom for auto)');
+                      send({ action: 'regenerate-boxid', id });
+                    }}
+                  >
+                    Lag ny box-id
+                  </Button>
 
-                <Button type="submit">Oppdater</Button>
-              </form>
-            )}
-          </Group>
-          {boxId && <BoxId>{boxId}</BoxId>}
-        </div>
-      )}
-    </Container>
+                  <Button
+                    size="xs"
+                    variant="light"
+                    onClick={() => send({ action: 'firmware-update' })}
+                  >
+                    Oppdater fastvare
+                  </Button>
+
+                  <Button
+                    size="xs"
+                    variant="light"
+                    onClick={() => send({ action: 'os-update' })}
+                  >
+                    Oppdater OS
+                  </Button>
+
+                  <Button
+                    size="xs"
+                    variant="light"
+                    onClick={() => send({ action: 'reboot' })}
+                  >
+                    Start på nytt
+                  </Button>
+
+                  <Button
+                    size="xs"
+                    variant="light"
+                    onClick={() => send({ action: 'shutdown' })}
+                  >
+                    Skru av
+                  </Button>
+                </Group>
+              </div>
+            </Group>
+            <Divider />
+            <Group
+              justify="center"
+              gap="xl"
+              style={{ padding: '50px', fontSize: 50 }}
+            >
+              <Temperature {...sensorValues} />
+              <Divider orientation="vertical" style={{ margin: '0 50px' }} />
+              <Humidity {...sensorValues} />
+            </Group>
+            <Divider />
+            <Group style={{ padding: '16px 0' }}>
+              {!changeWifi ? (
+                <>
+                  <Button variant="light" onClick={() => setChangeWifi(true)}>
+                    Endre wifi
+                  </Button>
+                  <IsOnline>
+                    {isOnline === null
+                      ? 'Sjekker nettstatus...'
+                      : isOnline
+                        ? '☑️ Er på nett'
+                        : '⚠️ Er IKKE på nett'}
+                  </IsOnline>
+                </>
+              ) : (
+                <form
+                  onSubmit={onWifiSettingsUpdateSubmit}
+                  autoComplete="off"
+                  style={{ display: 'grid', gap: '10px' }}
+                >
+                  {wifiSettings.map((w, index) => (
+                    <div key={index} style={{ opacity: w.deleted ? 0.5 : 1 }}>
+                      <Input.Wrapper
+                        required
+                        label="Navn på wifi"
+                        style={{ marginBottom: 16 }}
+                      >
+                        <Input
+                          name={`${index}:::::ssid`}
+                          defaultValue={w.ssid}
+                        />
+                      </Input.Wrapper>
+                      <Input.Wrapper
+                        required
+                        label="Passordet for wifi"
+                        style={{ marginBottom: 16 }}
+                      >
+                        <Input name={`${index}:::::psk`} defaultValue={w.psk} />
+                      </Input.Wrapper>
+                      {supportsMultipleWifi &&
+                        wifiSettings.filter((s) => !s.deleted).length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeWifi(index)}
+                          >
+                            -
+                          </button>
+                        )}
+                    </div>
+                  ))}
+
+                  {supportsMultipleWifi && (
+                    <button type="button" onClick={() => addWifi()}>
+                      +
+                    </button>
+                  )}
+
+                  <Button type="submit">Oppdater</Button>
+                </form>
+              )}
+            </Group>
+            {boxId && <BoxId>{boxId}</BoxId>}
+          </div>
+        )}
+      </Container>
+    </MantineProvider>
   );
 }

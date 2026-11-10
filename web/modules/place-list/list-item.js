@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import upperFirst from 'upper-case-first';
+import { upperFirst } from 'core/utils';
 
 import { timeOrDate } from 'core/date';
 import SnapshotImage from 'modules/snapshot-image';

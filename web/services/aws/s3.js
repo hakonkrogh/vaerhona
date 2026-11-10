@@ -4,7 +4,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import imageSize from 'image-size';
+import { imageSize } from 'image-size';
 
 import config from '../config';
 

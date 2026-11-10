@@ -1,8 +1,8 @@
 import React, { useState, createRef, useEffect } from 'react';
 import TimeAgo from 'react-timeago';
 import styled from 'styled-components';
-import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
-import TaNo from 'react-timeago/lib/language-strings/no';
+import buildFormatter from 'react-timeago/formatters/buildFormatter';
+import TaNo from 'react-timeago/language-strings/no';
 
 import { prettyDateTime, graphDate } from 'core/date';
 

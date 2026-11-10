@@ -1,6 +1,5 @@
-import gql from 'graphql-tag';
-
-export const typeDefs = gql`
+// The "/* GraphQL */" comment is only a hint for editors and Prettier.
+export const typeDefs = /* GraphQL */ `
   scalar Date
 
   type Place {
@@ -42,7 +41,6 @@ export const typeDefs = gql`
       limit: Int
       from: String
       to: String
-      limit: Int
     ): [Snapshot]
   }
 

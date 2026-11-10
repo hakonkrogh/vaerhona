@@ -18,10 +18,10 @@ export const Loading = styled.div`
 
 export default class Layout extends Component {
   render() {
-    const { loading, title, scroll } = this.props;
+    const { loading, title } = this.props;
 
     return (
-      <Wrapper scroll={scroll}>
+      <Wrapper>
         <Head>
           <title>{loading ? 'Henter...' : title}</title>
         </Head>
