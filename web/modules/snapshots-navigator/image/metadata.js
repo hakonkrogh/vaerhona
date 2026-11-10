@@ -19,7 +19,9 @@ export default function Metadata({ snapshot }) {
   return (
     <>
       <div className={styles.values}>
-        <Temperature {...snapshot} /> /
+        {/* The key makes a click that shows the stored value apply to this
+            snapshot only. */}
+        <Temperature key={snapshot.cuid} {...snapshot} /> /
         <Humidity humidity={humidity} />
       </div>
       {yr && (

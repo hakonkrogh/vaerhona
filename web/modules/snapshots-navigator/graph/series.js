@@ -2,6 +2,8 @@
 // without React or Chart.js. The values come from the browser's local database
 // (modules/snapshot-history).
 
+import { validHumidity, validTemperature } from 'core/readings';
+
 const DAY = 24 * 60 * 60 * 1000;
 
 // Days are cut at midnight Norwegian winter time. Daylight saving moves the
@@ -15,13 +17,16 @@ export const PERIODS = [
   { key: 'all', label: 'Alt', daily: true },
 ];
 
+// `value` gives null for a reading that is off, and the chart leaves it out
+// (rule P11, see core/readings.js).
 export const PROPERTIES = [
   {
     key: 'temperature',
     icon: 'thermometer',
     label: 'Temperatur',
     unit: '°C',
-    value: (columns, i) => columns.temperature[i],
+    value: (columns, i) =>
+      validTemperature(columns.temperature[i], columns.humidity[i]),
   },
   {
     key: 'humidity',
@@ -30,7 +35,8 @@ export const PROPERTIES = [
     unit: '%',
     // The yr.no value when there is one, as the place page shows (rule P2).
     value: (columns, i) =>
-      columns.yr?.relativeHumidity[i] ?? columns.humidity[i],
+      columns.yr?.relativeHumidity[i] ??
+      validHumidity(columns.temperature[i], columns.humidity[i]),
   },
 ];
 
