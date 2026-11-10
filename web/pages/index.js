@@ -1,3 +1,4 @@
+import { useRestoreScrollOnBack } from 'core/page-transition';
 import {
   latestByPlace,
   useRefreshWhenNewer,
@@ -10,6 +11,7 @@ import { getFrontPageProps } from 'services/front-page';
 
 export default function FrontPage({ places }) {
   useReloadOnRestore();
+  useRestoreScrollOnBack('front-page');
   useRefreshWhenNewer('/api/latest', places ? latestByPlace(places) : null);
 
   return (

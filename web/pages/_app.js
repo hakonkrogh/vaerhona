@@ -1,4 +1,5 @@
 import { Montserrat } from 'next/font/google';
+import { ViewTransition } from 'react';
 import Head from 'next/head';
 
 import 'ui/global.css';
@@ -36,7 +37,12 @@ export default function App({ Component, pageProps }) {
       )}
       {/* The class sets the font for the whole page. */}
       <div className={montserrat.className}>
-        <Component {...pageProps} />
+        {/* Next.js draws a new page inside a React transition, so React runs
+            the change as a view transition: the pages fade over each other,
+            and a photo with the same name on both pages moves. */}
+        <ViewTransition>
+          <Component {...pageProps} />
+        </ViewTransition>
       </div>
     </>
   );
