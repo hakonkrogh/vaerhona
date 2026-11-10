@@ -4,11 +4,17 @@ export const Wrapper = styled.header`
   flex: 0 0 auto;
   /* Room for the iOS status bar. It is 0 in a normal browser tab. */
   --status-bar: env(safe-area-inset-top, 0px);
-  /* When the page is drawn under the status bar (a home screen app on newer
-     iOS), iOS also blurs the page for about 50px below the bar, so the logo
-     must sit below that too. min() makes this 0 when --status-bar is 0, so a
-     browser tab and landscape look the same as before. */
-  --status-bar-blur: min(50px, var(--status-bar) * 100);
+  --status-bar-blur: 0px;
+  /* As a home screen app, iOS blurs the top of the page for about 50px
+     below the status bar, so the logo must sit below that too. Some iOS
+     versions report a safe-area inset of 0 there and still blur, so this
+     checks for the home screen app (the ios-app class, set in _document.js),
+     not the inset. In landscape iOS hides the status bar, so no room. */
+  @media (orientation: portrait) {
+    html.ios-app & {
+      --status-bar-blur: 50px;
+    }
+  }
   padding-top: calc(var(--status-bar) + var(--status-bar-blur));
   height: calc(50px + var(--status-bar) + var(--status-bar-blur));
   box-sizing: border-box;
