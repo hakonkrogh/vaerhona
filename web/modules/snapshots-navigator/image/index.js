@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Switch from 'react-switch';
 
 import { Button, IconArrow, IconCompare } from 'ui';
+import { PHOTO_TRANSITION_NAME } from 'core/page-transition';
 
 import { useSnapshotNavigation } from '../use-snapshot-navigation';
 import { Outer, Bottom, BottomInner, SwitchOuter, CompareList } from './ui';
@@ -53,6 +54,7 @@ export default function SnapshotImage({
         place={place}
         snapshot={currentSnapshot}
         priority
+        transitionName={PHOTO_TRANSITION_NAME}
         onPhotoLoad={() => setLoadedPhoto(currentSnapshot.cuid)}
       />
 
