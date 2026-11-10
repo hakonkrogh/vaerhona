@@ -43,6 +43,12 @@ describe('timeAgo', () => {
     expect(timeAgo(now + 5 * MINUTE, now)).toBe('om 5 minutter');
   });
 
+  it('gives null for an invalid date', () => {
+    expect(timeAgo('not a date', now)).toBeNull();
+    expect(timeAgo(null, now)).toBeNull();
+    expect(timeAgo(undefined, now)).toBeNull();
+  });
+
   it('takes date strings', () => {
     expect(timeAgo('2026-06-15T10:00:00Z', now)).toBe('for ca. 2 timer siden');
   });

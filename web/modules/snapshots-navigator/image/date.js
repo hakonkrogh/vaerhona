@@ -58,17 +58,13 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
   }, [dateRef]);
 
   const minDate = place.firstSnapshot?.date;
+  // Empty for a date that cannot be read. The line keeps its height then too.
+  const ago = now !== null ? timeAgo(snapshot.date, now) : null;
 
   return (
     <div className={styles.outer}>
       <div className={styles.timeAgo}>
-        {now !== null ? (
-          <time dateTime={new Date(snapshot.date).toISOString()}>
-            {timeAgo(snapshot.date, now)}
-          </time>
-        ) : (
-          '\u00a0'
-        )}
+        {ago ? <time dateTime={snapshot.date}>{ago}</time> : '\u00a0'}
       </div>
       <div className={styles.dateString}>
         <span className={styles.inputPlacer}>

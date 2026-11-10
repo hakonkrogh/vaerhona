@@ -9,10 +9,16 @@ function amount(value, one, many) {
 
 /**
  * How long ago a date was, in Norwegian, like "for 5 minutter siden". A date
- * after `now` gives "om 5 minutter".
+ * after `now` gives "om 5 minutter". An invalid date gives null.
  */
 export function timeAgo(date, now = Date.now()) {
-  const then = new Date(date).getTime();
+  // new Date(null) would be 1 January 1970.
+  const then = date == null ? NaN : new Date(date).getTime();
+
+  if (Number.isNaN(then)) {
+    return null;
+  }
+
   const distance = Math.abs(now - then);
 
   const seconds = Math.round(distance / SECOND);
