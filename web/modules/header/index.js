@@ -1,16 +1,17 @@
 import React from 'react';
+import Link from 'next/link';
 
 import { IconApp } from 'ui';
-import { Wrapper, MainLink, Title } from './ui';
+import styles from './header.module.css';
 
 const Header = ({ title, children }) => (
-  <Wrapper>
-    <MainLink href="/">
+  <header className={styles.wrapper}>
+    <Link className={styles.mainLink} href="/">
       <IconApp size={30} />
-      <Title>{title}</Title>
-    </MainLink>
+      <span className={styles.title}>{title}</span>
+    </Link>
     {children}
-  </Wrapper>
+  </header>
 );
 
 export default Header;

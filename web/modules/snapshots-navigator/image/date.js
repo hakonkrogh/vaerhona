@@ -1,10 +1,9 @@
 import React, { useState, createRef, useEffect } from 'react';
-import TimeAgo from 'react-timeago';
-import styled from 'styled-components';
-import buildFormatter from 'react-timeago/formatters/buildFormatter';
-import TaNo from 'react-timeago/language-strings/no';
 
 import { prettyDateTime, graphDate } from 'core/date';
+import { timeAgo } from 'core/time-ago';
+
+import styles from './date.module.css';
 
 const deviceDoesDateChangeOnBlur = (() => {
   if (typeof window === 'undefined') {
@@ -14,82 +13,20 @@ const deviceDoesDateChangeOnBlur = (() => {
   return window.navigator.userAgent.includes('iPhone');
 })();
 
-// Set up the time ago component
-let timeAgoFormatter = buildFormatter(TaNo);
-
-const Outer = styled.div`
-  position: relative;
-  margin: 10px 0 25px 0;
-`;
-
-const DateTimeAgo = styled.div`
-  font-size: 1.5em;
-  text-align: center;
-  margin-bottom: 3px;
-
-  &::first-letter {
-    text-transform: uppercase;
-  }
-`;
-
-const DateString = styled.div`
-  display: block;
-  color: #888;
-  text-align: center;
-  position: relative;
-`;
-
-const DateInputPlacer = styled.span`
-  position: relative;
-  display: inline-block;
-`;
-
-const DateInput = styled.input.attrs(() => ({
-  type: 'date',
-}))`
-  appearance: none;
-  font-size: 1rem;
-  position: absolute;
-  top: calc(0px - 1em);
-  left: calc(0px - 1em);
-  width: calc(100% + 2em);
-  height: calc(100% + 2em);
-  z-index: 1;
-  opacity: 0;
-  border: none;
-  cursor: pointer;
-
-  &::-webkit-calendar-picker-indicator {
-    width: 100%;
-    height: 100%;
-  }
-
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &::-webkit-clear-button {
-    display: none;
-  }
-
-  &::-ms-clear {
-    width: 0;
-    height: 0;
-  }
-`;
-
 export default function DateCmp({ snapshot, place, onDateChange }) {
   const dateRef = createRef();
   const [enableDateChange, setEnableDateChange] = useState(true);
   const [date, setDate] = useState(snapshot.date);
-  const [isMounted, setIsMounted] = useState(false);
+  // The current time, or null until the browser has taken over. "Time ago"
+  // depends on it, so the server and the browser can disagree on the text.
+  // The line keeps its height until then.
+  const [now, setNow] = useState(null);
 
-  // "Time ago" depends on the current time, so the server and the browser can
-  // disagree on the text. The line keeps its height until the browser takes over.
+  // Keeps the text up to date while the page stays open.
   useEffect(() => {
-    setIsMounted(true);
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 30 * 1000);
+    return () => clearInterval(timer);
   }, []);
 
   function executeDateChange(dateValue) {
@@ -123,22 +60,23 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
   const minDate = place.firstSnapshot?.date;
 
   return (
-    <Outer>
-      <DateTimeAgo>
-        {isMounted ? (
-          <TimeAgo
-            date={new Date(snapshot.date)}
-            formatter={timeAgoFormatter}
-          />
+    <div className={styles.outer}>
+      <div className={styles.timeAgo}>
+        {now !== null ? (
+          <time dateTime={new Date(snapshot.date).toISOString()}>
+            {timeAgo(snapshot.date, now)}
+          </time>
         ) : (
           '\u00a0'
         )}
-      </DateTimeAgo>
-      <DateString>
-        <DateInputPlacer>
+      </div>
+      <div className={styles.dateString}>
+        <span className={styles.inputPlacer}>
           {prettyDateTime(snapshot.date)}
           {enableDateChange && (
-            <DateInput
+            <input
+              type="date"
+              className={styles.input}
               ref={dateRef}
               value={graphDate(date)}
               onChange={dateChange}
@@ -147,8 +85,8 @@ export default function DateCmp({ snapshot, place, onDateChange }) {
               max={graphDate(new Date())}
             />
           )}
-        </DateInputPlacer>
-      </DateString>
-    </Outer>
+        </span>
+      </div>
+    </div>
   );
 }

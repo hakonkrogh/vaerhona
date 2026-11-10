@@ -1,14 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
 import Image, { getImageProps } from 'next/image';
 
 import { prettyDateTime } from 'core/date';
 
-const StyledImage = styled(Image)`
-  object-fit: contain;
-  width: 100%;
-  height: auto;
-`;
+import styles from './snapshot-image.module.css';
 
 // The size of a snapshot photo.
 const WIDTH = 1280;
@@ -34,10 +29,11 @@ const SnapshotImage = ({
   image,
   width = WIDTH,
   height = HEIGHT,
+  className,
   ...rest
 }) => {
   return (
-    <StyledImage
+    <Image
       alt={`Bilde fra ${placeName} tatt ${prettyDateTime(date)}`}
       src={image}
       // src={
@@ -47,6 +43,7 @@ const SnapshotImage = ({
       width={width}
       height={height}
       {...rest}
+      className={className ? `${styles.image} ${className}` : styles.image}
     />
   );
 };

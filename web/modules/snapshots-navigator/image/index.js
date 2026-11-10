@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import Switch from 'react-switch';
 
 import { Button, IconArrow, IconCompare } from 'ui';
 
 import { useSnapshotNavigation } from '../use-snapshot-navigation';
-import { Outer, Bottom, BottomInner, SwitchOuter, CompareList } from './ui';
+import styles from './image.module.css';
 import SliceOfTime, { SliceOfTimeAt } from './slice-of-time';
 import DateVisualiser from './date';
 
@@ -42,7 +41,7 @@ export default function SnapshotImage({
   }
 
   return (
-    <Outer>
+    <div className={styles.outer}>
       <DateVisualiser
         place={place}
         snapshot={currentSnapshot}
@@ -57,19 +56,17 @@ export default function SnapshotImage({
       />
 
       {compare && (
-        <CompareList>
+        <ul className={styles.compareList}>
           {compareDates.map((date, index) => (
             <li key={index}>
-              <div style={{ margin: '30px 0 15px', textAlign: 'center' }}>
-                {date.getFullYear()}
-              </div>
+              <div className={styles.compareYear}>{date.getFullYear()}</div>
               <SliceOfTimeAt store={store} place={place} date={date} />
             </li>
           ))}
-        </CompareList>
+        </ul>
       )}
-      <Bottom>
-        <BottomInner>
+      <div className={styles.bottom}>
+        <div className={styles.bottomInner}>
           <span>
             <Button {...buttonProps(-24)}>
               <IconArrow left />
@@ -81,25 +78,21 @@ export default function SnapshotImage({
           </span>
 
           {canCompare && (
-            <SwitchOuter>
-              <label htmlFor="compare-switch">
+            <div className={styles.switchOuter}>
+              <label className={styles.switchLabel} htmlFor="compare-switch">
                 <IconCompare />
-                <Switch
-                  checked={compare}
+                <input
+                  type="checkbox"
+                  role="switch"
                   id="compare-switch"
+                  className={styles.switchInput}
+                  checked={compare}
                   onChange={() => setCompare(!compare)}
-                  onColor="#b7ccc2"
-                  onHandleColor="#81a594"
-                  handleDiameter={20}
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                  height={20}
-                  width={36}
                   aria-label="Sammenlign med året før"
                 />
+                <span className={styles.switchTrack} />
               </label>
-            </SwitchOuter>
+            </div>
           )}
 
           <span>
@@ -111,8 +104,8 @@ export default function SnapshotImage({
               <IconArrow />
             </Button>
           </span>
-        </BottomInner>
-      </Bottom>
-    </Outer>
+        </div>
+      </div>
+    </div>
   );
 }

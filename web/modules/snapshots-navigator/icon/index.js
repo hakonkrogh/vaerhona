@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
-import { Container, Label, ImageCompare } from './ui';
+import styles from './icon.module.css';
 
 import {
   Picture,
@@ -12,12 +11,6 @@ import {
 } from '../../icons';
 
 export default class Icon extends Component {
-  static propTypes = {
-    selected: PropTypes.bool.isRequired,
-    label: PropTypes.string,
-    onClick: PropTypes.func,
-  };
-
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -41,9 +34,9 @@ export default class Icon extends Component {
 
       case 'image-compare':
         icon = (
-          <ImageCompare $color={fillColor}>
+          <span className={styles.imageCompare} style={{ color: fillColor }}>
             <Picture fill={fillColor} />
-          </ImageCompare>
+          </span>
         );
         break;
 
@@ -68,12 +61,18 @@ export default class Icon extends Component {
     }
 
     return (
-      <Container onClick={this.onClick} onTouchStart={this.onClick}>
+      <div
+        className={styles.container}
+        onClick={this.onClick}
+        onTouchStart={this.onClick}
+      >
         {icon}
         {this.props.label ? (
-          <Label style={{ color: fillColor }}>{this.props.label}</Label>
+          <div className={styles.label} style={{ color: fillColor }}>
+            {this.props.label}
+          </div>
         ) : null}
-      </Container>
+      </div>
     );
   }
 }

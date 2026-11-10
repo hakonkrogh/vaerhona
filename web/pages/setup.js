@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import {
   Button,
   Container,
@@ -22,37 +21,7 @@ import '@mantine/core/styles/Group.css';
 import '@mantine/core/styles/Input.css';
 
 import { Temperature, Humidity } from 'ui';
-
-const IsOnline = styled.div`
-  margin-left: 15px;
-`;
-
-const BoxId = styled.div`
-  font-size: 0.7rem;
-  font-style: italic;
-  opacity: 0.6;
-  margin: 15px 0;
-
-  &::before {
-    content: 'Box id: ';
-  }
-`;
-
-const BlockingMessage = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  width: 100%;
-  height: 100%;
-  background: #ffffffdd;
-  padding: 10%;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2rem;
-`;
+import styles from 'modules/setup.module.css';
 
 const primaryServiceUuid = '601202ac-16d1-4f74-819d-85788a5ad77a';
 
@@ -242,9 +211,9 @@ export default function Setup() {
     <MantineProvider>
       <Container size="sm" suppressHydrationWarning>
         {blockingMessage ? (
-          <BlockingMessage>
+          <div className={styles.blockingMessage}>
             <span>{blockingMessage}</span>
-          </BlockingMessage>
+          </div>
         ) : null}
         {!isConnected ? (
           <div
@@ -338,13 +307,13 @@ export default function Setup() {
                   <Button variant="light" onClick={() => setChangeWifi(true)}>
                     Endre wifi
                   </Button>
-                  <IsOnline>
+                  <div className={styles.isOnline}>
                     {isOnline === null
                       ? 'Sjekker nettstatus...'
                       : isOnline
                         ? '☑️ Er på nett'
                         : '⚠️ Er IKKE på nett'}
-                  </IsOnline>
+                  </div>
                 </>
               ) : (
                 <form
@@ -393,7 +362,7 @@ export default function Setup() {
                 </form>
               )}
             </Group>
-            {boxId && <BoxId>{boxId}</BoxId>}
+            {boxId && <div className={styles.boxId}>{boxId}</div>}
           </div>
         )}
       </Container>

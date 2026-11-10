@@ -1,0 +1,10 @@
+.wrapper {
+  background: #fcfcfc;
+}
+
+.loading {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

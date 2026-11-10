@@ -36,7 +36,7 @@ function loadChartJs() {
 }
 
 import Icon from '../icon';
-import { Outer, Inner, Canvas, PropChooser } from './ui';
+import styles from './graph.module.css';
 
 const snapshotProperties = [
   {
@@ -249,11 +249,11 @@ export default class SnapshotGraph extends Component {
 
   render() {
     return (
-      <Outer>
-        <Inner>
-          <Canvas ref={(x) => (this.canvas = x)} />
-        </Inner>
-        <PropChooser>
+      <div className={styles.outer}>
+        <div className={styles.inner}>
+          <canvas className={styles.canvas} ref={(x) => (this.canvas = x)} />
+        </div>
+        <div className={styles.propChooser}>
           {snapshotProperties.map((prop) => (
             <Icon
               selected={this.state.selectedProperty.type === prop.type}
@@ -263,8 +263,8 @@ export default class SnapshotGraph extends Component {
               onClick={this.changeSelectedProperty.bind(this, prop)}
             />
           ))}
-        </PropChooser>
-      </Outer>
+        </div>
+      </div>
     );
   }
 }

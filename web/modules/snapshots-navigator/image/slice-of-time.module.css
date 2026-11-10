@@ -1,0 +1,20 @@
+.outer,
+.imageWrap {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.loader {
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+}
+
+@media (min-width: 700px) {
+  .loader {
+    width: 700px;
+  }
+}

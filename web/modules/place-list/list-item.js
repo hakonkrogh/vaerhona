@@ -5,19 +5,19 @@ import { upperFirst } from 'core/utils';
 import { timeOrDate } from 'core/date';
 import SnapshotImage from 'modules/snapshot-image';
 
-import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
+import styles from './place-list.module.css';
 
 const PlaceListItem = ({ name, lastSnapshot: snapshot, priority }) => (
-  <ListItem>
+  <li className={styles.item}>
     <Link href={`/${name}`}>
-      <Upper>
-        <PlaceName>{upperFirst(name)}</PlaceName>
+      <div className={styles.upper}>
+        <h2 className={styles.placeName}>{upperFirst(name)}</h2>
         <div>
-          <Time>{timeOrDate(snapshot.date)}</Time>
+          <time className={styles.time}>{timeOrDate(snapshot.date)}</time>
         </div>
-      </Upper>
+      </div>
 
-      <ImageWrapper>
+      <figure className={styles.imageWrapper}>
         <SnapshotImage
           image={snapshot.image}
           date={snapshot.date}
@@ -25,9 +25,9 @@ const PlaceListItem = ({ name, lastSnapshot: snapshot, priority }) => (
           sizes="300px"
           priority={priority}
         />
-      </ImageWrapper>
+      </figure>
     </Link>
-  </ListItem>
+  </li>
 );
 
 export default PlaceListItem;
