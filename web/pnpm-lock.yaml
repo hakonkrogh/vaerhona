@@ -24,9 +24,6 @@ importers:
       '@opennextjs/cloudflare':
         specifier: ^1.20.16
         version: 1.20.16(next@16.4.6(@babel/core@7.29.13)(@types/node@24.10.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.159.0(@types/node@24.10.0))
-      chart.js:
-        specifier: ^4.6.1
-        version: 4.6.1
       cuid:
         specifier: ^3.0.0
         version: 3.0.0
@@ -953,9 +950,6 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@kurkle/color@0.3.4':
-    resolution: {integrity: sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==}
-
   '@mantine/core@9.8.0':
     resolution: {integrity: sha512-+2Y+GBM6WvBJgBBb7hrfEvHbyljuRsOqC1GjxNpmX6NcD2SwmDXf9ZVFfquyXvi8fFerMrTpAwYdfb6k2PGAlQ==}
     peerDependencies:
@@ -1791,10 +1785,6 @@ packages:
   chalk@5.6.2:
     resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-
-  chart.js@4.6.1:
-    resolution: {integrity: sha512-hJyniucsFmq//EvXYvJ6c6mahPoI3kaxdjVH8awTaJ/fDNWeSqqqArixMJWkWNN6fcYvPU3HneSANFNYtRi61g==}
-    engines: {pnpm: '>=8'}
 
   ci-info@4.5.0:
     resolution: {integrity: sha512-d1uM8k5UZEyPza1n/MG3ko8nKupKN0KJpFsipgPcgaCCvV+IqIfJ+NzTjetlLM+UcXZx3+cLrNr76+eAO7G1Mw==}
@@ -4727,8 +4717,6 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@kurkle/color@0.3.4': {}
-
   '@mantine/core@9.8.0(@mantine/hooks@9.8.0(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@floating-ui/react': 0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -5560,10 +5548,6 @@ snapshots:
   chai@6.3.0: {}
 
   chalk@5.6.2: {}
-
-  chart.js@4.6.1:
-    dependencies:
-      '@kurkle/color': 0.3.4
 
   ci-info@4.5.0: {}
 

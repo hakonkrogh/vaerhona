@@ -20,7 +20,6 @@
     "@mantine/core": "^9.8.0",
     "@mantine/hooks": "^9.8.0",
     "@opennextjs/cloudflare": "^1.20.16",
-    "chart.js": "^4.6.1",
     "cuid": "^3.0.0",
     "graphql": "^17.1.0",
     "graphql-yoga": "^6.0.1",

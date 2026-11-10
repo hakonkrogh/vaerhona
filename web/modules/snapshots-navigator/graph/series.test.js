@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  chartLines,
+  chartPanels,
   dailyPoints,
   earlierYears,
   periodRange,
   PERIODS,
   pointsInRange,
-  PROPERTIES,
+  VALUES,
+  yearBand,
 } from './series';
 
 const [week, , year, all] = PERIODS;
-const [temperature, humidity] = PROPERTIES;
+const [temperature, humidity, wind, pressure] = VALUES;
 const DAY = 24 * 60 * 60 * 1000;
 const time = (iso) => new Date(iso).getTime();
 
@@ -90,7 +91,7 @@ describe('pointsInRange', () => {
     ]);
   });
 
-  it('uses the yr.no humidity when there is one', () => {
+  it('uses only the yr.no humidity in a month with yr.no weather', () => {
     const withYr = record(
       '2026-11',
       [
@@ -104,7 +105,17 @@ describe('pointsInRange', () => {
       pointsInRange([withYr], { from: 0, to: Infinity }, humidity).map(
         (p) => p.y
       )
-    ).toEqual([80, 50]);
+    ).toEqual([80]);
+  });
+
+  it('uses the humidity of the box in a month without yr.no weather', () => {
+    expect(
+      pointsInRange(
+        [record('2026-11', [['2026-11-01T00:00:00.000Z', 2]])],
+        { from: 0, to: Infinity },
+        humidity
+      ).map((p) => p.y)
+    ).toEqual([50]);
   });
 });
 
@@ -130,63 +141,124 @@ describe('dailyPoints', () => {
   });
 });
 
-describe('chartLines', () => {
+describe('values', () => {
+  it('leaves out the broken temperatures of old boxes', () => {
+    const broken = record('2026-11', [
+      ['2026-11-01T00:00:00.000Z', 3273.7],
+      ['2026-11-01T01:00:00.000Z', 2],
+    ]);
+
+    expect(
+      pointsInRange([broken], { from: 0, to: Infinity }, temperature).map(
+        (p) => p.y
+      )
+    ).toEqual([2]);
+  });
+
+  it('gives the wind with the direction it comes from', () => {
+    const withYr = record('2026-11', [['2026-11-01T00:00:00.000Z', 2]], {
+      windSpeed: [3.5],
+      windFromDirection: [250],
+    });
+
+    expect(pointsInRange([withYr], { from: 0, to: Infinity }, wind)).toEqual([
+      { x: time('2026-11-01T00:00:00.000Z'), y: 3.5, dir: 250 },
+    ]);
+  });
+
+  it('has no yr.no values for snapshots without yr.no weather', () => {
+    expect(
+      pointsInRange(
+        [record('2026-11', [['2026-11-01T00:00:00.000Z', 2]])],
+        { from: 0, to: Infinity },
+        pressure
+      )
+    ).toEqual([]);
+  });
+});
+
+describe('yearBand', () => {
+  const HOUR = 60 * 60 * 1000;
+  const line = (...values) => ({
+    points: values.map(([x, y]) => ({ x, y })),
+  });
+
+  it('gives the lowest, middle and highest year of each part', () => {
+    expect(
+      yearBand(
+        [line([0, 1], [HOUR, 5]), line([0, 3]), line([10, 2], [HOUR, 9])],
+        HOUR
+      )
+    ).toEqual([
+      { x: 3, lo: 1, mid: 2, hi: 3 },
+      { x: HOUR, lo: 5, mid: 7, hi: 9 },
+    ]);
+  });
+
+  it('counts each year once in a part, with its mean', () => {
+    expect(yearBand([line([0, 1], [10, 3]), line([0, 10])], HOUR)).toEqual([
+      { x: 3, lo: 2, mid: 6, hi: 10 },
+    ]);
+  });
+});
+
+describe('chartPanels', () => {
   const records = [
     record('2025-11', [['2025-11-08T12:00:00.000Z', -3]]),
     record('2026-11', [['2026-11-08T12:00:00.000Z', 5]]),
   ];
 
-  it('draws one line for the period', () => {
-    const { lines } = chartLines({
+  it('gives one panel per value, with the points of the period', () => {
+    const { panels } = chartPanels({
       records,
       period: week,
-      property: temperature,
+      values: [temperature, humidity],
       times,
     });
 
-    expect(lines).toHaveLength(1);
-    expect(lines[0].year).toBe(2026);
-    expect(lines[0].points).toEqual([{ x: 6 * DAY, y: 5 }]);
+    expect(panels.map((panel) => panel.value)).toEqual([temperature, humidity]);
+    expect(panels[0].points).toEqual([{ x: 6 * DAY, y: 5 }]);
+    expect(panels[0].band).toBeNull();
   });
 
-  it('draws the earlier years on the same days when comparing', () => {
-    const { lines } = chartLines({
+  it('adds what is normal from the earlier years when comparing', () => {
+    const { panels } = chartPanels({
       records,
       period: week,
-      property: temperature,
+      values: [temperature],
       times,
       compare: true,
     });
 
-    expect(lines.map((line) => line.year)).toEqual([2026, 2025, 2024]);
-    expect(lines[1].points).toEqual([{ x: 6 * DAY, y: -3 }]);
-    expect(lines[2].points).toEqual([]);
+    // 2024 has no snapshots in the period, so only 2025 is in the band.
+    expect(panels[0].bandYears).toEqual([2025, 2025]);
+    expect(panels[0].band).toEqual([{ x: 6 * DAY, lo: -3, mid: -3, hi: -3 }]);
   });
 
   it('gives one point per day for a long period', () => {
-    const { lines } = chartLines({
+    const { panels } = chartPanels({
       records: [
         record('2025-11', [['2025-11-20T12:00:00.000Z', -3]]),
         ...records.slice(1),
       ],
       period: year,
-      property: temperature,
+      values: [temperature],
       times,
     });
 
-    expect(lines[0].points).toHaveLength(2);
-    expect(lines[0].points[0]).toMatchObject({ y: -3, min: -3, max: -3 });
+    expect(panels[0].points).toHaveLength(2);
+    expect(panels[0].points[0]).toMatchObject({ y: -3, min: -3, max: -3 });
   });
 
   it('does not compare the whole history with itself', () => {
-    const { lines } = chartLines({
+    const { panels } = chartPanels({
       records,
       period: all,
-      property: temperature,
+      values: [temperature],
       times,
       compare: true,
     });
 
-    expect(lines).toHaveLength(1);
+    expect(panels[0].band).toBeNull();
   });
 });

@@ -5,7 +5,12 @@ import {
   graphDate,
   prettyDate,
   prettyDateTime,
+  prettyDay,
+  prettyDayMonth,
+  prettyMonth,
   prettyTime,
+  prettyWeekday,
+  prettyYear,
   prettyYearMonth,
   timeOrDate,
 } from './date';
@@ -81,6 +86,19 @@ describe('date input types', () => {
   it('reports an invalid date', () => {
     expect(prettyDateTime('not a date')).toBe('Invalid date');
     expect(prettyDateTime(null)).toBe('Invalid date');
+  });
+});
+
+describe('chart labels', () => {
+  // 23:30 UTC is already the next day in Oslo.
+  const date = '2025-12-31T23:30:00.000Z';
+
+  it('uses the day in Oslo', () => {
+    expect(prettyDay(date)).toBe('to. 1. jan. 2026');
+    expect(prettyWeekday(date)).toBe('to. 1.');
+    expect(prettyDayMonth(date)).toBe('1. jan.');
+    expect(prettyMonth(date)).toBe('jan.');
+    expect(prettyYear(date)).toBe('2026');
   });
 });
 
