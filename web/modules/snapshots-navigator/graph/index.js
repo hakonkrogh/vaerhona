@@ -1,7 +1,12 @@
-import React, { Component } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
-import { isClient } from 'core/utils';
-import { chartDate, prettyYearMonth } from 'core/date';
+import { prettyDate, prettyDateTime, prettyYearMonth } from 'core/date';
+import { Spinner } from 'ui';
+
+import Icon from '../icon';
+import styles from './graph.module.css';
+import { chartLines, earlierYears, PERIODS, PROPERTIES } from './series';
 
 // Chart.js is only loaded in the browser, and only when a graph is shown.
 // Only the parts a line chart needs are registered, to keep the download small.
@@ -14,8 +19,8 @@ function loadChartJs() {
         LineController,
         LineElement,
         PointElement,
-        CategoryScale,
         LinearScale,
+        Filler,
         Legend,
         Tooltip,
       }) => {
@@ -23,8 +28,8 @@ function loadChartJs() {
           LineController,
           LineElement,
           PointElement,
-          CategoryScale,
           LinearScale,
+          Filler,
           Legend,
           Tooltip
         );
@@ -35,236 +40,324 @@ function loadChartJs() {
   return chartPromise;
 }
 
-import Icon from '../icon';
-import styles from './graph.module.css';
+// The period on screen, and the band from the lowest to the highest value of
+// each day.
+const MAIN_COLOR = '#2f6fd6';
+const BAND_COLOR = 'rgba(47, 111, 214, 0.16)';
+// Earlier years, the newest first. Older years are lighter. After the last
+// colour, the rest share it.
+const EARLIER_COLORS = ['#3d7f63', '#6fa58b', '#9cc2ae', '#bfd6ca'];
 
-const snapshotProperties = [
-  {
-    type: 'temperature',
-    icon: 'thermometer',
-    label: 'Temperatur',
-    valueType: 'C',
-  },
-  {
-    type: 'humidity',
-    icon: 'droplets',
-    label: 'Luftfuktighet',
-    valueType: '%',
-  },
-  // {
-  //   type: 'pressure',
-  //   icon: 'compass',
-  //   label: 'Trykk',
-  //   valueType: 'hPa',
-  // },
-];
+const TEXT_COLOR = '#444';
+const GRID_COLOR = 'rgba(0, 0, 0, 0.08)';
 
-const setColors = ['rgba(129, 165, 148, .5)', 'rgba(72, 120, 220, .5)'];
+// Months that load at a time when the chart needs them.
+const LOAD_PARALLEL = 3;
 
-export default class SnapshotGraph extends Component {
-  constructor(props) {
-    super(props);
+const time = (snapshot) => new Date(snapshot.date).getTime();
 
-    this.state = {
-      selectedProperty: snapshotProperties[0],
-    };
-  }
+/** Loads months in order, a few at a time. Returns a function that stops it. */
+function loadMonths(history, months) {
+  const queue = [...months];
+  let stopped = false;
 
-  getColumnDates() {
-    const { snapshots } = this.props;
-    let [first] = snapshots;
-    let firstDate = new Date(first.date);
-    const lastDate = new Date(snapshots[snapshots.length - 1].date);
-    const dates = [];
-
-    // The display labels
-    dates.labels = [];
-
-    while (firstDate <= lastDate) {
-      dates.labels.push(chartDate(firstDate));
-      dates.push(new Date(firstDate.getTime()));
-      firstDate.setHours(firstDate.getHours() + 1);
+  async function work() {
+    while (!stopped && queue.length) {
+      // A month that fails is left out. The chart draws what it has.
+      await history.load(queue.shift()).catch(() => {});
     }
-
-    return dates;
   }
 
-  getColumnData(dates) {
-    const { selectedProperty } = this.state;
-    const { snapshots, compareSnapshots, compare } = this.props;
+  for (let i = 0; i < LOAD_PARALLEL; i++) {
+    work();
+  }
 
-    function handleArr({ month, date, hours }, arr, returnArr) {
-      const snapshot = arr.find((s) => {
-        const sD = new Date(s.date);
+  return () => {
+    stopped = true;
+  };
+}
 
-        // Month, date and hour need to match
-        return (
-          sD.getMonth() === month &&
-          sD.getDate() === date &&
-          sD.getHours() === hours
-        );
+function toDatasets({ lines }, period) {
+  const [main, ...earlier] = lines;
+  const line = (points, color, options) => ({
+    data: points,
+    borderColor: color,
+    backgroundColor: color,
+    borderWidth: 2,
+    pointRadius: 0,
+    pointHitRadius: 12,
+    pointHoverRadius: 4,
+    tension: 0.3,
+    // A long gap, when the box was off, is not drawn as a line.
+    spanGaps: (period.daily ? 3 : 0.5) * 24 * 60 * 60 * 1000,
+    ...options,
+  });
+
+  const datasets = [
+    line(main.points, MAIN_COLOR, {
+      label: String(main.year),
+      from: main.from,
+    }),
+    ...earlier.map(({ points, year, from }, i) =>
+      line(points, EARLIER_COLORS[Math.min(i, EARLIER_COLORS.length - 1)], {
+        label: String(year),
+        from,
+        borderWidth: 1.5,
+      })
+    ),
+  ];
+
+  // The band is drawn only for the period itself. One for every year would
+  // hide the lines.
+  if (period.daily && !earlier.length) {
+    const edge = (key) =>
+      line(
+        main.points.map((point) => ({ x: point.x, y: point[key] })),
+        'transparent',
+        { band: true, borderWidth: 0, pointHitRadius: 0, pointHoverRadius: 0 }
+      );
+
+    datasets.push(edge('min'), {
+      ...edge('max'),
+      backgroundColor: BAND_COLOR,
+      // Fills down to the dataset before it, the lowest values.
+      fill: '-1',
+    });
+  }
+
+  return datasets;
+}
+
+function chartOptions({ range, period, property, hasLegend }) {
+  const dateAt = (from, x) => new Date(from + x);
+
+  return {
+    maintainAspectRatio: false,
+    animation: false,
+    parsing: false,
+    normalized: true,
+    interaction: { mode: 'nearest', axis: 'x', intersect: false },
+    scales: {
+      x: {
+        type: 'linear',
+        min: 0,
+        max: range.to - range.from,
+        grid: { display: false },
+        ticks: {
+          color: TEXT_COLOR,
+          maxTicksLimit: 5,
+          maxRotation: 0,
+          callback: (x) =>
+            period.daily
+              ? prettyYearMonth(dateAt(range.from, x))
+              : prettyDate(dateAt(range.from, x), { year: false }),
+        },
+      },
+      y: {
+        grid: { color: GRID_COLOR },
+        border: { display: false },
+        ticks: {
+          color: TEXT_COLOR,
+          maxTicksLimit: 6,
+          callback: (y) => `${y} ${property.unit}`,
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: hasLegend,
+        position: 'bottom',
+        labels: {
+          color: TEXT_COLOR,
+          boxWidth: 16,
+          boxHeight: 2,
+          filter: (item, data) => !data.datasets[item.datasetIndex].band,
+        },
+      },
+      tooltip: {
+        filter: (item) => !item.dataset.band,
+        callbacks: {
+          title: ([item]) => {
+            if (!item) {
+              return '';
+            }
+
+            const date = dateAt(item.dataset.from, item.raw.x);
+
+            return period.daily ? prettyDate(date) : prettyDateTime(date);
+          },
+          label: ({ raw }) =>
+            raw.min == null || raw.min === raw.max
+              ? `${raw.y} ${property.unit}`
+              : `${raw.y} ${property.unit} (${raw.min} til ${raw.max})`,
+        },
+      },
+    },
+  };
+}
+
+/**
+ * A chart of the values around the snapshot on screen. It reads the browser's
+ * local database through the history (modules/snapshot-history), and draws
+ * what is there while the rest loads.
+ */
+export default function SnapshotGraph({
+  store,
+  place,
+  currentSnapshot,
+  compare,
+}) {
+  const { history } = store;
+  const canvas = useRef(null);
+  const chart = useRef(null);
+  const [period, setPeriod] = useState(PERIODS[0]);
+  const [property, setProperty] = useState(PROPERTIES[0]);
+  // What the months were last loaded for. The spinner shows until it is the
+  // same as what is on screen.
+  const [loadedFor, setLoadedFor] = useState(null);
+  const version = useSyncExternalStore(
+    history.subscribe,
+    history.getVersion,
+    history.getVersion
+  );
+
+  const current = time(currentSnapshot);
+  const first = place.firstSnapshot ? time(place.firstSnapshot) : current;
+  const latest = time(place.lastSnapshot);
+
+  const loadKey = `${period.key} ${compare} ${current}`;
+  const loading = loadedFor !== loadKey;
+
+  // Loads the months the chart needs: the period first, then the same period
+  // in earlier years.
+  useEffect(() => {
+    const range = period.days
+      ? { from: current - period.days * 24 * 60 * 60 * 1000, to: current }
+      : { from: first, to: latest };
+    const ranges =
+      compare && period.days ? [range, ...earlierYears(range, first)] : [range];
+    // Newest first, so the chart fills in from the snapshot on screen.
+    const months = ranges.flatMap(({ from, to }) =>
+      history.monthsBetween(from, to).reverse()
+    );
+    let active = true;
+
+    const stop = loadMonths(history, months);
+
+    // Shows the spinner until every month has loaded or failed.
+    Promise.allSettled(months.map((month) => history.load(month))).then(() => {
+      if (active) {
+        setLoadedFor(loadKey);
+      }
+    });
+
+    return () => {
+      active = false;
+      stop();
+    };
+  }, [history, period, compare, current, first, latest, loadKey]);
+
+  const data = useMemo(
+    () =>
+      chartLines({
+        records: history.getRecords(),
+        period,
+        property,
+        times: { current, first, latest },
+        compare,
+      }),
+    // `version` changes when the history has more to give.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [history, version, period, property, compare, current, first, latest]
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    loadChartJs().then((Chart) => {
+      // The graph can be closed while Chart.js loads.
+      if (!active || !canvas.current) {
+        return;
+      }
+
+      const datasets = toDatasets(data, period);
+      const options = chartOptions({
+        range: data.range,
+        period,
+        property,
+        hasLegend: data.lines.length > 1,
       });
 
-      if (snapshot) {
-        returnArr.push(snapshot[selectedProperty.type]);
+      if (chart.current) {
+        chart.current.data.datasets = datasets;
+        chart.current.options = options;
+        chart.current.update();
       } else {
-        returnArr.push(null);
-      }
-    }
-
-    const returnSnapshots = [];
-    const returnCompareSnapshots = [];
-
-    dates.forEach((date) => {
-      const d = {
-        month: date.getMonth(),
-        date: date.getDate(),
-        hours: date.getHours(),
-      };
-
-      handleArr(d, snapshots, returnSnapshots);
-      if (compare) {
-        handleArr(d, compareSnapshots, returnCompareSnapshots);
-      }
-    });
-
-    if (compare) {
-      return [returnCompareSnapshots, returnSnapshots];
-    }
-
-    return [returnSnapshots];
-  }
-
-  getLegends() {
-    function getYearFromSnapshots(s) {
-      const $0 = new Date(s[0].date).getFullYear();
-      const $1 = new Date(s[s.length - 1].date).getFullYear();
-      if ($0 === $1) {
-        return $0;
-      }
-      return `${$0} - ${$1}`;
-    }
-    const { snapshots, compareSnapshots, compare } = this.props;
-
-    if (!compare) {
-      return [getYearFromSnapshots(snapshots)];
-    }
-
-    return [
-      getYearFromSnapshots(compareSnapshots),
-      getYearFromSnapshots(snapshots),
-    ];
-  }
-
-  componentDidMount() {
-    this.unmounted = false;
-    this.loadChart();
-  }
-
-  componentDidUpdate() {
-    clearTimeout(this.loadChartTimeout);
-    this.loadChartTimeout = setTimeout(this.loadChart, 100);
-  }
-
-  componentWillUnmount() {
-    this.unmounted = true;
-    clearTimeout(this.loadChartTimeout);
-    this.myLineChart?.destroy();
-    this.myLineChart = null;
-  }
-
-  getColor = (index) => {
-    const { compare } = this.props;
-
-    if (!compare) {
-      return setColors[1];
-    }
-
-    return setColors[index];
-  };
-
-  loadChart = async () => {
-    // Client side only for now. Waiting for a universal graph framework
-    if (isClient) {
-      const Chart = await loadChartJs();
-
-      // The graph can be closed, or drawn by an earlier call, while Chart.js
-      // loads.
-      if (this.unmounted || !this.canvas) {
-        return;
-      }
-
-      const { selectedProperty } = this.state;
-
-      const dates = this.getColumnDates();
-      const data = this.getColumnData(dates);
-      const legends = this.getLegends();
-
-      if (!data[0].length || !dates.length) {
-        return;
-      }
-
-      const datasets = data.map((d, i) => ({
-        labelOld: selectedProperty.label,
-        label: legends[i],
-        data: d,
-        fill: false,
-        borderColor: this.getColor(i),
-        // Curved lines, as in Chart.js 2.
-        tension: 0.4,
-      }));
-
-      if (this.myLineChart) {
-        this.myLineChart.data.labels = dates.labels;
-        this.myLineChart.data.datasets = datasets;
-        this.myLineChart.update();
-      } else {
-        this.myLineChart = new Chart(this.canvas, {
+        chart.current = new Chart(canvas.current, {
           type: 'line',
-          data: {
-            labels: dates.labels,
-            datasets,
-          },
-          options: {
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  boxWidth: 20,
-                },
-              },
-            },
-          },
+          data: { datasets },
+          options,
         });
       }
-    }
-  };
-
-  changeSelectedProperty(newProperty) {
-    this.setState({
-      selectedProperty: newProperty,
     });
-  }
 
-  render() {
-    return (
-      <div className={styles.outer}>
-        <div className={styles.inner}>
-          <canvas className={styles.canvas} ref={(x) => (this.canvas = x)} />
-        </div>
-        <div className={styles.propChooser}>
-          {snapshotProperties.map((prop) => (
-            <Icon
-              selected={this.state.selectedProperty.type === prop.type}
-              key={prop.type}
-              type={prop.icon}
-              label={prop.label}
-              onClick={this.changeSelectedProperty.bind(this, prop)}
-            />
-          ))}
-        </div>
+    return () => {
+      active = false;
+    };
+  }, [data, period, property]);
+
+  useEffect(
+    () => () => {
+      chart.current?.destroy();
+      chart.current = null;
+    },
+    []
+  );
+
+  const isEmpty = data.lines.every((line) => !line.points.length);
+
+  return (
+    <div className={styles.outer}>
+      <div className={styles.periods} role="group" aria-label="Periode">
+        {PERIODS.map((option) => (
+          <button
+            key={option.key}
+            type="button"
+            className={styles.period}
+            aria-pressed={option === period}
+            onClick={() => setPeriod(option)}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
-    );
-  }
+      <div className={styles.inner}>
+        <canvas
+          className={styles.canvas}
+          ref={canvas}
+          role="img"
+          aria-label={`${property.label}, ${period.label.toLowerCase()}`}
+        />
+        {loading && (
+          <div className={styles.status}>
+            <Spinner size="20px" />
+          </div>
+        )}
+        {!loading && isEmpty && (
+          <div className={styles.empty}>Ingen målinger i perioden</div>
+        )}
+      </div>
+      <div className={styles.propChooser}>
+        {PROPERTIES.map((option) => (
+          <Icon
+            selected={property === option}
+            key={option.key}
+            type={option.icon}
+            label={option.label}
+            onClick={() => setProperty(option)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }

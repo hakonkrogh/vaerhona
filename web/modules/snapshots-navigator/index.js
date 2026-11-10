@@ -3,6 +3,9 @@ import Head from 'next/head';
 
 import { useRefreshWhenNewer } from 'core/use-refresh-when-newer';
 
+import { createHistory } from 'modules/snapshot-history/history';
+import { openMonthDb } from 'modules/snapshot-history/month-db';
+
 import SnapshotImage from './image';
 import { createSnapshotStore, initialListUrl } from './store';
 // import SnapshotGraph from './graph';
@@ -11,7 +14,18 @@ const oneYear = 1000 * 60 * 60 * 24 * 365;
 
 export function SnapshotsNavigator({ place }) {
   const [store] = useState(() =>
-    place?.lastSnapshot ? createSnapshotStore(place) : null
+    place?.lastSnapshot
+      ? createSnapshotStore(
+          place,
+          // The browser's local copy of the place's values. Nothing is read
+          // or loaded until the page asks.
+          createHistory({
+            place,
+            db: openMonthDb(),
+            locks: globalThis.navigator?.locks,
+          })
+        )
+      : null
   );
   const [currentSnapshot, setCurrentSnapshot] = useState(place?.lastSnapshot);
   // const [view, setView] = useState('image');

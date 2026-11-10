@@ -35,6 +35,7 @@ The main question the site answers is: **what does it look like there now?**
 | F4 | The latest snapshot may be cached only if a finished upload makes that cache correct before anyone can read it again. | Follows from F1 |
 | F5 | Do not show an older snapshot first and swap it for the latest one afterwards. A loading state is allowed. See open question 2. | Follows from F1 |
 | F6 | The front page shows the latest snapshot for each place, under the same rules. | Code |
+| F7 | The browser's local database never supplies the latest snapshot and never decides which one it is. The page gets that from the server on every visit. The local database may be empty or cleared at any time, and the page must work the same. | Owner |
 
 ### What may be cached
 
@@ -44,6 +45,8 @@ The main question the site answers is: **what does it look like there now?**
 | A snapshot photo, at any size | Yes, forever | The URL contains the snapshot's unique id, and the photo never changes. A new snapshot has a new URL. |
 | A list of snapshots that ends at or before the place's latest snapshot | Yes, forever | Boxes only add snapshots dated now, which is after the latest snapshot, so the list can never change. `/api/snapshots` marks these lists `immutable`, and the Worker keeps them in the Cloudflare cache. |
 | A list of snapshots that could include a new snapshot | No, unless F4 holds | It would hide the newest snapshot. This includes any query with no end date, or with an end date near now. |
+| The values of the snapshots in a part of time that ends at or before the place's latest snapshot | Yes, forever | Same reason as a list. `/api/values` gives them in a compact form and marks them `immutable`, and the Worker keeps them in the Cloudflare cache. |
+| The browser's local database of snapshot values | Yes, until the data version changes | It holds only values from `/api/values` at or before the latest snapshot the page got from the server. See F7. |
 | Page HTML with no snapshot data in it | Yes | It only holds the place name and code. |
 | Page HTML with snapshot data in it | Only as F4 describes | Same as the latest snapshot. |
 
@@ -69,6 +72,8 @@ The main question the site answers is: **what does it look like there now?**
 | P6 | Compare shows the same time in earlier years. It is available only when the current snapshot is more than one year newer than the place's first snapshot. | Code |
 | P7 | Dates and times are shown in Norwegian, in the `Europe/Oslo` time zone, for every viewer. | Code |
 | P8 | The arrows should answer at once. The page loads ahead the snapshots and photos they lead to, but only after the photo on screen has loaded. | Owner |
+| P9 | The chart button swaps the photo for a chart of temperature or humidity. The periods are week, month, year and all, and each ends at the snapshot on screen. Year and all show one point per day. With compare enabled, each earlier year is its own line. | Owner |
+| P10 | The page fills the browser's local database with the place's whole history in the background, outwards from the snapshot on screen and from now. It starts only after the photo on screen has loaded, pauses while the page is hidden, and does not run with data saver enabled. | Owner |
 
 ### Front page and setup
 
@@ -76,8 +81,6 @@ The main question the site answers is: **what does it look like there now?**
 |---|---|---|
 | S1 | The front page lists up to 10 public places that have a snapshot from the last 364 days, each with its latest photo and time. A place with only older snapshots is left off, but its page still works by URL. | Owner |
 | S2 | `/setup` connects to a box over Bluetooth to set wifi, read the sensors, take a photo, change box id, update, reboot and shut down. | Code |
-
-The graph view exists in `web/modules/snapshots-navigator/graph` but is not in use.
 
 ## How to check the freshness rules
 
@@ -98,7 +101,7 @@ These are places where today's code does not meet the intent, or may not. All co
 
 1. **An open page that stays on screen does not update.** Since 2026-11-09 a page checks `/api/latest` when it becomes visible again, for example when the home screen app is opened after a while, and gets its data again if a snapshot is newer. A page that is left visible the whole time is still not updated. See open question 1.
 2. **Going back to the front page in the same tab could show old data.** urql (the GraphQL client) kept the front page result in memory. Since 2026-11-09 the front page is rendered on the server like the place page, so it no longer uses urql, and a page restored by the browser's back-forward cache reloads. Checked live on 2026-11-09: a client-side back asks the server again.
-3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing. Snapshot lists are cached forever (see "What may be cached"), so deleting such a snapshot does not reach a list that is already cached.
+3. **A snapshot can exist without a photo.** The snapshot is saved before its photo. If the photo upload fails, `lastSnapshot` stays correct (B2), but the snapshot still shows up in the list when browsing. Snapshot lists are cached forever (see "What may be cached"), so deleting such a snapshot does not reach a list that is already cached. The same goes for values in the Cloudflare cache and in browsers' local databases, until `VALUES_VERSION` in `web/core/snapshot-values.js` is raised.
 4. **Forward paging had no sort.** Fixed on 2026-11-06: `getSnapshots` now sorts by date in every case.
 5. **A date with no data gives no feedback.** Since 2026-11-09 the page jumps to the closest snapshot on another date, but it does not say that the chosen date had none. Veggli has no snapshots for 12 to 18 June 2024, for example.
 6. **The front page order does nothing.** `getTopPublicPlaces` sorts on `lastSnapshot.dateAdded`, but `lastSnapshot` is only an id at that point.
@@ -191,3 +194,4 @@ Measured from Norway against production, from 2026-11-09 17:16 UTC to 2026-11-10
   - The next week loads in the background when the user gets within 4 days of the end of what is loaded.
   - After the photo on screen has loaded, the photos the arrows lead to load, then a few more steps back. With data saver on, only the arrow photos load.
 - **2026-11-10: Worker placement is disabled, so the Worker runs at the location nearest the visitor.** This replaces the placement decision of 2026-11-06. From 2026-11-07, with placement enabled, a page that reads a record took about 1.8 s. With placement disabled it takes about 150 ms (see "After placement was disabled"). The cost is that a request that reads MongoDB takes about 0.9 s, against about 430 ms on the day placement worked well. That matters less now: the first view of the place page and the front page reads the records, and browsing lists are cached after the first request. Placement was disabled as a test on 2026-11-09 and kept after the 12-hour check. Measure before enabling it again.
+- **2026-11-10: The browser keeps the values of a place's whole history in a local database (IndexedDB), and browsing, compare and charts read it first.** History never changes, so a copy in the browser is always correct up to the latest snapshot the page got from the server (F7). Values come from a new API, `/api/values`, one UTC month per request, so every visitor asks for the same URLs and shares the Cloudflare cache. The first week still comes from `/api/snapshots`, loaded with the HTML as before. Photos are not stored. Not yet measured against production data. See [the design](docs/client-storage-design.md).

@@ -74,9 +74,32 @@
   margin-left: -10px;
 }
 
+/* Between the arrows: the chart button and the compare switch. */
+.middle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.viewButton {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 10px 5px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.viewButton:focus-visible {
+  outline: 2px solid #00628b;
+  outline-offset: -2px;
+}
+
 /* The compare switch: a checkbox drawn as a track with a round handle. */
 .switchOuter {
-  flex: 0 0 100px;
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
 }

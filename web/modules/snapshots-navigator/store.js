@@ -47,6 +47,54 @@ function listUrl(place, { from, to }) {
   });
 }
 
+const WEEK = 7 * 24 * 60 * 60 * 1000;
+
+const iso = (time) => new Date(time).toISOString();
+
+/**
+ * The same part of time from the history (modules/snapshot-history), which
+ * reads the browser's local database before the server. It loads whole
+ * months, so it gives more than the part asks for.
+ *
+ * @returns {Promise<object[]|null>} lists as the snapshot list API gives
+ * them, or null if the list API must be asked
+ */
+async function loadFromHistory(history, part) {
+  const months = history.monthsBetween(
+    part.from ?? part.to - WEEK,
+    part.to ?? part.from + WEEK
+  );
+
+  if (!months.length) {
+    return null;
+  }
+
+  await Promise.all(months.map((month) => history.load(month)));
+
+  const lists = months.map((month) => {
+    const { from, to } = history.getCoverage(month);
+
+    return {
+      from: iso(from),
+      to: iso(to),
+      snapshots: history.getSnapshots(month),
+    };
+  });
+
+  // An open part asks for the snapshots before or after a time, however far
+  // away they are. If the box was off, these months have none, and the list
+  // API finds the next ones in one request.
+  const times = lists.flatMap((list) =>
+    list.snapshots.map((snapshot) => new Date(snapshot.date).getTime())
+  );
+  const found =
+    part.from == null
+      ? times.some((time) => time < part.to)
+      : part.to != null || times.some((time) => time > part.from);
+
+  return found ? lists : null;
+}
+
 async function fetchList(url) {
   const response = await fetch(url);
 
@@ -60,14 +108,41 @@ async function fetchList(url) {
 /**
  * Holds the snapshots of one place that the page has loaded. React reads it
  * with useSyncExternalStore.
+ *
+ * @param {object} place
+ * @param {object} [history] from modules/snapshot-history. With it, every
+ * list but the first comes from the browser's local database when it is
+ * there.
  */
-export function createSnapshotStore(place) {
+export function createSnapshotStore(place, history) {
   let timeline = createTimeline(place);
+  // The page starts loading this one with the HTML, so it comes from the list
+  // API as before.
+  const initialUrl = initialListUrl(place);
+
+  async function loadLists(part, url) {
+    if (history && url !== initialUrl) {
+      try {
+        const lists = await loadFromHistory(history, part);
+
+        if (lists) {
+          return lists;
+        }
+      } catch (err) {
+        console.warn('[snapshots] history failed, asking for a list', err);
+      }
+    }
+
+    return [await fetchList(url)];
+  }
+
   const listeners = new Set();
   // Requests by URL, so the same list is never asked for twice at once.
   const requests = new Map();
 
   return {
+    history,
+
     getTimeline: () => timeline,
 
     subscribe(listener) {
@@ -88,9 +163,9 @@ export function createSnapshotStore(place) {
       }
 
       if (!requests.has(url)) {
-        const request = fetchList(url).then(
-          (list) => {
-            timeline = addList(timeline, list);
+        const request = loadLists(part, url).then(
+          (lists) => {
+            timeline = lists.reduce(addList, timeline);
             listeners.forEach((listener) => listener());
           },
           (err) => {
