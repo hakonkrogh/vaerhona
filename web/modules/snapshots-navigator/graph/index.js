@@ -156,10 +156,13 @@ export default function SnapshotGraph({
       return;
     }
 
-    // In the order of VALUES, so the panels keep their places.
-    const keys = available
-      .map((value) => value.key)
-      .filter((other) => (other === key) !== shownKeys.has(other));
+    // In the order of VALUES, so the panels keep their places. A value this
+    // place does not have keeps its saved choice, for the other places.
+    const keys = VALUES.map((value) => value.key).filter((other) =>
+      available.some((value) => value.key === other)
+        ? (other === key) !== shownKeys.has(other)
+        : choice.includes(other)
+    );
 
     setChoice(keys);
     saveChoice(keys);

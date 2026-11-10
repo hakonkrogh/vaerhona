@@ -414,15 +414,15 @@ function Legend({ data, period, compare }) {
     return (
       <div className={styles.legend}>
         <span>
-          <i className={styles.lineKey} />
+          <i className={styles.lineKey} style={{ background: INK }} />
           {new Date(data.range.to).getUTCFullYear()}
         </span>
         <span>
-          <i className={styles.dashKey} />
+          <i className={styles.dashKey} style={{ borderColor: MUTED }} />
           Median {years}
         </span>
         <span>
-          <i className={styles.bandKey} />
+          <i className={styles.bandKey} style={{ background: MUTED }} />
           Laveste til høyeste {years}
         </span>
       </div>
@@ -433,11 +433,11 @@ function Legend({ data, period, compare }) {
     return (
       <div className={styles.legend}>
         <span>
-          <i className={styles.lineKey} />
+          <i className={styles.lineKey} style={{ background: INK }} />
           Døgnmiddel
         </span>
         <span>
-          <i className={styles.bandKey} />
+          <i className={styles.bandKey} style={{ background: MUTED }} />
           Laveste til høyeste i døgnet
         </span>
       </div>

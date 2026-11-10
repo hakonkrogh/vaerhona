@@ -181,17 +181,17 @@
   width: 16px;
 }
 
+/* The colours are set in chart.js, the same as in the chart. */
 .lineKey {
   height: 2px;
-  background: #52514e;
 }
 
 .dashKey {
-  border-top: 2px dashed #898781;
+  border-top: 2px dashed;
 }
 
 .bandKey {
   height: 10px;
   border-radius: 2px;
-  background: rgba(137, 135, 129, 0.3);
+  opacity: 0.3;
 }
