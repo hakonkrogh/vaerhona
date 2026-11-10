@@ -43,6 +43,15 @@ export default class MyDocument extends Document {
       <Html lang="no">
         <Head>
           <meta name="apple-mobile-web-app-capable" content="yes" />
+          {/* Marks the iOS home screen app before the first paint, so the
+              header can leave room for the status bar blur. iOS does not
+              always match (display-mode: standalone), but it does set
+              navigator.standalone. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `if (navigator.standalone) document.documentElement.classList.add('ios-app');`,
+            }}
+          />
           <link
             rel="apple-touch-icon"
             sizes="180x180"
