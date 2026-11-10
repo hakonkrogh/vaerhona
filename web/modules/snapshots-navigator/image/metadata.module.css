@@ -1,0 +1,26 @@
+.values {
+  font-size: 1.5em;
+  color: #555;
+  margin: 0 auto;
+  padding: 15px 0;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.yrWeatherRow {
+  font-size: 0.9em;
+  color: #888;
+  margin: 0 auto;
+  padding: 0 0 10px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.windGroup {
+  display: inline-flex;
+  gap: 5px;
+}

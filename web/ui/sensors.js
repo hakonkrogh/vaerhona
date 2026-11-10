@@ -1,18 +1,6 @@
 import { useState } from 'react';
-import styled from 'styled-components';
-import {
-  ArrowUp,
-  ArrowUpRight,
-  ArrowRight,
-  ArrowDownRight,
-  ArrowDown,
-  ArrowDownLeft,
-  ArrowLeft,
-  ArrowUpLeft,
-  TrendUp,
-  TrendDown,
-  Minus,
-} from '@phosphor-icons/react';
+
+import { Arrow, TrendUp, TrendDown, Minus } from './line-icons';
 import {
   ClearDay,
   PartlyCloudyDay,
@@ -21,19 +9,16 @@ import {
   OvercastRain,
   Wind,
 } from './weather-icons';
+import styles from './sensors.module.css';
 
-const Sensor = styled.span`
-  display: inline-flex;
-  align-items: baseline;
-`;
+const Sensor = ({ className, ...props }) => (
+  <span
+    className={className ? `${styles.sensor} ${className}` : styles.sensor}
+    {...props}
+  />
+);
 
-const TempSensor = styled(Sensor)`
-  align-items: flex-start;
-`;
-
-const Unit = styled.span`
-  font-size: 0.6em;
-`;
+const Unit = (props) => <span className={styles.unit} {...props} />;
 
 export const Temperature = ({ temperature }) => {
   const normalised = normaliseCrazyTemperature(temperature);
@@ -42,25 +27,25 @@ export const Temperature = ({ temperature }) => {
 
   if (isCrazy && !showCrazy) {
     return (
-      <TempSensor
+      <Sensor
+        className={styles.temperature}
         title={temperature}
         onClick={() => setShowCrazy((c) => !c)}
-        style={{ cursor: 'pointer' }}
       >
         ca. {normalised}
         <Unit>&#8451;</Unit>
-      </TempSensor>
+      </Sensor>
     );
   }
 
   return (
-    <TempSensor
+    <Sensor
+      className={styles.temperature}
       onClick={() => setShowCrazy((c) => !c)}
-      style={{ cursor: 'pointer' }}
     >
       {temperature}
       <Unit>&#8451;</Unit>
-    </TempSensor>
+    </Sensor>
   );
 };
 
@@ -103,26 +88,28 @@ export const WindSpeed = ({ windSpeed }) => {
   );
 };
 
-const windDirectionIcons = {
-  N: ArrowDown,
-  NE: ArrowDownLeft,
-  E: ArrowLeft,
-  SE: ArrowUpLeft,
-  S: ArrowUp,
-  SW: ArrowUpRight,
-  W: ArrowRight,
-  NW: ArrowDownRight,
+// The arrow shows where the wind blows to, so wind from the north points
+// down. The value is how far the arrow is turned from pointing up.
+const windArrowDegrees = {
+  N: 180,
+  NE: 225,
+  E: 270,
+  SE: 315,
+  S: 0,
+  SW: 45,
+  W: 90,
+  NW: 135,
 };
 
 export const WindDirection = ({ windFromDirection, windDirectionCompass }) => {
   if (windDirectionCompass == null) return null;
-  const Icon = windDirectionIcons[windDirectionCompass];
+  const degrees = windArrowDegrees[windDirectionCompass];
   return (
     <Sensor
+      className={styles.help}
       title={`${windDirectionCompass} (${windFromDirection}°)`}
-      style={{ cursor: 'help' }}
     >
-      {Icon && <Icon size={18} weight="bold" />}
+      {degrees != null && <Arrow degrees={degrees} />}
     </Sensor>
   );
 };
@@ -161,11 +148,11 @@ export const SeaLevelPressure = ({ airPressureAtSeaLevel }) => {
   const { label, Icon, double } = getPressureInfo(airPressureAtSeaLevel);
   return (
     <Sensor
+      className={`${styles.help} ${styles.pressure}`}
       title={`${label} (${Math.round(airPressureAtSeaLevel)} hPa)`}
-      style={{ cursor: 'help', display: 'inline-flex', gap: '2px' }}
     >
-      <Icon size={18} weight="bold" />
-      {double && <Icon size={18} weight="bold" />}
+      <Icon />
+      {double && <Icon />}
     </Sensor>
   );
 };
@@ -226,7 +213,7 @@ export const WeatherCondition = (yr) => {
     .join('\n');
 
   return (
-    <Sensor title={`${label}\n${details}`} style={{ cursor: 'help' }}>
+    <Sensor className={styles.help} title={`${label}\n${details}`}>
       <Icon size={32} />
     </Sensor>
   );

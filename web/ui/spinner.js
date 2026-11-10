@@ -1,36 +1,25 @@
-import PropTypes from 'prop-types';
-import styled, { keyframes } from 'styled-components';
+import styles from './spinner.module.css';
 
-function speedSwitch({ speed }) {
-  if (speed === 'fast') return 600;
-  if (speed === 'slow') return 900;
-  return 750;
-}
-
-const animation = keyframes`
-  from {transform: rotate(0deg)}
-  to {transform: rotate(360deg)}
-`;
-
-const Svg = styled.svg`
-  transition-property: transform;
-  animation-name: ${animation};
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-  animation-duration: ${speedSwitch}ms;
-`;
-
+/**
+ * A turning partial circle. `speed` is 'fast' or 'slow', `thickness` is 1 to
+ * 8 and `gap` is 1 to 5.
+ */
 export const Spinner = ({
   color = 'currentColor',
   gap = 4,
   thickness = 3,
   size = '1em',
+  speed,
+  className,
   ...props
 }) => (
-  <Svg
+  <svg
     height={size}
     width={size}
     {...props}
+    className={[styles.spinner, styles[speed], className]
+      .filter(Boolean)
+      .join(' ')}
     role="img"
     aria-labelledby="title desc"
     viewBox="0 0 32 32"
@@ -50,12 +39,5 @@ export const Spinner = ({
       strokeDasharray={Math.PI * 2 * (11 - gap)}
       strokeLinecap="round"
     />
-  </Svg>
+  </svg>
 );
-Spinner.propTypes = {
-  color: PropTypes.string,
-  thickness: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8]),
-  gap: PropTypes.oneOf([1, 2, 3, 4, 5]),
-  speed: PropTypes.oneOf(['fast', 'slow']),
-  size: PropTypes.string,
-};

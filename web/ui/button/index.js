@@ -1,175 +1,30 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
 
 import { Spinner } from '../spinner';
 
 import preventDoubleTapZoom from './preventDoubleTapZoom';
+import styles from './button.module.css';
 
-const themes = {
-  primary: {
-    default: `
-      background: #888;
-      color: #fff;
-      text-decoration: none;
-      text-align: center;
-    `,
-    hover: `
-      background: #999;
-    `,
-    disabled: `
-      background: #aaa;
-      color: #333;
-    `,
-  },
-  clean: {
-    default: ``,
-    hover: ``,
-    disabled: ``,
-  },
-  danger: {
-    default: `
-      background: red;
-      color: #fff;
-      text-decoration: none;
-      text-align: center;
-    `,
-    hover: `
-      background: #ff2c2c;
-    `,
-    disabled: `
-      background: #aaa;
-      color: #333;
-    `,
-  },
-};
-
-function getTheme(flags) {
-  const themeNames = Object.keys(themes);
-  for (let i = 0; i < themeNames.length; i++) {
-    if (flags[themeNames[i]] !== undefined) {
-      return themes[themeNames[i]];
-    }
-  }
-
-  return themes.primary;
+// The first theme flag that is set wins. Primary is the default.
+function getTheme({ primary, clean, danger }) {
+  if (primary !== undefined) return 'primary';
+  if (clean !== undefined) return 'clean';
+  if (danger !== undefined) return 'danger';
+  return 'primary';
 }
 
-const sizes = {
-  tiny: {
-    padding: '0px 1px',
-    minWidth: '0',
-  },
-  small: {
-    padding: '5px 10px',
-    minWidth: '0',
-  },
-  medium: {
-    padding: '10px 15px',
-  },
-  large: {
-    padding: '0px 1px',
-    minWidth: '0',
-  },
-  xlarge: {
-    padding: '0px 1px',
-    minWidth: '0',
-  },
-};
-
+// Medium is the default and has no class of its own.
 function getSize({ tiny, small, large, xlarge }) {
-  if (tiny) {
-    return sizes.tiny;
-  }
-  if (small) {
-    return sizes.small;
-  }
-  if (large) {
-    return sizes.large;
-  }
-  if (xlarge) {
-    return sizes.xlarge;
-  }
-  return sizes.medium;
+  if (tiny) return 'tiny';
+  if (small) return 'small';
+  if (large) return 'large';
+  if (xlarge) return 'xlarge';
+  return null;
 }
 
-const ButtonInner = styled.span`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: ${(p) => p.$size.minWidth};
-  padding: ${(p) => p.$size.padding};
-  font-size: ${(p) => p.$size.fontSize || 'inherit'};
-  transition: background-color 100ms;
-  position: relative;
-  ${(p) => (p.theme ? p.theme.default : '')};
-`;
-
-const ButtonOuter = styled.button`
-  display: ${(p) => (p.$block ? 'block' : 'inline-block')};
-  border-radius: 0;
-  border: none;
-  padding: 0;
-  appearance: none;
-  cursor: pointer;
-  text-decoration: none;
-  background: transparent;
-
-  &:hover ${ButtonInner} {
-    ${({ theme }) => (theme ? theme.hover : ``)};
-  }
-
-  &[disabled] {
-    cursor: default;
-
-    ${ButtonInner} {
-      ${({ theme }) => (theme ? theme.disabled : ``)};
-    }
-  }
-`;
-
-const ButtonText = styled.span`
-  position: relative;
-  z-index: 2;
-  transition:
-    opacity 100ms,
-    transform 100ms;
-
-  ${(p) =>
-    !p.$shown &&
-    css`
-      opacity: 0;
-      transform: scale(0.7);
-    `};
-`;
-
-const ButtonLoading = styled.span`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  opacity: 0;
-  transform: scale(0.5);
-  transition:
-    opacity 100ms,
-    transform 100ms;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    width: auto;
-    height: 50%;
-  }
-
-  ${(p) =>
-    p.$shown &&
-    css`
-      opacity: 1;
-      transform: none;
-    `};
-`;
+function classNames(...names) {
+  return names.filter(Boolean).join(' ');
+}
 
 export const Button = ({
   children,
@@ -179,33 +34,33 @@ export const Button = ({
   xlarge,
   loading,
   block,
-  // The theme flags are taken out here so they do not end up as HTML
-  // attributes. styled-components 6 passes every prop on to the element.
   primary,
   clean,
   danger,
+  as: Tag = 'button',
+  className,
   ...rest
 }) => {
   const theme = getTheme({ primary, clean, danger });
-
   const size = getSize({ tiny, small, large, xlarge });
 
-  const as = rest.as || 'button';
-
   return (
-    <ButtonOuter
-      as={as}
+    <Tag
       {...rest}
-      theme={theme}
-      $block={block}
+      className={classNames(
+        styles.outer,
+        block && styles.block,
+        loading && styles.isLoading,
+        className
+      )}
       onTouchStart={preventDoubleTapZoom}
     >
-      <ButtonInner theme={theme} $size={size}>
-        <ButtonText $shown={!loading}>{children}</ButtonText>
-        <ButtonLoading $shown={loading}>
+      <span className={classNames(styles.inner, styles[theme], styles[size])}>
+        <span className={styles.text}>{children}</span>
+        <span className={styles.loading}>
           <Spinner />
-        </ButtonLoading>
-      </ButtonInner>
-    </ButtonOuter>
+        </span>
+      </span>
+    </Tag>
   );
 };

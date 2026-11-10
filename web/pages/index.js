@@ -1,5 +1,3 @@
-import styled from 'styled-components';
-
 import { useRestoreScrollOnBack } from 'core/page-transition';
 import {
   latestByPlace,
@@ -7,13 +5,9 @@ import {
 } from 'core/use-refresh-when-newer';
 import { useReloadOnRestore } from 'core/use-reload-on-restore';
 import Layout from 'modules/layout';
+import styles from 'modules/layout/message.module.css';
 import PlaceList from 'modules/place-list';
 import { getFrontPageProps } from 'services/front-page';
-
-const Message = styled.p`
-  padding: 30px 15px;
-  text-align: center;
-`;
 
 export default function FrontPage({ places }) {
   useReloadOnRestore();
@@ -23,9 +17,13 @@ export default function FrontPage({ places }) {
   return (
     <Layout title="Værhøna" scroll>
       {!places && (
-        <Message>Fikk ikke hentet stedene. Prøv igjen om litt.</Message>
+        <p className={styles.message}>
+          Fikk ikke hentet stedene. Prøv igjen om litt.
+        </p>
       )}
-      {places && !places.length && <Message>Ingen steder ennå.</Message>}
+      {places && !places.length && (
+        <p className={styles.message}>Ingen steder ennå.</p>
+      )}
       {places?.length > 0 && <PlaceList places={places} />}
     </Layout>
   );

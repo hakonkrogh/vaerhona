@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 
 import { getTransitionPlace, setTransitionPlace } from 'core/page-transition';
 
-import { List } from './ui';
 import ListItem from './list-item';
+import styles from './place-list.module.css';
 
 // About this many photos show without scrolling on a phone. They load first.
 const PRIORITY_PHOTOS = 2;
@@ -20,7 +19,7 @@ const PlaceList = ({ places }) => {
   }
 
   return (
-    <List>
+    <ul className={styles.list}>
       {places.map((p, index) => (
         <ListItem
           {...p}
@@ -30,12 +29,8 @@ const PlaceList = ({ places }) => {
           onSelect={() => select(p.name)}
         />
       ))}
-    </List>
+    </ul>
   );
-};
-
-PlaceList.propTypes = {
-  places: PropTypes.array,
 };
 
 export default PlaceList;

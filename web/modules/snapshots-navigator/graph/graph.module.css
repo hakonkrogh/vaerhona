@@ -1,12 +1,10 @@
-import styled from 'styled-components';
-
-export const Outer = styled.div`
+.outer {
   flex: 1;
   display: flex;
   flex-direction: column;
-`;
+}
 
-export const Inner = styled.div`
+.inner {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -18,17 +16,17 @@ export const Inner = styled.div`
 
   max-height: none !important;
   width: auto !important;
-`;
+}
 
-export const Canvas = styled.canvas`
+.canvas {
   width: 100% !important;
   height: 100% !important;
-`;
+}
 
-export const PropChooser = styled.div`
+.propChooser {
   padding: 0 20px;
   height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-`;
+}

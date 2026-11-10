@@ -2,6 +2,7 @@ import { useLayoutEffect } from 'react';
 
 // The view-transition-name of the photo that moves between the front page and
 // the place page. Only one element on a page can have it.
+// ui/global.css styles the transition by this name, so keep the two the same.
 export const PHOTO_TRANSITION_NAME = 'place-photo';
 
 // The place whose photo moves. Set by a tap on the front page and by the

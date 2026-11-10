@@ -1,17 +1,10 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 export default class Icon extends Component {
   static defaultProps = {
     width: '22px',
     height: '22px',
     fill: '#000000',
-  };
-
-  static propTypes = {
-    width: PropTypes.string,
-    height: PropTypes.string,
-    fill: PropTypes.string,
   };
 
   render() {

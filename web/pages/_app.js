@@ -1,9 +1,9 @@
 import { Montserrat } from 'next/font/google';
 import { ViewTransition } from 'react';
 import Head from 'next/head';
-import styled, { keyframes } from 'styled-components';
 
-import { GlobalStyle } from 'ui';
+import 'ui/global.css';
+import navigationBar from 'modules/layout/navigation-bar.module.css';
 import { useNavigationPending } from 'core/use-navigation-pending';
 
 // Downloaded at build time and served with the site's own files, so the first
@@ -13,30 +13,6 @@ const montserrat = Montserrat({
   weight: '400',
   display: 'swap',
 });
-
-const slide = keyframes`
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
-`;
-
-// A thin bar at the top while the next page loads.
-const NavigationBar = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  height: 3px;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    display: block;
-    height: 100%;
-    background: #5bbad5;
-    animation: ${slide} 1s ease-in-out infinite;
-  }
-`;
 
 export default function App({ Component, pageProps }) {
   const navigating = useNavigationPending();
@@ -52,14 +28,22 @@ export default function App({ Component, pageProps }) {
           content="width=device-width, viewport-fit=cover"
         />
       </Head>
-      <GlobalStyle fontFamily={montserrat.style.fontFamily} />
-      {navigating && <NavigationBar role="progressbar" aria-label="Laster" />}
-      {/* Next.js draws a new page inside a React transition, so React runs
-          the change as a view transition: the pages fade over each other,
-          and a photo with the same name on both pages moves. */}
-      <ViewTransition>
-        <Component {...pageProps} />
-      </ViewTransition>
+      {navigating && (
+        <div
+          className={navigationBar.bar}
+          role="progressbar"
+          aria-label="Laster"
+        />
+      )}
+      {/* The class sets the font for the whole page. */}
+      <div className={montserrat.className}>
+        {/* Next.js draws a new page inside a React transition, so React runs
+            the change as a view transition: the pages fade over each other,
+            and a photo with the same name on both pages moves. */}
+        <ViewTransition>
+          <Component {...pageProps} />
+        </ViewTransition>
+      </div>
     </>
   );
 }

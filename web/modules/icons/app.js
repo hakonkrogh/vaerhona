@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 export default class Icon extends Component {
   static defaultProps = {
@@ -7,13 +6,6 @@ export default class Icon extends Component {
     height: '30px',
     fill: null,
     className: '',
-  };
-
-  static propTypes = {
-    width: PropTypes.string,
-    height: PropTypes.string,
-    fill: PropTypes.string,
-    className: PropTypes.string,
   };
 
   render() {

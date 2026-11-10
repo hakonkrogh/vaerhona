@@ -1,0 +1,62 @@
+.outer {
+  position: relative;
+  margin: 10px 0 25px 0;
+}
+
+.timeAgo {
+  font-size: 1.5em;
+  text-align: center;
+  margin-bottom: 3px;
+}
+
+.timeAgo::first-letter {
+  text-transform: uppercase;
+}
+
+.dateString {
+  display: block;
+  color: #888;
+  text-align: center;
+  position: relative;
+}
+
+.inputPlacer {
+  position: relative;
+  display: inline-block;
+}
+
+/* An unseen date input on top of the date text. A click on the text opens
+   the date picker. */
+.input {
+  appearance: none;
+  font-size: 1rem;
+  position: absolute;
+  top: calc(0px - 1em);
+  left: calc(0px - 1em);
+  width: calc(100% + 2em);
+  height: calc(100% + 2em);
+  z-index: 1;
+  opacity: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.input::-webkit-calendar-picker-indicator {
+  width: 100%;
+  height: 100%;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input::-webkit-clear-button {
+  display: none;
+}
+
+.input::-ms-clear {
+  width: 0;
+  height: 0;
+}

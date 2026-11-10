@@ -1,16 +1,6 @@
 const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare');
 
 module.exports = {
-  compiler: {
-    // Gives each styled component a class name from its file and position.
-    // Without it, styled-components counts components in the order their files
-    // load, which differs between the server and the browser, so the class
-    // names did not match when React took over the page.
-    styledComponents: true,
-  },
-  // Next.js leaves node_modules out of the server build, so the Worker got the
-  // whole icon library (about 6 MB). Building it in keeps only the icons used.
-  transpilePackages: ['@phosphor-icons/react'],
   // Build the packages into the server code, and do not load them from
   // node_modules at run time. graphql 17 is an ES module, and Node failed when
   // our code loaded it with require() while graphql-yoga loaded it with

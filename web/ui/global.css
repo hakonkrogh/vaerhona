@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  /* Room for the camera cut-out when an iPhone is held sideways. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* "place-photo" below is PHOTO_TRANSITION_NAME in core/page-transition.js.
+   Keep the two the same. */
+
+/* The photo has a different shape on the front page and the place page.
+   Without this, the browser stretches it while it moves. */
+::view-transition-old(place-photo),
+::view-transition-new(place-photo) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Without this, the part that "cover" cuts away is still drawn, outside
+     the moving box. */
+  overflow: clip;
+}
+
+/* The browser fades from the old photo to the new one. The front page
+   shows a cut of the photo, so the two do not line up and the fade shows
+   a double image. Draw only the whole photo (the place page's), cut to
+   the moving box. It then looks the same as the front page's at that end.
+   markFullPhotoPage in core/page-transition.js sets data-full-photo. */
+html[data-full-photo='new']::view-transition-old(place-photo),
+html[data-full-photo='old']::view-transition-new(place-photo) {
+  display: none;
+}
+
+html[data-full-photo='new']::view-transition-new(place-photo),
+html[data-full-photo='old']::view-transition-old(place-photo) {
+  animation: none;
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+/* The browser's own 250ms feels slow for a page change. */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 150ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

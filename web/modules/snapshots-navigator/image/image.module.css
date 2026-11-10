@@ -1,0 +1,145 @@
+.outer {
+  --navigation-buttons-height: 65px;
+  padding-bottom: calc(
+    var(--navigation-buttons-height) + 15px + env(safe-area-inset-bottom)
+  );
+}
+
+.compareList {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compareList > li {
+  margin: 0 0 60px;
+  padding: 0;
+}
+
+.compareYear {
+  margin: 30px 0 15px;
+  text-align: center;
+}
+
+.bottom {
+  /* Room for the iOS home indicator below the buttons. */
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(var(--navigation-buttons-height) + env(safe-area-inset-bottom));
+  position: fixed;
+  background: #fff;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottomInner {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.bottomInner > span {
+  flex: 1 1 50%;
+  display: flex;
+  justify-content: center;
+}
+
+.bottomInner > span > button {
+  flex: 1 1 50%;
+  padding: 0;
+  outline-offset: -5px;
+  white-space: nowrap;
+}
+
+.bottomInner > span > button:active {
+  transform: scale(0.9);
+}
+
+.bottomInner > span > button,
+.bottomInner > span > button * {
+  touch-action: manipulation;
+}
+
+.bottomInner > span > button:disabled {
+  opacity: 0.25;
+}
+
+.bottomInner > span > button svg:not(:first-child) {
+  margin-left: -10px;
+}
+
+/* The compare switch: a checkbox drawn as a track with a round handle. */
+.switchOuter {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: center;
+}
+
+.switchLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.switchLabel svg {
+  margin-right: 10px;
+  position: relative;
+  top: 2px;
+}
+
+/* The real checkbox is kept for the keyboard and screen readers, but it is
+   not drawn. */
+.switchInput {
+  appearance: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.switchTrack {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: #888;
+  transition: background-color 250ms;
+}
+
+.switchTrack::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.6);
+  transition:
+    transform 250ms,
+    background-color 250ms;
+}
+
+.switchInput:checked + .switchTrack {
+  background: #b7ccc2;
+}
+
+.switchInput:checked + .switchTrack::after {
+  background: #81a594;
+  transform: translateX(16px);
+}
+
+.switchInput:focus-visible + .switchTrack {
+  outline: 2px solid #00628b;
+  outline-offset: 2px;
+}

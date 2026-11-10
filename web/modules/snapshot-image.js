@@ -1,15 +1,10 @@
 import React, { ViewTransition } from 'react';
-import styled from 'styled-components';
 import Image, { getImageProps } from 'next/image';
 
 import { prettyDateTime } from 'core/date';
 import { getLoadedPhoto, rememberLoadedPhoto } from 'core/page-transition';
 
-const StyledImage = styled(Image)`
-  object-fit: contain;
-  width: 100%;
-  height: auto;
-`;
+import styles from './snapshot-image.module.css';
 
 // The size of a snapshot photo.
 const WIDTH = 1280;
@@ -35,6 +30,7 @@ const SnapshotImage = ({
   image,
   width = WIDTH,
   height = HEIGHT,
+  className,
   transitionName,
   onLoad,
   ...rest
@@ -46,7 +42,7 @@ const SnapshotImage = ({
   const loaded = getLoadedPhoto(image);
 
   const photo = (
-    <StyledImage
+    <Image
       alt={`Bilde fra ${placeName} tatt ${prettyDateTime(date)}`}
       src={image}
       // src={
@@ -56,6 +52,7 @@ const SnapshotImage = ({
       width={loaded?.width ?? width}
       height={loaded?.height ?? height}
       {...rest}
+      className={className ? `${styles.image} ${className}` : styles.image}
       style={
         loaded && {
           backgroundImage: `url("${loaded.src}")`,

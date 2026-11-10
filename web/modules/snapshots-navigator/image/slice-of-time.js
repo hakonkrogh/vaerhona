@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
 import SnapshotImage from 'modules/snapshot-image';
 import { Spinner } from 'ui';
@@ -8,30 +7,7 @@ import { PLACE_PHOTO_SIZES } from '../photo-prefetch';
 import { findSnapshot } from '../store';
 import { closestTarget } from '../timeline';
 import Metadata from './metadata';
-
-const Outer = styled.div`
-  position: relative;
-  max-width: 700px;
-  margin: 0 auto;
-
-  .loader {
-    background: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 16 / 9;
-
-    @media (min-width: 700px) {
-      width: 700px;
-    }
-  }
-`;
-
-const ImageWrap = styled.div`
-  position: relative;
-  max-width: 700px;
-  margin: 0 auto;
-`;
+import styles from './slice-of-time.module.css';
 
 /** One snapshot: its values and its photo. */
 export default function SliceOfTime({
@@ -43,18 +19,18 @@ export default function SliceOfTime({
 }) {
   if (!snapshot) {
     return (
-      <Outer>
-        <div className="loader">
+      <div className={styles.outer}>
+        <div className={styles.loader}>
           <Spinner size="30px" />
         </div>
-      </Outer>
+      </div>
     );
   }
 
   return (
-    <Outer>
+    <div className={styles.outer}>
       <Metadata place={place} snapshot={snapshot} />
-      <ImageWrap>
+      <div className={styles.imageWrap}>
         <SnapshotImage
           key={snapshot.cuid}
           image={snapshot.image}
@@ -68,8 +44,8 @@ export default function SliceOfTime({
           // must still load then.
           onError={onPhotoLoad}
         />
-      </ImageWrap>
-    </Outer>
+      </div>
+    </div>
   );
 }
 

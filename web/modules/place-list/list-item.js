@@ -6,7 +6,7 @@ import { timeOrDate } from 'core/date';
 import { PHOTO_TRANSITION_NAME } from 'core/page-transition';
 import SnapshotImage from 'modules/snapshot-image';
 
-import { ListItem, Upper, PlaceName, Time, ImageWrapper } from './ui';
+import styles from './place-list.module.css';
 
 const PlaceListItem = ({
   name,
@@ -15,16 +15,16 @@ const PlaceListItem = ({
   photoTransition,
   onSelect,
 }) => (
-  <ListItem>
+  <li className={styles.item}>
     <Link href={`/${name}`} onClick={onSelect}>
-      <Upper>
-        <PlaceName>{upperFirst(name)}</PlaceName>
+      <div className={styles.upper}>
+        <h2 className={styles.placeName}>{upperFirst(name)}</h2>
         <div>
-          <Time>{timeOrDate(snapshot.date)}</Time>
+          <time className={styles.time}>{timeOrDate(snapshot.date)}</time>
         </div>
-      </Upper>
+      </div>
 
-      <ImageWrapper>
+      <figure className={styles.imageWrapper}>
         <SnapshotImage
           image={snapshot.image}
           date={snapshot.date}
@@ -33,9 +33,9 @@ const PlaceListItem = ({
           priority={priority}
           transitionName={photoTransition ? PHOTO_TRANSITION_NAME : undefined}
         />
-      </ImageWrapper>
+      </figure>
     </Link>
-  </ListItem>
+  </li>
 );
 
 export default PlaceListItem;

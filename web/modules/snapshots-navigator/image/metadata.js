@@ -1,6 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
-
 import {
   Temperature,
   Humidity,
@@ -10,32 +8,7 @@ import {
   WeatherCondition,
 } from 'ui';
 
-const Values = styled.div`
-  font-size: 1.5em;
-  color: #555;
-  margin: 0 auto;
-  padding: 15px 0;
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-`;
-
-const YrWeatherRow = styled.div`
-  font-size: 0.9em;
-  color: #888;
-  margin: 0 auto;
-  padding: 0 0 10px;
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-`;
-
-const WindGroup = styled.span`
-  display: inline-flex;
-  gap: 5px;
-`;
+import styles from './metadata.module.css';
 
 export default function Metadata({ snapshot }) {
   const yr = snapshot.yrWeather;
@@ -45,21 +18,21 @@ export default function Metadata({ snapshot }) {
 
   return (
     <>
-      <Values>
+      <div className={styles.values}>
         <Temperature {...snapshot} /> /
         <Humidity humidity={humidity} />
-      </Values>
+      </div>
       {yr && (
-        <YrWeatherRow>
+        <div className={styles.yrWeatherRow}>
           <WeatherCondition {...yr} />
           {yr.windDirectionCompass != null && (
-            <WindGroup>
+            <span className={styles.windGroup}>
               <WindDirection {...yr} />
               <WindSpeed {...yr} />
               {yr.windSpeedOfGust != null && <WindGust {...yr} />}
-            </WindGroup>
+            </span>
           )}
-        </YrWeatherRow>
+        </div>
       )}
     </>
   );

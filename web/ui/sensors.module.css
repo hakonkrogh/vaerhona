@@ -1,0 +1,21 @@
+.sensor {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.temperature {
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.help {
+  cursor: help;
+}
+
+.pressure {
+  gap: 2px;
+}
+
+.unit {
+  font-size: 0.6em;
+}
