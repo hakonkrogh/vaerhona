@@ -67,6 +67,57 @@ describe('addList', () => {
   });
 });
 
+describe('months that meet', () => {
+  // Two months from the local database: the first ends one millisecond
+  // before the second starts.
+  const border = LATEST - 24 * HOUR;
+  const older = snapshot(25);
+  const newer = snapshot(23);
+
+  function twoMonths() {
+    let timeline = addList(start(), {
+      from: new Date(border - 30 * DAY).toISOString(),
+      to: new Date(border - 1).toISOString(),
+      snapshots: [older],
+    });
+
+    return addList(timeline, {
+      from: new Date(border).toISOString(),
+      to: new Date(LATEST).toISOString(),
+      snapshots: [newer],
+    });
+  }
+
+  it('become one range', () => {
+    expect(twoMonths().ranges).toContainEqual({
+      from: border - 30 * DAY,
+      to: Infinity,
+    });
+  });
+
+  it('can be stepped across', () => {
+    expect(stepTarget(twoMonths(), newer, -1)).toEqual({ snapshot: older });
+    expect(stepTarget(twoMonths(), older, 1)).toEqual({ snapshot: newer });
+  });
+
+  it('stay apart when a millisecond is missing between them', () => {
+    const timeline = addList(
+      addList(start(), {
+        from: new Date(border - 30 * DAY).toISOString(),
+        to: new Date(border - 2).toISOString(),
+        snapshots: [older],
+      }),
+      {
+        from: new Date(border).toISOString(),
+        to: new Date(LATEST).toISOString(),
+        snapshots: [newer],
+      }
+    );
+
+    expect(stepTarget(timeline, newer, -1).snapshot).toBeUndefined();
+  });
+});
+
 describe('stepTarget', () => {
   it('steps to the neighbours inside a loaded week', () => {
     const timeline = withWeek();

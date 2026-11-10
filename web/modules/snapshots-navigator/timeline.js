@@ -36,7 +36,9 @@ function addRange(ranges, range) {
   const result = [];
 
   for (const existing of ranges) {
-    if (existing.to < from || existing.from > to) {
+    // Times are whole milliseconds, so two ranges with no millisecond between
+    // them are one range. Months from the local database meet like this.
+    if (existing.to < from - 1 || existing.from > to + 1) {
       result.push(existing);
     } else {
       from = Math.min(from, existing.from);

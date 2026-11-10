@@ -31,7 +31,7 @@ Size as plain JSON, estimated, not measured: about 80 bytes per snapshot. A box 
 GET /api/values?place=veggli&from=<ISO date>&to=<ISO date>&v=1
 ```
 
-`v` is the data version, `VALUES_VERSION` in `web/core/snapshot-values.js`. It is part of the cache key.
+`v` is the data version, `VALUES_VERSION` in `web/core/snapshot-values.js`. It is part of the cache key, and a request with another version is refused (HTTP 400).
 
 - The client asks for whole UTC months, for example `from=2024-06-01T00:00:00.000Z&to=2024-06-30T23:59:59.999Z`. Every visitor asks for the same URLs, so the Cloudflare cache is shared.
 - The newest part ends at the latest snapshot the page has: `from=<start of month>&to=<latest date>`.
@@ -129,6 +129,7 @@ Things that differ:
 
 ## Stale and wrong data
 
+- **Only final answers are stored.** The browser keeps an answer only if the server marked it `immutable`. Any other answer is dropped, and browsing asks the list API as before.
 - **A deleted or fixed snapshot** (known gap 3 in SPEC.md) does not reach clients by itself. The API answer has a version, `v`. Raising it in the code makes every client drop its local months and backfill again, and it changes the cache key at Cloudflare.
 - **A place that is renamed or removed:** the API answers 404, and the client drops that place's months.
 - **Old places:** a place not opened for a year is removed from the local database.

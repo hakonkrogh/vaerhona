@@ -52,6 +52,7 @@ describe('parseValuesQuery', () => {
     place: 'veggli',
     from: FROM.toISOString(),
     to: LATEST.toISOString(),
+    v: '1',
   };
 
   it('reads a valid query', () => {
@@ -75,6 +76,8 @@ describe('parseValuesQuery', () => {
   it.each([
     ['no place', { ...valid, place: undefined }],
     ['two places', { ...valid, place: ['a', 'b'] }],
+    ['no version', { ...valid, v: undefined }],
+    ['another version', { ...valid, v: '2' }],
     ['no start date', { ...valid, from: undefined }],
     ['no end date', { ...valid, to: undefined }],
     ['a bad date', { ...valid, to: 'soon' }],

@@ -31,9 +31,9 @@ function parseDate(value) {
  * Reads the query of a snapshot values request.
  *
  * @returns {{ placeName: string, from: Date, to: Date } | null} null if the
- * query is not valid
+ * query is not valid, or asks for another data version than this code gives
  */
-export function parseValuesQuery({ place, from, to }) {
+export function parseValuesQuery({ place, from, to, v }) {
   const placeName = typeof place === 'string' ? place : '';
   const fromDate = parseDate(from);
   const toDate = parseDate(to);
@@ -41,6 +41,9 @@ export function parseValuesQuery({ place, from, to }) {
   if (
     !placeName ||
     placeName.length > 100 ||
+    // `v` is part of the cache key. An answer must never be stored under
+    // another version than its own.
+    v !== String(VALUES_VERSION) ||
     !fromDate ||
     !toDate ||
     fromDate > toDate ||

@@ -74,13 +74,19 @@ export function backfillOrder({ first, latest, focus, skip = () => false }) {
   );
 }
 
-async function fetchValues(url) {
+export async function fetchValues(url) {
   const response = await fetch(url);
 
   if (!response.ok) {
     const error = new Error(`HTTP ${response.status}`);
     error.status = response.status;
     throw error;
+  }
+
+  // Only values the server calls final may be kept. Others could still get a
+  // snapshot (see services/snapshot-values.js).
+  if (!(response.headers.get('cache-control') ?? '').includes('immutable')) {
+    throw new Error('Values are not final');
   }
 
   return response.json();
@@ -125,6 +131,10 @@ export function createHistory({
   let running = 0;
   let failuresInARow = 0;
   let releaseLock;
+  // Counts starts and stops, so a start that waits for the lock can see that
+  // it was stopped in the meantime.
+  let backfillRun = 0;
+  let waitingForLock = false;
   const failures = new Map();
 
   function changed() {
@@ -211,7 +221,10 @@ export function createHistory({
       } catch (err) {
         if (err.status === 404) {
           // The place is gone or renamed.
+          records.clear();
+          decoded.clear();
           await db.clearPlace(place.name);
+          changed();
         }
         throw err;
       }
@@ -398,10 +411,11 @@ export function createHistory({
 
     /** Starts filling in the whole history, unless another tab already is. */
     startBackfill() {
-      if (started) {
+      if (started || waitingForLock) {
         return;
       }
 
+      const thisRun = ++backfillRun;
       const run = () => {
         started = true;
         failuresInARow = 0;
@@ -413,12 +427,18 @@ export function createHistory({
         return;
       }
 
+      waitingForLock = true;
+
       locks
         .request(
           `vaerhona-backfill:${place.name}`,
           { ifAvailable: true },
           (lock) => {
-            if (!lock) {
+            if (thisRun === backfillRun) {
+              waitingForLock = false;
+            }
+
+            if (!lock || thisRun !== backfillRun) {
               return undefined;
             }
 
@@ -430,7 +450,12 @@ export function createHistory({
             });
           }
         )
-        .catch(() => run());
+        .catch(() => {
+          if (thisRun === backfillRun) {
+            waitingForLock = false;
+            run();
+          }
+        });
     },
 
     /** Pauses the backfill, for example while the page is hidden. */
@@ -444,6 +469,8 @@ export function createHistory({
     },
 
     stopBackfill() {
+      backfillRun++;
+      waitingForLock = false;
       started = false;
       releaseLock?.();
       releaseLock = undefined;

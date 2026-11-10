@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { monthEnd, monthStart, toColumns } from 'core/snapshot-values';
 
-import { backfillOrder, createHistory } from './history';
+import { backfillOrder, createHistory, fetchValues } from './history';
 import { createMemoryDb } from './month-db';
 
 const BASE = 'https://photos.test/veggli';
@@ -262,10 +262,15 @@ describe('createHistory', () => {
     fetchJson.mockRejectedValue(
       Object.assign(new Error('gone'), { status: 404 })
     );
+    const history = make();
+    await history.open();
+    expect(history.getRecords()).toHaveLength(1);
 
-    await expect(make().load('2026-08')).rejects.toThrow('gone');
+    await expect(history.load('2026-08')).rejects.toThrow('gone');
 
     expect(await db.list('veggli')).toEqual([]);
+    expect(history.getRecords()).toEqual([]);
+    expect(history.getSnapshots('2026-07')).toBeNull();
   });
 
   it('removes places that have not been opened for a year', async () => {
@@ -412,6 +417,26 @@ describe('createHistory', () => {
       expect(released).toBe(true);
     });
 
+    it('does not start when it was stopped while waiting for the lock', async () => {
+      let grant;
+      const locks = {
+        request: vi.fn(
+          (name, options, run) =>
+            new Promise((resolve) => {
+              grant = () => resolve(run({}));
+            })
+        ),
+      };
+      const history = make({ locks });
+
+      history.startBackfill();
+      history.stopBackfill();
+      grant();
+      await settle();
+
+      expect(fetchJson).not.toHaveBeenCalled();
+    });
+
     it('tells listeners as months arrive', async () => {
       const history = make();
       const listener = vi.fn();
@@ -422,5 +447,42 @@ describe('createHistory', () => {
 
       expect(listener.mock.calls.length).toBeGreaterThanOrEqual(6);
     });
+  });
+});
+
+describe('fetchValues', () => {
+  const respond = (cacheControl, status = 200) =>
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response('{"v":1}', {
+            status,
+            headers: { 'cache-control': cacheControl },
+          })
+      )
+    );
+
+  it('gives values the server calls final', async () => {
+    respond('public, max-age=31536000, immutable');
+
+    expect(await fetchValues('/api/values')).toEqual({ v: 1 });
+    vi.unstubAllGlobals();
+  });
+
+  it('refuses values that could still change, so they are never stored', async () => {
+    respond('no-store');
+
+    await expect(fetchValues('/api/values')).rejects.toThrow('not final');
+    vi.unstubAllGlobals();
+  });
+
+  it('passes on the status of a failed request', async () => {
+    respond('no-store', 404);
+
+    await expect(fetchValues('/api/values')).rejects.toMatchObject({
+      status: 404,
+    });
+    vi.unstubAllGlobals();
   });
 });

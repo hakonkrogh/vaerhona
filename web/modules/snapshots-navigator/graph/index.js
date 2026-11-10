@@ -56,7 +56,12 @@ const LOAD_PARALLEL = 3;
 
 const time = (snapshot) => new Date(snapshot.date).getTime();
 
-/** Loads months in order, a few at a time. Returns a function that stops it. */
+/**
+ * Loads months in order, a few at a time.
+ *
+ * @returns {{ done: Promise<void>, stop: () => void }} done: when every month
+ * has loaded or failed. stop: leaves the rest.
+ */
 function loadMonths(history, months) {
   const queue = [...months];
   let stopped = false;
@@ -68,12 +73,13 @@ function loadMonths(history, months) {
     }
   }
 
-  for (let i = 0; i < LOAD_PARALLEL; i++) {
-    work();
-  }
-
-  return () => {
-    stopped = true;
+  return {
+    done: Promise.all(Array.from({ length: LOAD_PARALLEL }, work)).then(
+      () => {}
+    ),
+    stop() {
+      stopped = true;
+    },
   };
 }
 
@@ -242,10 +248,10 @@ export default function SnapshotGraph({
     );
     let active = true;
 
-    const stop = loadMonths(history, months);
+    const { done, stop } = loadMonths(history, months);
 
     // Shows the spinner until every month has loaded or failed.
-    Promise.allSettled(months.map((month) => history.load(month))).then(() => {
+    done.then(() => {
       if (active) {
         setLoadedFor(loadKey);
       }
