@@ -1,8 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import mongoose from 'mongoose';
 
 import config from './config';
-import { registerModels } from './mongo/models';
 
 const dbStorage = new AsyncLocalStorage();
 
@@ -19,6 +17,15 @@ export async function runWithDb(fn) {
   if (!config.mongo.url) {
     throw new Error('process.env.MONGO_DB_URI is not set');
   }
+
+  // Loaded here and not at the top of the file. Mongoose is big, and most page
+  // views read a record from R2 and never open a connection. With a static
+  // import, the first request of a new Worker loaded mongoose anyway, which
+  // made that request slower.
+  const [{ default: mongoose }, { registerModels }] = await Promise.all([
+    import('mongoose'),
+    import('./mongo/register-models'),
+  ]);
 
   const connection = await mongoose
     .createConnection(config.mongo.url, {
