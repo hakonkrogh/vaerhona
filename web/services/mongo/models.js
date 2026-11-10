@@ -1,23 +1,9 @@
 import { getDb } from '../init';
 import { MODEL_NAMES } from './utils';
-import { snapshotSchema, snapshotPlaceSchema } from './schemas';
 
-const definitions = [
-  [MODEL_NAMES.SNAPSHOT_PLACE, snapshotPlaceSchema],
-  [MODEL_NAMES.SNAPSHOT, snapshotSchema],
-];
-
-/**
- * Registers all models on a connection. Both models must exist on the
- * connection before any query runs, since populate() looks them up by name.
- */
-export function registerModels(connection) {
-  for (const [name, schema] of definitions) {
-    if (!connection.models[name]) {
-      connection.model(name, schema);
-    }
-  }
-}
+// This file must not import mongoose, not even through another file. Pages
+// that read a record import it without ever using MongoDB. The schemas are in
+// register-models.js, which runWithDb() loads when a connection is opened.
 
 /**
  * Returns a model bound to the current request's connection.
