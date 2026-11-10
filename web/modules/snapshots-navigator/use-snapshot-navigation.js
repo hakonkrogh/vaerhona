@@ -6,6 +6,8 @@ import {
   useSyncExternalStore,
 } from 'react';
 
+import { requestPersistentStorage } from 'modules/snapshot-history/persist';
+
 import { prefetchPhotos } from './photo-prefetch';
 import { findSnapshot } from './store';
 import {
@@ -27,6 +29,54 @@ export function useTimeline(store) {
 
 function saveData() {
   return Boolean(navigator.connection?.saveData);
+}
+
+/**
+ * Fills the browser's local database with the whole history of the place, in
+ * the background (see modules/snapshot-history/history.js). It works outwards
+ * from the snapshot on screen and from now.
+ *
+ * @param {object} options
+ * @param {object} [options.history]
+ * @param {object} [options.current] the snapshot on screen
+ * @param {boolean} options.ready false while something more important loads,
+ * such as the photo on screen (rule P8)
+ */
+export function useHistoryBackfill({ history, current, ready }) {
+  const time = current ? new Date(current.date).getTime() : null;
+
+  useEffect(() => {
+    if (history && time != null) {
+      history.setFocus(time);
+    }
+  }, [history, time]);
+
+  useEffect(() => {
+    // With data saver on, only what the user browses is loaded.
+    if (!history || !ready || saveData()) {
+      return;
+    }
+
+    requestPersistentStorage();
+    history.startBackfill();
+  }, [history, ready]);
+
+  useEffect(() => {
+    if (!history) {
+      return undefined;
+    }
+
+    const onVisibility = () =>
+      history.setPaused(document.visibilityState !== 'visible');
+
+    onVisibility();
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      history.stopBackfill();
+    };
+  }, [history]);
 }
 
 /**
@@ -119,6 +169,8 @@ export function useSnapshotNavigation({
     const { first, later } = photoTargets(timeline, current);
     prefetchPhotos(saveData() ? first : [...first, ...later]);
   }, [timeline, current, photoLoaded]);
+
+  useHistoryBackfill({ history: store.history, current, ready: photoLoaded });
 
   return { go, goToDate, pending };
 }

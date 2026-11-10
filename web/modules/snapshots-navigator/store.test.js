@@ -138,3 +138,104 @@ describe('findSnapshot', () => {
     expect(store.load).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('createSnapshotStore with a history', () => {
+  const DAY = 24 * HOUR;
+  const latest = new Date(LATEST).getTime();
+  const october = { cuid: 'oct', date: '2026-10-20T10:00:00.000Z' };
+  let fetch;
+  let history;
+
+  function makeHistory(snapshotsByMonth) {
+    return {
+      monthsBetween: vi.fn((from, to) => {
+        const months = [];
+        const date = new Date(from);
+        date.setUTCDate(1);
+
+        while (date.getTime() <= Math.min(to, latest)) {
+          months.push(date.toISOString().slice(0, 7));
+          date.setUTCMonth(date.getUTCMonth() + 1);
+        }
+
+        return months;
+      }),
+      load: vi.fn(async () => {}),
+      getCoverage: (month) => ({
+        from: Date.parse(`${month}-01T00:00:00.000Z`),
+        to:
+          month === '2026-11' ? latest : Date.parse('2026-10-31T23:59:59.999Z'),
+      }),
+      getSnapshots: (month) => snapshotsByMonth[month] ?? [],
+    };
+  }
+
+  beforeEach(() => {
+    fetch = vi.fn(async () =>
+      okList({ from: null, to: LATEST, snapshots: [] })
+    );
+    vi.stubGlobal('fetch', fetch);
+    history = makeHistory({ '2026-10': [october] });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('still asks the list API for the list the page preloads', async () => {
+    const store = createSnapshotStore(place, history);
+    const [first] = nearbyLoads(store.getTimeline(), place.lastSnapshot);
+
+    await store.load(first);
+
+    expect(fetch).toHaveBeenCalledWith(initialListUrl(place));
+    expect(history.load).not.toHaveBeenCalled();
+  });
+
+  it('takes a part of time from the history, with no list request', async () => {
+    const store = createSnapshotStore(place, history);
+    const time = new Date(october.date).getTime();
+
+    await store.load({ from: time - 3 * DAY, to: time + 3 * DAY });
+
+    expect(history.load).toHaveBeenCalledWith('2026-10');
+    expect(fetch).not.toHaveBeenCalled();
+    expect(store.getTimeline().snapshots).toContainEqual(october);
+    expect(store.getTimeline().ranges).toContainEqual({
+      from: Date.parse('2026-10-01T00:00:00.000Z'),
+      to: Date.parse('2026-10-31T23:59:59.999Z'),
+    });
+  });
+
+  it('loads both months when the week before a time crosses a month', async () => {
+    const store = createSnapshotStore(place, history);
+
+    await store.load({ to: Date.parse('2026-11-02T00:00:00.000Z') });
+
+    expect(history.load.mock.calls.map(([month]) => month)).toEqual([
+      '2026-10',
+      '2026-11',
+    ]);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('asks the list API when the months have nothing before the time', async () => {
+    const store = createSnapshotStore(place, history);
+
+    // The box was off: nothing in October before the 15th.
+    await store.load({ to: Date.parse('2026-10-15T00:00:00.000Z') });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks the list API when the history fails', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    history.load.mockRejectedValue(new Error('offline'));
+    const store = createSnapshotStore(place, history);
+    const time = new Date(october.date).getTime();
+
+    await store.load({ from: time - 3 * DAY, to: time + 3 * DAY });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+});

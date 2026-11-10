@@ -1,26 +1,66 @@
 .outer {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.periods {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 15px 20px 0;
+}
+
+.period {
+  appearance: none;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-size: 90%;
+  padding: 6px 14px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.period[aria-pressed='true'] {
+  border-color: #00628b;
+  background: #00628b;
+  color: #fff;
+}
+
+.period:focus-visible {
+  outline: 2px solid #00628b;
+  outline-offset: 2px;
 }
 
 .inner {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   position: relative;
-  margin: 20px 20px 10px;
-  box-sizing: border-box;
-
-  max-height: none !important;
-  width: auto !important;
+  margin: 20px 15px 10px;
+  height: min(55vh, 420px);
 }
 
 .canvas {
   width: 100% !important;
   height: 100% !important;
+}
+
+.status {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  pointer-events: none;
 }
 
 .propChooser {

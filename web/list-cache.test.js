@@ -4,6 +4,8 @@ import { isSnapshotListRequest, serveCachedList } from './list-cache';
 
 const LIST =
   'https://example.test/api/snapshots?place=veggli&to=2026-11-09T12%3A00%3A00.000Z&limit=168';
+const VALUES =
+  'https://example.test/api/values?place=veggli&from=2026-10-01T00%3A00%3A00.000Z&to=2026-10-31T23%3A59%3A59.999Z&v=1';
 const FINAL = 'public, max-age=31536000, immutable';
 
 function makeCache() {
@@ -31,6 +33,10 @@ function listResponse(cacheControl, status = 200) {
 describe('isSnapshotListRequest', () => {
   it('accepts a list request', () => {
     expect(isSnapshotListRequest(new Request(LIST))).toBe(true);
+  });
+
+  it('accepts a values request', () => {
+    expect(isSnapshotListRequest(new Request(VALUES))).toBe(true);
   });
 
   it('skips other paths and methods', () => {
@@ -90,6 +96,14 @@ describe('serveCachedList', () => {
   it('keeps different lists apart', async () => {
     await serve();
     await serve(LIST.replace('limit=168', 'limit=24'));
+
+    expect(getList).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps values of different versions apart', async () => {
+    await serve(VALUES);
+    await serve(VALUES);
+    await serve(VALUES.replace('v=1', 'v=2'));
 
     expect(getList).toHaveBeenCalledTimes(2);
   });
