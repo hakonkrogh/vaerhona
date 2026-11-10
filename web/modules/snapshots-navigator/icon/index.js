@@ -2,13 +2,7 @@ import React, { Component } from 'react';
 
 import styles from './icon.module.css';
 
-import {
-  Picture,
-  Statistics,
-  Thermometer,
-  Droplets,
-  Compass,
-} from '../../icons';
+import { Picture, Statistics, Compass } from '../../icons';
 
 export default class Icon extends Component {
   constructor(props) {
@@ -42,14 +36,6 @@ export default class Icon extends Component {
 
       case 'graph':
         icon = <Statistics fill={fillColor} />;
-        break;
-
-      case 'thermometer':
-        icon = <Thermometer fill={fillColor} />;
-        break;
-
-      case 'droplets':
-        icon = <Droplets fill={fillColor} />;
         break;
 
       case 'compass':

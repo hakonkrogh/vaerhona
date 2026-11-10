@@ -1,14 +1,15 @@
 // The numbers behind the chart: plain data in and out, so it can be tested
-// without React or Chart.js. The values come from the browser's local database
+// without React. The values come from the browser's local database
 // (modules/snapshot-history).
 
 import { validHumidity, validTemperature } from 'core/readings';
 
-const DAY = 24 * 60 * 60 * 1000;
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
 
 // Days are cut at midnight Norwegian winter time. Daylight saving moves the
 // cut one hour in summer, which a daily mean does not show.
-const DAY_OFFSET = 60 * 60 * 1000;
+const DAY_OFFSET = HOUR;
 
 export const PERIODS = [
   { key: 'week', label: 'Uke', days: 7 },
@@ -17,28 +18,83 @@ export const PERIODS = [
   { key: 'all', label: 'Alt', daily: true },
 ];
 
-// `value` gives null for a reading that is off, and the chart leaves it out
-// (rule P11, see core/readings.js).
-export const PROPERTIES = [
+const yrValue = (field) => (columns, i) => columns.yr?.[field]?.[i] ?? null;
+
+/**
+ * The values the chart can show, each in its own panel. `value` gives null
+ * for a reading that is off, and the chart leaves it out (rule P11, see
+ * core/readings.js).
+ *
+ * - yr: the value only comes from yr.no. The boxes measure only temperature,
+ *   humidity and pressure, and their pressure is not at sea level, so it
+ *   cannot be mixed with the yr.no pressure.
+ * - zero: the scale starts at 0.
+ * - min, max: the scale never goes past these. With `fixed`, it always shows
+ *   all of it.
+ */
+export const VALUES = [
   {
     key: 'temperature',
-    icon: 'thermometer',
     label: 'Temperatur',
     unit: '°C',
+    decimals: 1,
     value: (columns, i) =>
       validTemperature(columns.temperature[i], columns.humidity[i]),
   },
   {
     key: 'humidity',
-    icon: 'droplets',
     label: 'Luftfuktighet',
     unit: '%',
-    // The yr.no value when there is one, as the place page shows (rule P2).
+    decimals: 0,
+    min: 0,
+    max: 100,
+    // The yr.no value, as the place page shows (rule P2). In a month with
+    // yr.no weather, a snapshot without it is left out instead of using the
+    // box's own value. Some boxes send values such as 9 % and 99 % that
+    // validHumidity cannot catch, which would draw a spike in the line.
     value: (columns, i) =>
-      columns.yr?.relativeHumidity[i] ??
-      validHumidity(columns.temperature[i], columns.humidity[i]),
+      columns.yr
+        ? (columns.yr.relativeHumidity?.[i] ?? null)
+        : validHumidity(columns.temperature[i], columns.humidity[i]),
+  },
+  {
+    key: 'wind',
+    label: 'Vind',
+    unit: 'm/s',
+    decimals: 1,
+    yr: true,
+    zero: true,
+    value: yrValue('windSpeed'),
+    direction: yrValue('windFromDirection'),
+  },
+  {
+    key: 'pressure',
+    label: 'Lufttrykk',
+    unit: 'hPa',
+    decimals: 0,
+    yr: true,
+    value: yrValue('airPressureAtSeaLevel'),
+  },
+  {
+    key: 'cloud',
+    label: 'Skydekke',
+    unit: '%',
+    decimals: 0,
+    yr: true,
+    min: 0,
+    max: 100,
+    fixed: true,
+    value: yrValue('cloudAreaFraction'),
   },
 ];
+
+/**
+ * The longest time between two points that is still drawn as a line. A
+ * longer gap, when the box was off, is left open.
+ */
+export function gapLimit(period) {
+  return (period.daily ? 3 : 0.5) * DAY;
+}
 
 /**
  * The time a period covers. It ends at the snapshot on screen, and "all" is
@@ -82,9 +138,11 @@ export function earlierYears({ from, to }, first) {
  * range, so the same days of different years land on top of each other.
  *
  * @param {object[]} records from history.getRecords(), oldest first
- * @returns {{ x: number, y: number }[]}
+ * @param {object} value from VALUES
+ * @returns {{ x: number, y: number, dir?: number }[]} dir: where the wind
+ * comes from, in degrees, for a value with a direction
  */
-export function pointsInRange(records, { from, to }, property) {
+export function pointsInRange(records, { from, to }, value) {
   const points = [];
 
   for (const { columns } of records) {
@@ -95,11 +153,24 @@ export function pointsInRange(records, { from, to }, property) {
     }
 
     for (let i = 0; i < time.length; i++) {
-      const y = property.value(columns, i);
-
-      if (time[i] >= from && time[i] <= to && y != null) {
-        points.push({ x: time[i] - from, y });
+      if (time[i] < from || time[i] > to) {
+        continue;
       }
+
+      const y = value.value(columns, i);
+
+      if (y == null) {
+        continue;
+      }
+
+      const point = { x: time[i] - from, y };
+      const dir = value.direction?.(columns, i);
+
+      if (dir != null) {
+        point.dir = dir;
+      }
+
+      points.push(point);
     }
   }
 
@@ -142,30 +213,103 @@ export function dailyPoints(points, from) {
   }));
 }
 
-/**
- * Everything the chart draws for a period.
- *
- * @returns {{ range: object, lines: object[] }} lines: the period itself
- * first, then the same period in earlier years if `compare` is set. Each has
- * the start time of its range, the year it ends in, and its points.
- */
-export function chartLines({ records, period, property, times, compare }) {
-  const range = periodRange(period, times);
-  // Comparing the whole history with itself makes no sense.
-  const ranges =
-    compare && period.days
-      ? [range, ...earlierYears(range, times.first)]
-      : [range];
+function median(sorted) {
+  const middle = Math.floor(sorted.length / 2);
 
-  const lines = ranges.map((lineRange) => {
-    const points = pointsInRange(records, lineRange, property);
+  return sorted.length % 2
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+/**
+ * What is normal for each part of the period: the lowest, middle and highest
+ * value of the earlier years. Each year counts once in a part, with the mean
+ * of its points there.
+ *
+ * @param {{ points: object[] }[]} lines the earlier years
+ * @param {number} size the length of a part: an hour, or a day for daily
+ * points. The ranges of all years start at the same time of day, so their
+ * parts line up.
+ * @returns {{ x: number, lo: number, mid: number, hi: number }[]}
+ */
+export function yearBand(lines, size) {
+  const parts = new Map();
+
+  for (const { points } of lines) {
+    const ofYear = new Map();
+
+    for (const { x, y } of points) {
+      const key = Math.floor(x / size);
+      const part = ofYear.get(key) ?? { x: 0, y: 0, count: 0 };
+
+      part.x += x;
+      part.y += y;
+      part.count++;
+      ofYear.set(key, part);
+    }
+
+    for (const [key, part] of ofYear) {
+      const all = parts.get(key) ?? { x: 0, values: [] };
+
+      all.x += part.x / part.count;
+      all.values.push(part.y / part.count);
+      parts.set(key, all);
+    }
+  }
+
+  return [...parts.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([, { x, values }]) => {
+      const sorted = values.sort((a, b) => a - b);
+
+      return {
+        x: Math.round(x / values.length),
+        lo: round(sorted[0]),
+        mid: round(median(sorted)),
+        hi: round(sorted[sorted.length - 1]),
+      };
+    });
+}
+
+/**
+ * Everything the chart draws for a period: one panel per value.
+ *
+ * @param {object} options
+ * @param {object[]} options.values from VALUES
+ * @param {boolean} [options.compare] add what is normal from earlier years.
+ * Not for "all", which has no earlier years.
+ * @returns {{ range: object, panels: object[] }} Each panel has its value,
+ * the points of the period, and with `compare` a band from yearBand and the
+ * first and last year in it. The band is null when no earlier year has data.
+ */
+export function chartPanels({ records, period, values, times, compare }) {
+  const range = periodRange(period, times);
+  const earlier =
+    compare && period.days ? earlierYears(range, times.first) : [];
+
+  const lineOf = (lineRange, value) => {
+    const points = pointsInRange(records, lineRange, value);
 
     return {
-      from: lineRange.from,
       year: new Date(lineRange.to).getUTCFullYear(),
       points: period.daily ? dailyPoints(points, lineRange.from) : points,
     };
+  };
+
+  const panels = values.map((value) => {
+    const panel = { value, points: lineOf(range, value).points, band: null };
+    const lines = earlier
+      .map((lineRange) => lineOf(lineRange, value))
+      .filter((line) => line.points.length);
+
+    if (lines.length) {
+      panel.band = yearBand(lines, period.daily ? DAY : HOUR);
+      // The lines are newest first.
+      panel.bandYears = [lines[lines.length - 1].year, lines[0].year];
+    }
+
+    return panel;
   });
 
-  return { range, lines };
+  return { range, panels };
 }

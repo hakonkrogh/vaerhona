@@ -31,20 +31,126 @@
   color: #fff;
 }
 
-.period:focus-visible {
+.period:focus-visible,
+.choice:focus-visible {
   outline: 2px solid #00628b;
   outline-offset: 2px;
 }
 
-.inner {
-  position: relative;
-  margin: 20px 15px 10px;
-  height: min(55vh, 420px);
+/* The values to show. More than one can be on, unlike the periods. */
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 12px 15px 0;
 }
 
-.canvas {
-  width: 100% !important;
-  height: 100% !important;
+.choice {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+  color: #666;
+  font: inherit;
+  font-size: 80%;
+  padding: 4px 11px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.choice[aria-pressed='true'] {
+  border-color: #00628b;
+  background: #eaf2f6;
+  color: #00384f;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0.35;
+}
+
+.choice[aria-pressed='true'] .dot {
+  opacity: 1;
+}
+
+.chart {
+  margin: 14px 15px 10px;
+}
+
+/* The time of the values in the panels. */
+.when {
+  min-height: 1.4em;
+  color: #666;
+  font-size: 85%;
+}
+
+.panels {
+  position: relative;
+  /* A finger moving sideways moves the time. Up and down still scrolls. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: crosshair;
+}
+
+.panels:focus {
+  outline: none;
+}
+
+.panels:focus-visible {
+  outline: 2px solid #00628b;
+  outline-offset: 4px;
+}
+
+.panel {
+  margin-top: 8px;
+}
+
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 1.4em;
+  font-size: 90%;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  color: #555;
+}
+
+.value {
+  color: #000;
+  font-weight: 600;
+}
+
+.extra {
+  color: #777;
+  font-size: 92%;
+}
+
+.svg {
+  display: block;
+  overflow: visible;
+}
+
+.tick {
+  font-size: 11px;
+  fill: #898781;
+  font-variant-numeric: tabular-nums;
+}
+
+.none {
+  font-size: 13px;
+  fill: #888;
 }
 
 .status {
@@ -53,20 +159,39 @@
   right: 0;
 }
 
-.empty {
-  position: absolute;
-  inset: 0;
+.legend {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 8px;
   color: #666;
-  pointer-events: none;
+  font-size: 80%;
 }
 
-.propChooser {
-  padding: 0 20px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
+.legend > span {
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+}
+
+.lineKey,
+.dashKey,
+.bandKey {
+  display: inline-block;
+  width: 16px;
+}
+
+/* The colours are set in chart.js, the same as in the chart. */
+.lineKey {
+  height: 2px;
+}
+
+.dashKey {
+  border-top: 2px dashed;
+}
+
+.bandKey {
+  height: 10px;
+  border-radius: 2px;
+  opacity: 0.3;
 }

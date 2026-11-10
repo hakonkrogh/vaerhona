@@ -86,6 +86,34 @@ export function prettyYearMonth(date) {
   return format(date, (p) => `${p.monthName} ${p.year}`);
 }
 
+/** "ti. 4. nov. 2026" */
+export function prettyDay(date) {
+  return format(
+    date,
+    (p) => `${p.weekdayName} ${p.day}. ${p.monthName} ${p.year}`
+  );
+}
+
+/** "ti. 4." */
+export function prettyWeekday(date) {
+  return format(date, (p) => `${p.weekdayName} ${p.day}.`);
+}
+
+/** "4. nov." */
+export function prettyDayMonth(date) {
+  return format(date, (p) => `${p.day}. ${p.monthName}`);
+}
+
+/** "nov." */
+export function prettyMonth(date) {
+  return format(date, (p) => p.monthName);
+}
+
+/** "2026" */
+export function prettyYear(date) {
+  return format(date, (p) => String(p.year));
+}
+
 export function chartDate(date) {
   return format(date, (p) => `${p.day}. ${p.monthName} ${p.paddedHour}`);
 }

@@ -98,7 +98,7 @@ Time for a full backfill of 10 years (120 months), estimated: a few seconds when
 
 - **Arrows and date picker:** `store.load(part)` asks the history (`web/modules/snapshot-history/history.js`) for the months the part touches. The history reads the local database first, and asks `/api/values` only for what is missing. If the months hold no snapshot in the direction asked for, because the box was off, or if the history fails, the list API is asked as before.
 - **Compare years:** the closest snapshot to the same time in each earlier year comes from the local months. If a month is missing, it is fetched and skips the queue.
-- **Charts:** the chart button in the bottom bar swaps the photo for the graph view in `web/modules/snapshots-navigator/graph`. It reads months straight from the history, not through the timeline. Week and month draw every snapshot. Year and all draw one point per day: the mean as a line, with the lowest and highest value as a band. With compare enabled, each earlier year is its own line. The chart loads the months it needs first, and draws what it has while the rest loads.
+- **Charts:** the chart button in the bottom bar swaps the photo for the graph view in `web/modules/snapshots-navigator/graph`. It reads months straight from the history, not through the timeline. Each value the user picks has its own panel. Week and month draw every snapshot. Year and all draw one point per day: the mean as a line, with the lowest and highest value as a band. With compare enabled, the earlier years show as one band (lowest to highest) with their median. The chart loads the months it needs first, and draws what it has while the rest loads.
 
 The timeline in memory keeps only the months near the snapshot on screen. Loading 87,600 snapshots into it would make every merge slow.
 
@@ -144,7 +144,7 @@ Things that differ:
 | `web/modules/snapshot-history/month-db.js` | IndexedDB, with memory as the fallback |
 | `web/modules/snapshot-history/history.js` | Reads and loads months, and runs the backfill |
 | `web/modules/snapshots-navigator/store.js` | Browsing asks the history first |
-| `web/modules/snapshots-navigator/graph/` | The chart. `series.js` has the numbers, `index.js` draws them |
+| `web/modules/snapshots-navigator/graph/` | The chart. `series.js` has the numbers, `geometry.js` the scales and paths, `chart.js` draws them, `index.js` loads the months |
 
 ## Not done yet
 
