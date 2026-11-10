@@ -54,7 +54,13 @@ export default function SnapshotImage({
         place={place}
         snapshot={currentSnapshot}
         priority
-        transitionName={PHOTO_TRANSITION_NAME}
+        // The front page shows the latest photo. An older one would move
+        // into the card and then jump to the latest.
+        transitionName={
+          currentSnapshot.cuid === place.lastSnapshot.cuid
+            ? PHOTO_TRANSITION_NAME
+            : undefined
+        }
         onPhotoLoad={() => setLoadedPhoto(currentSnapshot.cuid)}
       />
 

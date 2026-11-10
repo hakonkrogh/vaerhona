@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import { useRestoreScrollOnBack } from 'core/page-transition';
 import {
   latestByPlace,
   useRefreshWhenNewer,
@@ -16,6 +17,7 @@ const Message = styled.p`
 
 export default function FrontPage({ places }) {
   useReloadOnRestore();
+  useRestoreScrollOnBack('front-page');
   useRefreshWhenNewer('/api/latest', places ? latestByPlace(places) : null);
 
   return (

@@ -11,13 +11,6 @@ module.exports = {
   // Next.js leaves node_modules out of the server build, so the Worker got the
   // whole icon library (about 6 MB). Building it in keeps only the icons used.
   transpilePackages: ['@phosphor-icons/react'],
-  experimental: {
-    // Next.js puts the scroll position back on the back button, as part of
-    // drawing the page. The browser does it too early: the old page is still
-    // on screen while the next one loads. The photo then moves to the wrong
-    // place in the view transition.
-    scrollRestoration: true,
-  },
   // Build the packages into the server code, and do not load them from
   // node_modules at run time. graphql 17 is an ES module, and Node failed when
   // our code loaded it with require() while graphql-yoga loaded it with

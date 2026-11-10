@@ -48,6 +48,13 @@ export const GlobalStyle = createGlobalStyle`
     mix-blend-mode: normal;
   }
 
+  /* The browser's own 250ms feels slow for a page change. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 150ms;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(*),
     ::view-transition-old(*),
