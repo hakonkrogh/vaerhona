@@ -3,5 +3,8 @@ export const isServer =
 export const isClient = !isServer;
 
 export function upperFirst(text) {
+  if (!text) {
+    return '';
+  }
   return text.charAt(0).toUpperCase() + text.slice(1);
 }

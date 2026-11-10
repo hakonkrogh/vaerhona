@@ -7,7 +7,8 @@ import { runWithDb } from '../../services/init';
 const loggingPlugin = {
   // Runs for every GraphQL operation, before it is executed.
   onParams({ params }) {
-    const { query, variables = {} } = params;
+    const { query } = params;
+    const variables = params.variables ?? {};
 
     if (query?.includes('mutation')) {
       console.log('Mutation:');
@@ -43,10 +44,23 @@ export const config = {
   },
 };
 
+// The body types Yoga can read. Anything else is treated as JSON below.
+const KNOWN_BODY_TYPES =
+  /json|multipart\/form-data|application\/x-www-form-urlencoded|application\/graphql/i;
+
 export default function handler(req, res) {
   // A CORS preflight needs no database.
   if (req.method === 'OPTIONS') {
     return yoga(req, res);
+  }
+
+  // The old server read the body as JSON whatever the Content-Type said. Boxes
+  // cannot be updated, so a box that sends another type must keep working.
+  if (
+    req.method === 'POST' &&
+    !KNOWN_BODY_TYPES.test(req.headers['content-type'] ?? '')
+  ) {
+    req.headers['content-type'] = 'application/json';
   }
 
   return runWithDb(() => yoga(req, res));

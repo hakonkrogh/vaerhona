@@ -157,6 +157,7 @@ export default class SnapshotGraph extends Component {
   }
 
   componentDidMount() {
+    this.unmounted = false;
     this.loadChart();
   }
 

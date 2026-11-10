@@ -11,6 +11,11 @@ module.exports = {
   // Next.js leaves node_modules out of the server build, so the Worker got the
   // whole icon library (about 6 MB). Building it in keeps only the icons used.
   transpilePackages: ['@phosphor-icons/react'],
+  // Build the packages into the server code, and do not load them from
+  // node_modules at run time. graphql 17 is an ES module, and Node failed when
+  // our code loaded it with require() while graphql-yoga loaded it with
+  // import. Built in, there is one copy and one way of loading it.
+  bundlePagesRouterDependencies: true,
   async redirects() {
     return [
       {
