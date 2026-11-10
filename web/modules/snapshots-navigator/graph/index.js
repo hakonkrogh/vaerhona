@@ -3,9 +3,36 @@ import React, { Component } from 'react';
 import { isClient } from 'core/utils';
 import { chartDate, prettyYearMonth } from 'core/date';
 
-var Chart;
-if (isClient) {
-  Chart = require('chart.js');
+// Chart.js is only loaded in the browser, and only when a graph is shown.
+// Only the parts a line chart needs are registered, to keep the download small.
+let chartPromise;
+function loadChartJs() {
+  if (!chartPromise) {
+    chartPromise = import('chart.js').then(
+      ({
+        Chart,
+        LineController,
+        LineElement,
+        PointElement,
+        CategoryScale,
+        LinearScale,
+        Legend,
+        Tooltip,
+      }) => {
+        Chart.register(
+          LineController,
+          LineElement,
+          PointElement,
+          CategoryScale,
+          LinearScale,
+          Legend,
+          Tooltip
+        );
+        return Chart;
+      }
+    );
+  }
+  return chartPromise;
 }
 
 import Icon from '../icon';
@@ -130,12 +157,20 @@ export default class SnapshotGraph extends Component {
   }
 
   componentDidMount() {
+    this.unmounted = false;
     this.loadChart();
   }
 
   componentDidUpdate() {
     clearTimeout(this.loadChartTimeout);
     this.loadChartTimeout = setTimeout(this.loadChart, 100);
+  }
+
+  componentWillUnmount() {
+    this.unmounted = true;
+    clearTimeout(this.loadChartTimeout);
+    this.myLineChart?.destroy();
+    this.myLineChart = null;
   }
 
   getColor = (index) => {
@@ -148,9 +183,17 @@ export default class SnapshotGraph extends Component {
     return setColors[index];
   };
 
-  loadChart = () => {
+  loadChart = async () => {
     // Client side only for now. Waiting for a universal graph framework
     if (isClient) {
+      const Chart = await loadChartJs();
+
+      // The graph can be closed, or drawn by an earlier call, while Chart.js
+      // loads.
+      if (this.unmounted || !this.canvas) {
+        return;
+      }
+
       const { selectedProperty } = this.state;
 
       const dates = this.getColumnDates();
@@ -167,6 +210,8 @@ export default class SnapshotGraph extends Component {
         data: d,
         fill: false,
         borderColor: this.getColor(i),
+        // Curved lines, as in Chart.js 2.
+        tension: 0.4,
       }));
 
       if (this.myLineChart) {
@@ -182,15 +227,12 @@ export default class SnapshotGraph extends Component {
           },
           options: {
             maintainAspectRatio: false,
-            title: {
-              display: false,
-              position: 'bottom',
-            },
-            legend: {
-              position: 'bottom',
-              fillStyle: 'red',
-              labels: {
-                boxWidth: 20,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  boxWidth: 20,
+                },
               },
             },
           },

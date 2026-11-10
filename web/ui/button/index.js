@@ -1,6 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-import is, { isNot } from 'styled-is';
+import styled, { css } from 'styled-components';
 
 import { Spinner } from '../spinner';
 
@@ -44,10 +43,10 @@ const themes = {
   },
 };
 
-function getTheme(rest) {
+function getTheme(flags) {
   const themeNames = Object.keys(themes);
   for (let i = 0; i < themeNames.length; i++) {
-    if (themeNames[i] in rest) {
+    if (flags[themeNames[i]] !== undefined) {
       return themes[themeNames[i]];
     }
   }
@@ -97,17 +96,16 @@ const ButtonInner = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: ${(p) => p.size.minWidth};
-  padding: ${(p) => p.size.padding};
-  padding: ${(p) => p.size.padding};
-  font-size: ${(p) => p.size.fontSize || 'inherit'};
+  min-width: ${(p) => p.$size.minWidth};
+  padding: ${(p) => p.$size.padding};
+  font-size: ${(p) => p.$size.fontSize || 'inherit'};
   transition: background-color 100ms;
   position: relative;
   ${(p) => (p.theme ? p.theme.default : '')};
 `;
 
 const ButtonOuter = styled.button`
-  display: ${(p) => (p.block ? 'block' : 'inline-block')};
+  display: ${(p) => (p.$block ? 'block' : 'inline-block')};
   border-radius: 0;
   border: none;
   padding: 0;
@@ -132,12 +130,16 @@ const ButtonOuter = styled.button`
 const ButtonText = styled.span`
   position: relative;
   z-index: 2;
-  transition: opacity 100ms, transform 100ms;
+  transition:
+    opacity 100ms,
+    transform 100ms;
 
-  ${isNot('shown')`
-    opacity: 0;
-    transform: scale(0.7);
-  `};
+  ${(p) =>
+    !p.$shown &&
+    css`
+      opacity: 0;
+      transform: scale(0.7);
+    `};
 `;
 
 const ButtonLoading = styled.span`
@@ -149,7 +151,9 @@ const ButtonLoading = styled.span`
   z-index: 1;
   opacity: 0;
   transform: scale(0.5);
-  transition: opacity 100ms, transform 100ms;
+  transition:
+    opacity 100ms,
+    transform 100ms;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,10 +163,12 @@ const ButtonLoading = styled.span`
     height: 50%;
   }
 
-  ${is('shown')`
-    opacity: 1;
-    transform: none;
-  `};
+  ${(p) =>
+    p.$shown &&
+    css`
+      opacity: 1;
+      transform: none;
+    `};
 `;
 
 export const Button = ({
@@ -173,9 +179,14 @@ export const Button = ({
   xlarge,
   loading,
   block,
+  // The theme flags are taken out here so they do not end up as HTML
+  // attributes. styled-components 6 passes every prop on to the element.
+  primary,
+  clean,
+  danger,
   ...rest
 }) => {
-  const theme = getTheme(rest);
+  const theme = getTheme({ primary, clean, danger });
 
   const size = getSize({ tiny, small, large, xlarge });
 
@@ -186,12 +197,12 @@ export const Button = ({
       as={as}
       {...rest}
       theme={theme}
-      block={block}
+      $block={block}
       onTouchStart={preventDoubleTapZoom}
     >
-      <ButtonInner theme={theme} size={size}>
-        <ButtonText shown={!loading}>{children}</ButtonText>
-        <ButtonLoading shown={loading}>
+      <ButtonInner theme={theme} $size={size}>
+        <ButtonText $shown={!loading}>{children}</ButtonText>
+        <ButtonLoading $shown={loading}>
           <Spinner />
         </ButtonLoading>
       </ButtonInner>
