@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { repairTemperature } from 'core/readings';
+
 import { Arrow, TrendUp, TrendDown, Minus } from './line-icons';
 import {
   ClearDay,
@@ -21,18 +23,19 @@ const Sensor = ({ className, ...props }) => (
 const Unit = (props) => <span className={styles.unit} {...props} />;
 
 export const Temperature = ({ temperature }) => {
-  const normalised = normaliseCrazyTemperature(temperature);
-  const isCrazy = Math.abs(normalised - temperature) > 1;
-  const [showCrazy, setShowCrazy] = useState(false);
+  // A temperature that came in the wrong form (see core/readings.js) is shown
+  // repaired. A click shows the stored value.
+  const repaired = repairTemperature(temperature);
+  const [showStored, setShowStored] = useState(false);
 
-  if (isCrazy && !showCrazy) {
+  if (repaired != null && !showStored) {
     return (
       <Sensor
         className={styles.temperature}
         title={temperature}
-        onClick={() => setShowCrazy((c) => !c)}
+        onClick={() => setShowStored((c) => !c)}
       >
-        ca. {normalised}
+        ca. {repaired}
         <Unit>&#8451;</Unit>
       </Sensor>
     );
@@ -41,28 +44,13 @@ export const Temperature = ({ temperature }) => {
   return (
     <Sensor
       className={styles.temperature}
-      onClick={() => setShowCrazy((c) => !c)}
+      onClick={() => setShowStored((c) => !c)}
     >
       {temperature}
       <Unit>&#8451;</Unit>
     </Sensor>
   );
 };
-
-function normaliseCrazyTemperature(temperature) {
-  const magicNumber = 3273.7; // Used to be 3276.7
-  let temp = temperature;
-  if (Math.abs(temp) > 100) {
-    if (temperature > 0) {
-      temp -= magicNumber;
-    } else {
-      temp += magicNumber;
-    }
-    temp = Math.floor(temp);
-  }
-
-  return Math.round(temp * 10) / 10;
-}
 
 export const Humidity = ({ humidity }) => (
   <Sensor>
