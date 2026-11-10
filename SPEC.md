@@ -153,11 +153,33 @@ From about 12:23-12:35 UTC on 2026-11-07, the first request in each 15-minute ch
 | Place page that reads the record (Veggli) | 208 ms | 1,539 ms |
 | `places` query | 735 ms | 1,256 ms |
 
-The front page was static HTML and did not touch MongoDB, so the delay is in the Worker or the Cloudflare network, not the database. The image cache (#50) went live at 12:34 and was reverted for 3 hours on 2026-11-09 as a test. It was just as slow without it, so #50 is not the cause. The cause is unknown.
+The front page was static HTML and did not touch MongoDB, so the delay is in the Worker or the Cloudflare network, not the database. The image cache (#50) went live at 12:34 and was reverted for 3 hours on 2026-11-09 as a test. It was just as slow without it, so #50 is not the cause.
+
+Worker placement was the main cause. It was disabled on 2026-11-09 at 13:20 UTC, and the Myking page was fast again in the first check after that (210 ms). Why placement got slow on 2026-11-07 is not known. A smaller Worker bundle (19.2 MB to 11.7 MB) went live 10 minutes later, so its own effect could not be measured.
+
+### After placement was disabled
+
+Measured from Norway against production, from 2026-11-09 17:16 UTC to 2026-11-10 05:16 UTC, with one check every 15 minutes (48 checks). By then placement was disabled and the front page read the records. "Before" is the morning of 2026-11-09, 08:09 to 12:09 UTC (16 checks), with placement enabled. First byte is the wait for the first byte after the connection is open. Drawn is the time until the largest element on the page, usually the photo, is drawn in headless Chrome (LCP).
+
+| Request | Before, median | After, median | After, 90th percentile |
+|---|---|---|---|
+| Front page, first byte | 1,312 ms (static HTML) | 362 ms | 912 ms |
+| Veggli page, first byte | 1,766 ms | 156 ms | 274 ms |
+| Myking page, first byte | 2,192 ms | 144 ms | 287 ms |
+| Tornes page, first byte | 1,944 ms (read MongoDB) | 132 ms | 229 ms |
+| `places` query (GraphQL, reads MongoDB) | 1,277 ms | 858 ms | 1,218 ms |
+| `snapshots` query, 168 snapshots (GraphQL, reads MongoDB) | 909 ms | 876 ms | 1,063 ms |
+| Front page, drawn | 1,996 ms | 322 ms | 652 ms |
+| Veggli page, drawn | 664 ms | 166 ms | 292 ms |
+| Myking page, drawn | 768 ms | 184 ms | 244 ms |
+
+- No request failed in the 48 checks, and no check saw an older snapshot than the API gave.
+- The first request after idle time is slower. In a test on 2026-11-09, after about 12 minutes with no requests from the test, the first page took 645 ms and one later page took 885 ms, whichever pages they were. The others took 165-275 ms. This is most likely the Worker starting up. The front page comes first in each check, which explains its higher 90th percentile.
+- Requests that read MongoDB did not get faster. The 168-snapshot query took about 430 ms on 2026-11-06, when placement worked well.
 
 ## Decisions
 
-- **2026-11-06: The Worker runs in `aws:eu-west-1`, next to MongoDB Atlas and S3.** Each MongoDB request takes several round trips, so being close saves more than the longer path from a visitor to the Worker costs. Measured from Norway, a 168-snapshot query with the same fields went from about 740 ms to about 445 ms, and pages that read the record got about 40 ms slower. On 2026-11-06 Cloudflare ran the Worker in London for this setting, which is near enough to help. Check the `cf-placement` header for the current location, since Cloudflare can change it. Static assets still come from the location nearest the visitor.
+- **2026-11-06: The Worker runs in `aws:eu-west-1`, next to MongoDB Atlas and S3.** Each MongoDB request takes several round trips, so being close saves more than the longer path from a visitor to the Worker costs. Measured from Norway, a 168-snapshot query with the same fields went from about 740 ms to about 445 ms, and pages that read the record got about 40 ms slower. On 2026-11-06 Cloudflare ran the Worker in London for this setting, which is near enough to help. Check the `cf-placement` header for the current location, since Cloudflare can change it. Static assets still come from the location nearest the visitor. Replaced on 2026-11-10 (see below).
 - **2026-11-06: The first view does not use ISR with `revalidate`.** It would load faster, but can show an older snapshot, which breaks F1 and F3.
 - **2026-11-06: The latest data gets no short TTL cache.** Same reason. A TTL of even one minute can hide a new snapshot.
 - **2026-11-06: Uploads maintain a latest snapshot record in R2, and the place page reads it.** This is how we meet F4. See [the design](docs/latest-snapshot-design.md).
@@ -168,3 +190,4 @@ The front page was static HTML and did not touch MongoDB, so the delay is in the
   - The week before the latest snapshot starts loading with the HTML, through a `preload` link.
   - The next week loads in the background when the user gets within 4 days of the end of what is loaded.
   - After the photo on screen has loaded, the photos the arrows lead to load, then a few more steps back. With data saver on, only the arrow photos load.
+- **2026-11-10: Worker placement is disabled, so the Worker runs at the location nearest the visitor.** This replaces the placement decision of 2026-11-06. From 2026-11-07, with placement enabled, a page that reads a record took about 1.8 s. With placement disabled it takes about 150 ms (see "After placement was disabled"). The cost is that a request that reads MongoDB takes about 0.9 s, against about 430 ms on the day placement worked well. That matters less now: the first view of the place page and the front page reads the records, and browsing lists are cached after the first request. Placement was disabled as a test on 2026-11-09 and kept after the 12-hour check. Measure before enabling it again.

@@ -8,9 +8,11 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  // Temporary test (2026-11-09): placement is disabled to see if it causes the
-  // slow first requests since 2026-11-07. It ran the Worker next to MongoDB
-  // Atlas and S3 with { "region": "aws:eu-west-1" }.
+  // Placement stays disabled, so the Worker runs at the location nearest the
+  // visitor. With { "region": "aws:eu-west-1" } it ran next to MongoDB Atlas
+  // and S3, and pages that read a record took about 1.8 s instead of about
+  // 150 ms. Measure before enabling it again. See the decision of 2026-11-10
+  // in SPEC.md.
   "placement": {
     "mode": "off"
   },
