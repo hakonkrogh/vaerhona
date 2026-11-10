@@ -22,13 +22,14 @@ const times = {
   latest: time('2026-11-10T12:00:00.000Z'),
 };
 
+// Rows are [date, temperature, humidity]. The humidity is 50 if left out.
 function record(month, rows, yr = null) {
   return {
     month,
     columns: {
       time: rows.map(([iso]) => time(iso)),
       temperature: rows.map(([, value]) => value),
-      humidity: rows.map(() => 50),
+      humidity: rows.map(([, , value = 50]) => value),
       yr,
     },
   };
@@ -117,6 +118,72 @@ describe('pointsInRange', () => {
       ).map((p) => p.y)
     ).toEqual([50]);
   });
+
+  describe('readings that are off', () => {
+    const everything = { from: 0, to: Infinity };
+    const values = (rows, property, yr) =>
+      pointsInRange([record('2025-01', rows, yr)], everything, property).map(
+        (p) => p.y
+      );
+
+    it('repairs a temperature below zero in the wrong form', () => {
+      expect(
+        values(
+          [
+            ['2025-01-19T22:39:00.000Z', 0.6, 44],
+            // As stored for Veggli that night.
+            ['2025-01-19T23:39:00.000Z', -3276.6, 47],
+            ['2025-01-20T00:39:00.000Z', -3275.5, 50],
+            ['2025-01-20T11:39:00.000Z', 0.6, 59],
+          ],
+          temperature
+        )
+      ).toEqual([0.6, -0.2, -1.3, 0.6]);
+    });
+
+    it('leaves out a temperature outside -50 to 50 °C that cannot be repaired', () => {
+      expect(
+        values(
+          [
+            ['2025-01-01T00:00:00.000Z', 3, 60],
+            ['2025-01-01T01:00:00.000Z', 85, 60],
+            ['2025-01-01T02:00:00.000Z', 3276.7, 60],
+          ],
+          temperature
+        )
+      ).toEqual([3]);
+    });
+
+    it('leaves out a snapshot where the box had no reading', () => {
+      const rows = [
+        ['2025-01-01T00:00:00.000Z', 12.5, 60],
+        ['2025-01-01T01:00:00.000Z', 0, 0],
+        // A real 0 °C.
+        ['2025-01-01T02:00:00.000Z', 0, 95],
+      ];
+
+      expect(values(rows, temperature)).toEqual([12.5, 0]);
+      expect(values(rows, humidity)).toEqual([60, 95]);
+    });
+
+    it('leaves out the humidity of a stuck sensor, but not its temperature', () => {
+      const rows = [
+        ['2025-01-01T00:00:00.000Z', 3, 99.9],
+        ['2025-01-01T01:00:00.000Z', 4, 1],
+      ];
+
+      expect(values(rows, humidity)).toEqual([99.9]);
+      expect(values(rows, temperature)).toEqual([3, 4]);
+    });
+
+    it('uses the yr.no humidity also when the sensor is stuck', () => {
+      expect(
+        values([['2025-01-01T00:00:00.000Z', 4, 1]], humidity, {
+          relativeHumidity: [81],
+        })
+      ).toEqual([81]);
+    });
+  });
 });
 
 describe('dailyPoints', () => {
@@ -142,19 +209,6 @@ describe('dailyPoints', () => {
 });
 
 describe('values', () => {
-  it('leaves out the broken temperatures of old boxes', () => {
-    const broken = record('2026-11', [
-      ['2026-11-01T00:00:00.000Z', 3273.7],
-      ['2026-11-01T01:00:00.000Z', 2],
-    ]);
-
-    expect(
-      pointsInRange([broken], { from: 0, to: Infinity }, temperature).map(
-        (p) => p.y
-      )
-    ).toEqual([2]);
-  });
-
   it('gives the wind with the direction it comes from', () => {
     const withYr = record('2026-11', [['2026-11-01T00:00:00.000Z', 2]], {
       windSpeed: [3.5],
@@ -248,6 +302,43 @@ describe('chartPanels', () => {
 
     expect(panels[0].points).toHaveLength(2);
     expect(panels[0].points[0]).toMatchObject({ y: -3, min: -3, max: -3 });
+  });
+
+  it('keeps readings that are off out of the mean and the band of a day', () => {
+    const { panels } = chartPanels({
+      records: [
+        record('2026-11', [
+          ['2026-11-08T10:00:00.000Z', 4, 70],
+          ['2026-11-08T11:00:00.000Z', 85, 70],
+          ['2026-11-08T12:00:00.000Z', 0, 0],
+          ['2026-11-08T13:00:00.000Z', 6, 70],
+        ]),
+      ],
+      period: all,
+      values: [temperature],
+      times,
+    });
+
+    expect(panels[0].points).toHaveLength(1);
+    expect(panels[0].points[0]).toMatchObject({ y: 5, min: 4, max: 6 });
+  });
+
+  it('uses repaired temperatures in the mean and the band of a day', () => {
+    const { panels } = chartPanels({
+      records: [
+        record('2026-11', [
+          ['2026-11-08T10:00:00.000Z', 2, 70],
+          // -4 °C in the wrong form.
+          ['2026-11-08T11:00:00.000Z', -3272.8, 70],
+        ]),
+      ],
+      period: all,
+      values: [temperature],
+      times,
+    });
+
+    expect(panels[0].points).toHaveLength(1);
+    expect(panels[0].points[0]).toMatchObject({ y: -1, min: -4, max: 2 });
   });
 
   it('does not compare the whole history with itself', () => {

@@ -2,6 +2,8 @@
 // without React. The values come from the browser's local database
 // (modules/snapshot-history).
 
+import { validHumidity, validTemperature } from 'core/readings';
+
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 
@@ -19,7 +21,9 @@ export const PERIODS = [
 const yrValue = (field) => (columns, i) => columns.yr?.[field]?.[i] ?? null;
 
 /**
- * The values the chart can show, each in its own panel.
+ * The values the chart can show, each in its own panel. `value` gives null
+ * for a reading that is off, and the chart leaves it out (rule P11, see
+ * core/readings.js).
  *
  * - yr: the value only comes from yr.no. The boxes measure only temperature,
  *   humidity and pressure, and their pressure is not at sea level, so it
@@ -34,13 +38,8 @@ export const VALUES = [
     label: 'Temperatur',
     unit: '°C',
     decimals: 1,
-    value(columns, i) {
-      const value = columns.temperature[i];
-
-      // Some old boxes sent values such as 3273.7 (see ui/sensors.js). They
-      // would hide every real value on the scale.
-      return value != null && Math.abs(value) < 100 ? value : null;
-    },
+    value: (columns, i) =>
+      validTemperature(columns.temperature[i], columns.humidity[i]),
   },
   {
     key: 'humidity',
@@ -51,12 +50,12 @@ export const VALUES = [
     max: 100,
     // The yr.no value, as the place page shows (rule P2). In a month with
     // yr.no weather, a snapshot without it is left out instead of using the
-    // box's own value. Some boxes send values such as 1 % and 99 %, which
-    // would draw a spike in the line.
+    // box's own value. Some boxes send values such as 9 % and 99 % that
+    // validHumidity cannot catch, which would draw a spike in the line.
     value: (columns, i) =>
       columns.yr
         ? (columns.yr.relativeHumidity?.[i] ?? null)
-        : (columns.humidity[i] ?? null),
+        : validHumidity(columns.temperature[i], columns.humidity[i]),
   },
   {
     key: 'wind',

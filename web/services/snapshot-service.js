@@ -1,23 +1,16 @@
 import generateCuid from 'cuid';
 
+import {
+  isTemperatureInRange,
+  TEMPERATURE_MAX,
+  TEMPERATURE_MIN,
+} from '../core/readings';
+
 import { snapshotModel, snapshotPlaceModel } from './mongo/models';
 import { normalizeAndEnrichSnapshot } from './utils';
 import { saveImageFromSnapshot } from './aws/s3';
 import { publishLatestSnapshot } from './latest-snapshot';
 import { hasYrSupport, fetchWeatherData } from './yr-service';
-
-// Temperature validation constants
-const TEMP_MIN = -50;
-const TEMP_MAX = 50;
-
-/**
- * Check if temperature is within valid range
- * @param {number} temperature
- * @returns {boolean}
- */
-function isTemperatureValid(temperature) {
-  return temperature >= TEMP_MIN && temperature <= TEMP_MAX;
-}
 
 // The fields of a snapshot that the API can return.
 const SNAPSHOT_LIST_FIELDS =
@@ -112,9 +105,9 @@ export async function addSnapshot({ boxId, image, ...snapshotBody }) {
   let temperature = snapshotBody.temperature;
   const sensorTemperature = temperature;
 
-  if (!isTemperatureValid(temperature)) {
+  if (!isTemperatureInRange(temperature)) {
     console.log(
-      `[addSnapshot] Temperature ${temperature}°C outside valid range [${TEMP_MIN}, ${TEMP_MAX}] for place: ${place.name}`
+      `[addSnapshot] Temperature ${temperature}°C outside valid range [${TEMPERATURE_MIN}, ${TEMPERATURE_MAX}] for place: ${place.name}`
     );
 
     if (yrWeather?.airTemperature != null) {
