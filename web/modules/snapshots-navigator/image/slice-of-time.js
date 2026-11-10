@@ -39,6 +39,7 @@ export default function SliceOfTime({
   snapshot,
   priority,
   onPhotoLoad,
+  transitionName,
 }) {
   if (!snapshot) {
     return (
@@ -61,6 +62,7 @@ export default function SliceOfTime({
           placeName={place.name}
           sizes={PLACE_PHOTO_SIZES}
           priority={priority}
+          transitionName={transitionName}
           onLoad={onPhotoLoad}
           // A snapshot can have no photo (SPEC.md, known gap 3). Photos ahead
           // must still load then.

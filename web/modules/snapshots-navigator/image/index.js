@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Switch from 'react-switch';
 
 import { Button, IconArrow, IconCompare } from 'ui';
+import { PHOTO_TRANSITION_NAME } from 'core/page-transition';
 
 import { useSnapshotNavigation } from '../use-snapshot-navigation';
 import { Outer, Bottom, BottomInner, SwitchOuter, CompareList } from './ui';
@@ -53,6 +54,13 @@ export default function SnapshotImage({
         place={place}
         snapshot={currentSnapshot}
         priority
+        // The front page shows the latest photo. An older one would move
+        // into the card and then jump to the latest.
+        transitionName={
+          currentSnapshot.cuid === place.lastSnapshot.cuid
+            ? PHOTO_TRANSITION_NAME
+            : undefined
+        }
         onPhotoLoad={() => setLoadedPhoto(currentSnapshot.cuid)}
       />
 

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { upperFirst } from 'core/utils';
 
+import { markFullPhotoPage, setTransitionPlace } from 'core/page-transition';
 import { useReloadOnRestore } from 'core/use-reload-on-restore';
 import Layout from 'modules/layout';
 import { SnapshotsNavigator } from 'modules/snapshots-navigator';
@@ -8,6 +9,10 @@ import { getPlaceForPage } from 'services/place-page';
 
 export default function PlacePage({ place }) {
   useReloadOnRestore();
+
+  // Going back to the front page, this place's photo moves into the list.
+  useEffect(() => setTransitionPlace(place.name), [place.name]);
+  useLayoutEffect(markFullPhotoPage, []);
 
   return (
     <Layout title={upperFirst(place.name)}>

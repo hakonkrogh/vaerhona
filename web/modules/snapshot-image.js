@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { ViewTransition } from 'react';
 import styled from 'styled-components';
 import Image, { getImageProps } from 'next/image';
 
 import { prettyDateTime } from 'core/date';
+import { getLoadedPhoto, rememberLoadedPhoto } from 'core/page-transition';
 
 const StyledImage = styled(Image)`
   object-fit: contain;
@@ -34,9 +35,17 @@ const SnapshotImage = ({
   image,
   width = WIDTH,
   height = HEIGHT,
+  transitionName,
+  onLoad,
   ...rest
 }) => {
-  return (
+  // A size of this photo that has loaded already, shown behind the photo
+  // until its own size has loaded. It also gives the photo's real shape, so
+  // the box is right from the start. Only set after a page change in the
+  // browser, never on the server.
+  const loaded = getLoadedPhoto(image);
+
+  const photo = (
     <StyledImage
       alt={`Bilde fra ${placeName} tatt ${prettyDateTime(date)}`}
       src={image}
@@ -44,10 +53,29 @@ const SnapshotImage = ({
       //   image.replace('d31r10omfuzino.cloudfront.net', 'vaerhona.imgix.net') +
       //   '?auto=format,enhance'
       // }
-      width={width}
-      height={height}
+      width={loaded?.width ?? width}
+      height={loaded?.height ?? height}
       {...rest}
+      style={
+        loaded && {
+          backgroundImage: `url("${loaded.src}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }
+      }
+      onLoad={(event) => {
+        rememberLoadedPhoto(image, event.currentTarget);
+        onLoad?.(event);
+      }}
     />
+  );
+
+  // With a name, the photo moves to the photo with the same name on the
+  // next page. On its own it does not animate.
+  return (
+    <ViewTransition name={transitionName} default="none" share="auto">
+      {photo}
+    </ViewTransition>
   );
 };
 
