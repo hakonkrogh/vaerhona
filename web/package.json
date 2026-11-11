@@ -13,7 +13,10 @@
     "test:run": "vitest run",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload"
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build-storybook": "storybook build",
+    "visuals": "node scripts/visuals.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1165.0",
@@ -30,9 +33,12 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@storybook/nextjs-vite": "^10.6.7",
     "eslint": "^10.14.0",
     "eslint-config-next": "^16.4.6",
+    "playwright": "^1.65.0",
     "prettier": "^3.9.10",
+    "storybook": "^10.6.7",
     "vite": "^8.3.7",
     "vitest": "^5.1.0",
     "wrangler": "^4.159.0"

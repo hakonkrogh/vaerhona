@@ -35,7 +35,9 @@ module.exports = {
   },
 };
 
-// Makes Cloudflare bindings available in `next dev` (skipped during `next build`)
-if (process.env.NODE_ENV !== 'production') {
+// Makes Cloudflare bindings available in `next dev` (skipped during `next build`).
+// Storybook reads this file too, and sets STORYBOOK. Its components need no
+// bindings, so it skips starting the local Worker.
+if (process.env.NODE_ENV !== 'production' && !process.env.STORYBOOK) {
   initOpenNextCloudflareForDev();
 }
