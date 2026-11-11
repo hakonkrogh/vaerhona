@@ -18,6 +18,7 @@ import {
   existsSync,
   lstatSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   rmSync,
   statSync,
@@ -124,6 +125,21 @@ function buildStorybook(webDir, outDir) {
   );
 }
 
+// Base builds kept in the cache. Each is tens of MB.
+const CACHE_KEEP = 3;
+
+/** Removes all but the newest base builds, and always keeps `keep`. */
+function pruneCache(keep) {
+  const builds = readdirSync(CACHE)
+    .filter((name) => name !== keep)
+    .map((name) => ({ name, time: statSync(join(CACHE, name)).mtimeMs }))
+    .sort((a, b) => b.time - a.time);
+
+  for (const { name } of builds.slice(CACHE_KEEP - 1)) {
+    rmSync(join(CACHE, name), { recursive: true, force: true });
+  }
+}
+
 /**
  * Storybook as it was at a commit, built in a temporary git worktree.
  *
@@ -166,6 +182,7 @@ function buildBase(sha) {
 
     rmSync(out, { recursive: true, force: true });
     buildStorybook(srcWeb, out);
+    pruneCache(sha);
   } finally {
     // Removes the link only, so the packages it points to stay.
     if (lstatSync(modules, { throwIfNoEntry: false })?.isSymbolicLink()) {
@@ -260,6 +277,15 @@ async function launchBrowser() {
   }
 }
 
+async function errorMessage(page) {
+  const message = await page
+    .locator('#error-message')
+    .innerText()
+    .catch(() => '');
+
+  return message.trim() || 'The story failed to draw.';
+}
+
 /** A picture of one story, or the reason it has none. */
 async function shoot(page, url, id) {
   await page.goto(
@@ -269,8 +295,16 @@ async function shoot(page, url, id) {
   const state = await page
     .waitForFunction(
       () => {
+        // Storybook sets sb-show-main as soon as a story starts to draw, and
+        // swaps it for sb-show-errordisplay if the story then fails. So the
+        // classes only count once Storybook says the story is done.
         const { classList } = document.body;
+        const phase = window.__STORYBOOK_PREVIEW__?.currentRender?.phase;
+        const done = phase
+          ? ['completed', 'finished', 'errored', 'aborted'].includes(phase)
+          : !classList.contains('sb-show-preparing-story');
 
+        if (!done) return false;
         if (classList.contains('sb-show-errordisplay')) return 'error';
         if (classList.contains('sb-show-main')) return 'ok';
         return false;
@@ -278,18 +312,24 @@ async function shoot(page, url, id) {
       null,
       { timeout: 20000 }
     )
-    .then((handle) => handle.jsonValue());
+    .then((handle) => handle.jsonValue())
+    // A story that never draws is reported, and the other stories go on.
+    .catch(() => 'timeout');
+
+  if (state === 'timeout') {
+    return { error: 'The story did not draw within 20 seconds.' };
+  }
 
   if (state === 'error') {
-    const message = await page
-      .locator('#error-message')
-      .innerText()
-      .catch(() => '');
-
-    return { error: message.trim() || 'The story failed to draw.' };
+    return { error: await errorMessage(page) };
   }
 
   await settle(page);
+
+  // An error from an effect can come after the story was drawn.
+  if (await page.locator('body.sb-show-errordisplay').count()) {
+    return { error: await errorMessage(page) };
+  }
 
   // A story can still change after it looks done, for example when a photo
   // is drawn. The picture counts when two in a row are the same.
@@ -430,6 +470,15 @@ async function shootAll(browser, url) {
   return shots;
 }
 
+// The kinds of change, in the order the PR shows them. "fixed" is a story
+// that failed to draw on the base.
+const TITLES = {
+  changed: 'Changed',
+  new: 'New',
+  fixed: 'Fixed',
+  removed: 'Removed',
+};
+
 /** What changed between the two sets of pictures. */
 function compare(before, after) {
   const entries = [];
@@ -440,8 +489,10 @@ function compare(before, after) {
 
     if (shot.error) {
       errors.push(`${id}: ${shot.error}`);
-    } else if (!old || old.error) {
+    } else if (!old) {
       entries.push({ id, kind: 'new', story: shot.story, after: shot });
+    } else if (old.error) {
+      entries.push({ id, kind: 'fixed', story: shot.story, after: shot });
     } else if (!shot.png.equals(old.png)) {
       entries.push({
         id,
@@ -459,15 +510,20 @@ function compare(before, after) {
     }
   }
 
-  const order = { changed: 0, new: 1, removed: 2 };
+  const order = Object.keys(TITLES);
   entries.sort(
-    (a, b) => order[a.kind] - order[b.kind] || a.id.localeCompare(b.id)
+    (a, b) =>
+      order.indexOf(a.kind) - order.indexOf(b.kind) || a.id.localeCompare(b.id)
   );
 
-  return { entries, errors };
-}
+  // Stories whose pictures never came out the same twice. They can show up
+  // as changed without a real change.
+  const unstable = [...after.values()]
+    .filter((shot) => shot.unstable)
+    .map(({ story }) => story.id);
 
-const TITLES = { changed: 'Changed', new: 'New', removed: 'Removed' };
+  return { entries, errors, unstable };
+}
 
 function image(src, width, maxWidth) {
   return `<img src="${src}" width="${Math.min(width, maxWidth)}" alt="">`;
@@ -553,7 +609,7 @@ function github(method, path, body) {
     const error = new Error(
       `gh api ${method} ${path}: ${result.stderr || result.stdout}`
     );
-    error.notFound = /HTTP 404/.test(result.stderr);
+    error.status = Number(/HTTP (\d{3})/.exec(result.stderr)?.[1]);
     throw error;
   }
 
@@ -599,7 +655,8 @@ function upload(names) {
       parent = github('GET', `repos/${repo}/git/ref/heads/${PICTURE_BRANCH}`)
         .object.sha;
     } catch (error) {
-      if (!error.notFound) throw error;
+      // The branch is made by the first upload.
+      if (error.status !== 404) throw error;
     }
 
     const commit = github('POST', `repos/${repo}/git/commits`, {
@@ -620,10 +677,16 @@ function upload(names) {
         });
       }
 
+      // Each part on its own, so a branch name with # or ? stays in the path.
+      const path = (name) =>
+        `${folder}/${name}`.split('/').map(encodeURIComponent).join('/');
+
       return (name) =>
-        `https://github.com/${repo}/blob/${commit}/${encodeURI(`${folder}/${name}`)}?raw=true`;
+        `https://github.com/${repo}/blob/${commit}/${path(name)}?raw=true`;
     } catch (error) {
-      if (attempt === 4) throw error;
+      // 422: the branch moved since it was read. Anything else is a real
+      // problem, like missing access, and is not tried again.
+      if (error.status !== 422 || attempt === 4) throw error;
     }
   }
 }
@@ -677,6 +740,24 @@ async function main() {
       }
     }
 
+    // A story that fails to draw must be fixed first, so nothing is uploaded.
+    if (result.errors.length) {
+      console.error(
+        `\nThese stories failed to draw:\n${result.errors.join('\n')}`
+      );
+      if (options.upload) {
+        console.error('Nothing was uploaded. Fix the stories and run again.');
+      }
+      process.exitCode = 1;
+      return;
+    }
+
+    if (result.unstable.length) {
+      console.warn(
+        `\nThese stories never looked the same twice, so a change in them may not be real:\n${result.unstable.join('\n')}`
+      );
+    }
+
     // Without --upload the Markdown points at the files next to it, to look
     // at before uploading.
     let src = (name) => name;
@@ -693,20 +774,15 @@ async function main() {
     const count = (kind) =>
       result.entries.filter((entry) => entry.kind === kind).length;
     console.log(
-      `\n${after.size} stories checked. Changed: ${count('changed')}, new: ${count('new')}, removed: ${count('removed')}.`
+      `\n${after.size} stories checked. ${Object.keys(TITLES)
+        .map((kind) => `${TITLES[kind]}: ${count(kind)}`)
+        .join(', ')}.`
     );
     console.log(`Pictures and Markdown: ${OUT}`);
 
     if (options.upload) {
       console.log('\nFor the PR description:\n');
       console.log(text);
-    }
-
-    if (result.errors.length) {
-      console.error(
-        `\nThese stories failed to draw:\n${result.errors.join('\n')}`
-      );
-      process.exitCode = 1;
     }
   } finally {
     await browser.close();
