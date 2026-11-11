@@ -7,6 +7,18 @@ The website and API. Run all commands below from this folder.
 1) Copy env.txt to .env and fill in the values
 2) Run `pnpm dev`
 
+## Storybook (components on their own)
+
+Run `pnpm storybook` and open http://localhost:6006. It shows each component
+with made-up data, so you can change a design without the database or the
+rest of the site. A component's stories sit next to it, in `*.stories.js`.
+Config is in `.storybook/`. The chart's made-up values come from
+`modules/snapshots-navigator/graph/story-data.js`.
+
+`pnpm visuals` takes pictures of every story before and after your change,
+and keeps the ones that look different, for the PR description
+(`scripts/visuals.mjs`, see `AGENTS.md` at the repo root for when to use it).
+
 ## Hosting (Cloudflare Workers)
 
 The app runs on Cloudflare Workers through the OpenNext adapter.

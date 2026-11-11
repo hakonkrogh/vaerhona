@@ -1,18 +1,10 @@
-import { Montserrat } from 'next/font/google';
 import { ViewTransition } from 'react';
 import Head from 'next/head';
 
 import 'ui/global.css';
+import { montserrat } from 'ui/font';
 import navigationBar from 'modules/layout/navigation-bar.module.css';
 import { useNavigationPending } from 'core/use-navigation-pending';
-
-// Downloaded at build time and served with the site's own files, so the first
-// paint does not wait for a stylesheet from Google.
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-});
 
 export default function App({ Component, pageProps }) {
   const navigating = useNavigationPending();

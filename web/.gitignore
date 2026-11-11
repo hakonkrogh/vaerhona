@@ -16,3 +16,10 @@ yarn-error.log
 .open-next
 .wrangler
 .dev.vars
+
+# Storybook
+storybook-static
+*storybook.log
+
+# Pictures from pnpm visuals
+.visuals
