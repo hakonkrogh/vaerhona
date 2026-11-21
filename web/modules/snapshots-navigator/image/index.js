@@ -5,7 +5,8 @@ import { PHOTO_TRANSITION_NAME } from 'core/page-transition';
 
 import { useSnapshotNavigation } from '../use-snapshot-navigation';
 import styles from './image.module.css';
-import SliceOfTime, { SliceOfTimeAt } from './slice-of-time';
+import SliceOfTime from './slice-of-time';
+import CompareGrid from './compare-grid';
 import DateVisualiser from './date';
 import SnapshotGraph from '../graph';
 import Icon from '../icon';
@@ -46,6 +47,22 @@ export default function SnapshotImage({
     };
   }
 
+  // The photo on screen, alone or as the first tile in compare mode.
+  const photoProps = {
+    place,
+    // The front page shows the latest photo. An older one would move into
+    // the card and then jump to the latest.
+    transitionName:
+      currentSnapshot.cuid === place.lastSnapshot.cuid
+        ? PHOTO_TRANSITION_NAME
+        : undefined,
+    onPhotoLoad: () => setLoadedPhoto(currentSnapshot.cuid),
+  };
+  // With no earlier year to show, the photo stays as it is. That is so for a
+  // moment after the switch is enabled, and when the user has browsed back
+  // to the place's first year, where the switch is hidden.
+  const showCompare = compare && compareDates.length > 0;
+
   return (
     <div className={styles.outer}>
       <DateVisualiser
@@ -61,33 +78,15 @@ export default function SnapshotImage({
           currentSnapshot={currentSnapshot}
           compare={compare}
         />
+      ) : showCompare ? (
+        <CompareGrid
+          {...photoProps}
+          store={store}
+          currentSnapshot={currentSnapshot}
+          compareDates={compareDates}
+        />
       ) : (
-        <>
-          <SliceOfTime
-            place={place}
-            snapshot={currentSnapshot}
-            priority
-            // The front page shows the latest photo. An older one would move
-            // into the card and then jump to the latest.
-            transitionName={
-              currentSnapshot.cuid === place.lastSnapshot.cuid
-                ? PHOTO_TRANSITION_NAME
-                : undefined
-            }
-            onPhotoLoad={() => setLoadedPhoto(currentSnapshot.cuid)}
-          />
-
-          {compare && (
-            <ul className={styles.compareList}>
-              {compareDates.map((date, index) => (
-                <li key={index}>
-                  <div className={styles.compareYear}>{date.getFullYear()}</div>
-                  <SliceOfTimeAt store={store} place={place} date={date} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+        <SliceOfTime {...photoProps} snapshot={currentSnapshot} priority />
       )}
       <div className={styles.bottom}>
         <div className={styles.bottomInner}>
