@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import SnapshotImage from 'modules/snapshot-image';
 import { Spinner } from 'ui';
 
 import { PLACE_PHOTO_SIZES } from '../photo-prefetch';
-import { findSnapshot } from '../store';
-import { closestTarget } from '../timeline';
 import Metadata from './metadata';
 import styles from './slice-of-time.module.css';
 
@@ -47,31 +45,4 @@ export default function SliceOfTime({
       </div>
     </div>
   );
-}
-
-/** The snapshot closest to a date, for compare mode. */
-export function SliceOfTimeAt({ store, place, date }) {
-  const time = date.getTime();
-  // Keeps the previous snapshot on screen while the next one loads.
-  const [snapshot, setSnapshot] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-
-    findSnapshot(
-      store,
-      (timeline, settle) => closestTarget(timeline, time, { settle }),
-      () => !active
-    ).then((found) => {
-      if (active && found) {
-        setSnapshot(found);
-      }
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [store, time]);
-
-  return <SliceOfTime place={place} snapshot={snapshot} />;
 }

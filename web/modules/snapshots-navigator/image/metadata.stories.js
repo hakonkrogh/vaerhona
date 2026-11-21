@@ -34,6 +34,9 @@ export const BoxOnly = {
   args: { snapshot: { ...snapshot, yrWeather: null } },
 };
 
+/** As in a tile in compare mode. */
+export const Compact = { args: { compact: true } };
+
 export const NoWind = {
   args: {
     snapshot: {

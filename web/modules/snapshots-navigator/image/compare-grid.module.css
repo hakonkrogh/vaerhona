@@ -1,0 +1,90 @@
+/* The columns follow the width of this box, not of the window, so the grid
+   also fits where it is given less room (a story of a phone, for one). */
+.outer {
+  container-type: inline-size;
+}
+
+/* Two columns on a phone, so four to six years fit on one screen. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 8px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 8px;
+  list-style: none;
+}
+
+@container (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 16px;
+    padding: 0 16px;
+  }
+}
+
+@container (min-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 0 32px;
+  }
+}
+
+/* Every tile has the same shape, also while its photo loads and when the
+   year has none. */
+.photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* A photo of another shape is shown whole, with the grey behind it. */
+.photo img {
+  display: block;
+  height: 100%;
+}
+
+/* The year sits on the photo, so it cannot be read as the year of the tile
+   next to it. */
+.year {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.9em;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.none {
+  padding: 30px 10px 10px;
+  color: #666;
+  font-size: 0.85em;
+  text-align: center;
+}
+
+/* Room for the values and the time, so a tile does not grow when its
+   snapshot arrives. */
+.text {
+  min-height: 3em;
+  padding: 6px 2px 0;
+}
+
+.when,
+.note {
+  color: #666;
+  font-size: 0.8em;
+  line-height: 1.4;
+}
+
+/* The photo is from another day than the one asked for. */
+.note {
+  color: #a15c00;
+}

@@ -5,23 +5,6 @@
   );
 }
 
-.compareList {
-  display: block;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.compareList > li {
-  margin: 0 0 60px;
-  padding: 0;
-}
-
-.compareYear {
-  margin: 30px 0 15px;
-  text-align: center;
-}
-
 .bottom {
   /* Room for the iOS home indicator below the buttons. */
   padding-bottom: env(safe-area-inset-bottom);
