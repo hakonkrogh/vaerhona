@@ -4,28 +4,43 @@
   container-type: inline-size;
 }
 
-/* Two columns on a phone, so four to six years fit on one screen. */
+/* Two columns on a phone, so four to six years fit on one screen. The rows
+   are centered, so a last row with fewer tiles, or a place with only two
+   years on a wide screen, sits in the middle. A grid would put them to the
+   left. */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px 8px;
+  --columns: 2;
+  --gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px var(--gap);
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 8px;
   list-style: none;
 }
 
+/* An equal share of the row. The 0.1px keeps the last tile of a row from
+   wrapping when the browser rounds the widths up. */
+.grid > li {
+  flex: 0 0
+    calc((100% - (var(--columns) - 1) * var(--gap)) / var(--columns) - 0.1px);
+  min-width: 0;
+}
+
 @container (min-width: 700px) {
   .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px 16px;
+    --columns: 3;
+    --gap: 16px;
+    row-gap: 24px;
     padding: 0 16px;
   }
 }
 
 @container (min-width: 1100px) {
   .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    --columns: 4;
     padding: 0 32px;
   }
 }

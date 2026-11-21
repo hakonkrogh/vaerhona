@@ -68,7 +68,7 @@ const meta = {
     width: { control: { type: 'range', min: 280, max: 1600, step: 10 } },
   },
   render: ({ width, ...args }) => (
-    <div style={{ width }}>
+    <div style={{ width, margin: '0 auto' }}>
       <CompareGrid {...args} />
     </div>
   ),
@@ -81,6 +81,11 @@ export const Grid = {};
 export const Phone = { args: { width: 375 } };
 
 export const Wide = { args: { width: 1400 } };
+
+/** Fewer tiles than columns: they sit in the middle. */
+export const TwoYears = {
+  args: { width: 1400, compareDates: [yearsBefore(current.date, 1)] },
+};
 
 const tile = (args) => ({
   render: (tileArgs) => (
