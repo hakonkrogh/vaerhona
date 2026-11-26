@@ -155,6 +155,18 @@ export function useSnapshotNavigation({
     [run]
   );
 
+  /** Straight to a snapshot the page has, as a tap on a year tile does. */
+  const show = useCallback(
+    (snapshot) => {
+      // A newer command, so an arrow that still waits for data does not move
+      // the user afterwards.
+      lastCommand.current += 1;
+      setPending(null);
+      setCurrent(snapshot);
+    },
+    [setCurrent]
+  );
+
   useEffect(() => {
     for (const part of nearbyLoads(timeline, current)) {
       store.load(part);
@@ -172,5 +184,5 @@ export function useSnapshotNavigation({
 
   useHistoryBackfill({ history: store.history, current, ready: photoLoaded });
 
-  return { go, goToDate, pending };
+  return { go, goToDate, show, pending };
 }

@@ -63,6 +63,8 @@ const meta = {
     compareDates: [1, 2, 3, 4, 5, 6].map((years) =>
       yearsBefore(current.date, years)
     ),
+    // As on the place page, where a tap on a photo goes to its snapshot.
+    onSelect: () => {},
   },
   argTypes: {
     width: { control: { type: 'range', min: 280, max: 1600, step: 10 } },
@@ -93,7 +95,7 @@ const tile = (args) => ({
       <YearTile {...tileArgs} />
     </div>
   ),
-  args: { place, year: '2023', ...args },
+  args: { place, year: '2023', onSelect: () => {}, ...args },
   parameters: { controls: { include: ['year'] } },
 });
 

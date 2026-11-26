@@ -22,6 +22,8 @@ const TILE_PHOTO_SIZES = '(min-width: 700px) 350px, 50vw';
  * @param {{ snapshot: object, time: number }|null} [found] the snapshot and
  * the time that was asked for. Undefined while it is searched for, null when
  * the year has no snapshot close enough to that time.
+ * @param {(snapshot: object) => void} [onSelect] called with the tile's
+ * snapshot when its photo is tapped. A tile with no snapshot cannot be tapped.
  */
 export function YearTile({
   place,
@@ -31,13 +33,25 @@ export function YearTile({
   priority,
   transitionName,
   onPhotoLoad,
+  onSelect,
 }) {
   const snapshot = found?.snapshot;
   const note = snapshot ? offNote(snapshot, found.time) : null;
+  // Only the photo is the button. The temperature under it has a click of
+  // its own (see ui/sensors.js).
+  const canSelect = Boolean(snapshot && onSelect);
+  const Photo = canSelect ? 'button' : 'div';
 
   return (
     <div className={styles.tile}>
-      <div className={styles.photo}>
+      <Photo
+        className={styles.photo}
+        {...(canSelect && {
+          type: 'button',
+          onClick: () => onSelect(snapshot),
+          'aria-label': `Vis bildet fra ${prettyDayMonth(snapshot.date)} ${year}`,
+        })}
+      >
         {found === undefined && <Spinner size="30px" />}
         {found === null && (
           <span className={styles.none}>Fant ingen bilder fra denne tiden</span>
@@ -58,7 +72,7 @@ export function YearTile({
           />
         )}
         <span className={styles.year}>{year}</span>
-      </div>
+      </Photo>
       <div className={styles.text}>
         {snapshot && (
           <>
@@ -75,7 +89,7 @@ export function YearTile({
 }
 
 /** The tile for the snapshot closest to a date. */
-function YearTileAt({ store, place, date }) {
+function YearTileAt({ store, place, date, onSelect }) {
   const time = date.getTime();
   // The last snapshot found stays on screen while the next one is searched
   // for. It is kept with the time it was found for, so its note stays right.
@@ -101,12 +115,22 @@ function YearTileAt({ store, place, date }) {
     };
   }, [store, time]);
 
-  return <YearTile place={place} year={prettyYear(date)} found={found} />;
+  return (
+    <YearTile
+      place={place}
+      year={prettyYear(date)}
+      found={found}
+      onSelect={onSelect}
+    />
+  );
 }
 
 /**
  * Compare mode: the snapshot on screen and the same time in earlier years,
  * newest first, as one grid of tiles.
+ *
+ * @param {(snapshot: object) => void} [onSelect] called with the snapshot of
+ * the tile whose photo is tapped
  */
 export default function CompareGrid({
   store,
@@ -115,6 +139,7 @@ export default function CompareGrid({
   compareDates,
   transitionName,
   onPhotoLoad,
+  onSelect,
 }) {
   return (
     <div className={styles.outer}>
@@ -133,11 +158,17 @@ export default function CompareGrid({
             priority
             transitionName={transitionName}
             onPhotoLoad={onPhotoLoad}
+            onSelect={onSelect}
           />
         </li>
         {compareDates.map((date) => (
           <li key={date.getFullYear()}>
-            <YearTileAt store={store} place={place} date={date} />
+            <YearTileAt
+              store={store}
+              place={place}
+              date={date}
+              onSelect={onSelect}
+            />
           </li>
         ))}
       </ul>

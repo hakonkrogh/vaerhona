@@ -26,7 +26,7 @@ export default function SnapshotImage({
   const [loadedPhoto, setLoadedPhoto] = useState(null);
   // 'image' shows the photo, 'graph' shows a chart of the values.
   const [view, setView] = useState('image');
-  const { go, goToDate, pending } = useSnapshotNavigation({
+  const { go, goToDate, show, pending } = useSnapshotNavigation({
     store,
     current: currentSnapshot,
     setCurrent: setCurrentSnapshot,
@@ -45,6 +45,14 @@ export default function SnapshotImage({
       disabled,
       loading: pending === step,
     };
+  }
+
+  // A tap on a year tile: its snapshot alone, out of compare mode.
+  function showAlone(snapshot) {
+    show(snapshot);
+    setCompare(false);
+    // The grid can be longer than the screen, and the photo is at the top.
+    window.scrollTo(0, 0);
   }
 
   // The photo on screen, alone or as the first tile in compare mode.
@@ -84,6 +92,7 @@ export default function SnapshotImage({
           store={store}
           currentSnapshot={currentSnapshot}
           compareDates={compareDates}
+          onSelect={showAlone}
         />
       ) : (
         <SliceOfTime {...photoProps} snapshot={currentSnapshot} priority />
