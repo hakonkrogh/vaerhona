@@ -57,6 +57,25 @@
   overflow: hidden;
 }
 
+/* A tile with a photo is a button that goes to its snapshot. It looks like
+   the tiles that are not: only the cursor and the focus ring differ. */
+button.photo {
+  appearance: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.photo:focus-visible {
+  outline: 2px solid #00628b;
+  outline-offset: 2px;
+}
+
 /* A photo of another shape is shown whole, with the grey behind it. */
 .photo img {
   display: block;
